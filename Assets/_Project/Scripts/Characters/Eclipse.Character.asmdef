@@ -1,0 +1,20 @@
+{
+    "name": "Eclipse.Character",
+    "rootNamespace": "Eclipse.Character",
+    "references": [
+        "Eclipse.Core",
+        "Eclipse.Damage",
+        "Eclipse.Settings",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,30 @@
+# MTL file for Ethan Cross
+newmtl M_Ethan_Skin
+Ka 1.0 1.0 1.0
+Kd 0.85 0.68 0.58
+Ks 0.04 0.04 0.04
+Ns 30.0
+map_Kd C:\Users\selva\.gemini\antigravity\scratch\eclipse-the-last-civilization\Assets\_Project\Textures\Characters\Player\T_Ethan_Skin_Albedo.png
+map_Bump C:\Users\selva\.gemini\antigravity\scratch\eclipse-the-last-civilization\Assets\_Project\Textures\Characters\Player\T_Ethan_Skin_Normal.png
+
+newmtl M_Ethan_TacticalCloth
+Ka 1.0 1.0 1.0
+Kd 0.22 0.28 0.24
+Ks 0.02 0.02 0.02
+Ns 15.0
+map_Kd C:\Users\selva\.gemini\antigravity\scratch\eclipse-the-last-civilization\Assets\_Project\Textures\Characters\Player\T_Ethan_TacticalCloth_Albedo.png
+
+newmtl M_Ethan_Armor
+Ka 1.0 1.0 1.0
+Kd 0.14 0.16 0.15
+Ks 0.15 0.15 0.15
+Ns 50.0
+map_Kd C:\Users\selva\.gemini\antigravity\scratch\eclipse-the-last-civilization\Assets\_Project\Textures\Characters\Player\T_Ethan_Gear_Albedo.png
+
+newmtl M_Ethan_Gear
+Ka 1.0 1.0 1.0
+Kd 0.35 0.25 0.18
+Ks 0.10 0.10 0.10
+Ns 25.0
+map_Kd C:\Users\selva\.gemini\antigravity\scratch\eclipse-the-last-civilization\Assets\_Project\Textures\Characters\Player\T_Ethan_Gear_Albedo.png
+

@@ -1,0 +1,25 @@
+{
+    "name": "Eclipse.Player",
+    "rootNamespace": "Eclipse.Player",
+    "references": [
+        "Eclipse.Core",
+        "Eclipse.Character",
+        "Eclipse.Damage",
+        "Eclipse.Mobile",
+        "Eclipse.Settings",
+        "Eclipse.Networking",
+        "Unity.Netcode.Runtime",
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
