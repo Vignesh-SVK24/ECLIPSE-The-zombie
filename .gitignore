@@ -39,3 +39,14 @@ $RECYCLE.BIN/
 /Tools/Backup/Archives/
 *.bak
 *.orig
+
+*.log
+*_log.txt
+Tools/apply_stylized_update.js
+
+.venv/
+__pycache__/
+*.pyc
+Tools/Python/.venv/
+Tools/sync_git.js
+Tools/Backup/unity_log.txt

@@ -84,6 +84,9 @@ namespace Eclipse.Character
             // 2. NECK (Muscular sternocleidomastoid transition)
             AddNeckGeometry(vertices, normals, uvs, tangents, boneWeights, triSkin, headBoneIdx, neckBoneIdx, chestBoneIdx);
 
+            // 2b. STYLIZED HOOD COLLAR (Signature crimson combat jacket hood)
+            AddStylizedHoodCollar(vertices, normals, uvs, tangents, boneWeights, triCloth, neckBoneIdx, chestBoneIdx);
+
             // 3. TORSO WITH TACTICAL COMBAT JACKET (Pectorals, spine curve, latissimus)
             AddTacticalTorso(vertices, normals, uvs, tangents, boneWeights, triCloth, chestBoneIdx, spineBoneIdx, hipsBoneIdx);
 
@@ -132,6 +135,27 @@ namespace Eclipse.Character
                 Mesh = mesh,
                 Materials = pbrMaterials != null && pbrMaterials.Length >= 4 ? pbrMaterials : new Material[4]
             };
+        }
+
+        private static void AddStylizedHoodCollar(
+            List<Vector3> verts, List<Vector3> norms, List<Vector2> uvs, List<Vector4> tans,
+            List<BoneWeight> weights, List<int> triCloth, int neckBone, int chestBone)
+        {
+            // Draped hood resting on Ethan's upper shoulders/nape
+            AddBoxMesh(verts, norms, uvs, tans, weights, triCloth,
+                center: new Vector3(0, 1.54f, -0.08f),
+                size: new Vector3(0.30f, 0.12f, 0.20f),
+                bone0: neckBone, weight0: 0.6f, bone1: chestBone, weight1: 0.4f);
+
+            // Left and Right draped hood lapels
+            AddBoxMesh(verts, norms, uvs, tans, weights, triCloth,
+                center: new Vector3(-0.13f, 1.50f, 0.02f),
+                size: new Vector3(0.08f, 0.14f, 0.14f),
+                bone0: chestBone, weight0: 0.8f, bone1: neckBone, weight1: 0.2f);
+            AddBoxMesh(verts, norms, uvs, tans, weights, triCloth,
+                center: new Vector3(0.13f, 1.50f, 0.02f),
+                size: new Vector3(0.08f, 0.14f, 0.14f),
+                bone0: chestBone, weight0: 0.8f, bone1: neckBone, weight1: 0.2f);
         }
 
         #region Geometry Generators
@@ -560,6 +584,22 @@ namespace Eclipse.Character
                 center: new Vector3(0, 1.30f, -0.22f),
                 size: new Vector3(0.34f, 0.44f, 0.18f),
                 bone0: chestBone, weight0: 0.75f, bone1: spineBone, weight1: 0.25f);
+
+            // Rolled Sleeping Mat / Bedroll on Top of Backpack
+            AddBoxMesh(verts, norms, uvs, tans, weights, triGear,
+                center: new Vector3(0, 1.54f, -0.22f),
+                size: new Vector3(0.36f, 0.11f, 0.12f),
+                bone0: chestBone, weight0: 0.9f, bone1: spineBone, weight1: 0.1f);
+
+            // Left & Right Survival Pouches on Backpack
+            AddBoxMesh(verts, norms, uvs, tans, weights, triGear,
+                center: new Vector3(-0.19f, 1.28f, -0.20f),
+                size: new Vector3(0.07f, 0.22f, 0.12f),
+                bone0: chestBone, weight0: 0.8f, bone1: spineBone, weight1: 0.2f);
+            AddBoxMesh(verts, norms, uvs, tans, weights, triGear,
+                center: new Vector3(0.19f, 1.28f, -0.20f),
+                size: new Vector3(0.07f, 0.22f, 0.12f),
+                bone0: chestBone, weight0: 0.8f, bone1: spineBone, weight1: 0.2f);
 
             // Sidearm Drop-Leg Holster (Right thigh)
             AddBoxMesh(verts, norms, uvs, tans, weights, triGear,

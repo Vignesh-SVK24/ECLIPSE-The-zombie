@@ -1,0 +1,12 @@
+{
+  "stamina": 100,
+  "currentWeapon": "9mm Tactical Pistol",
+  "health": 100,
+  "kills": 5,
+  "position": {
+    "y": 0,
+    "z": -50,
+    "x": 0
+  },
+  "savedAt": "2026-11-03T18:04:34.194Z"
+}

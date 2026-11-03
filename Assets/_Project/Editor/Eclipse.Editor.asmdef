@@ -2,7 +2,15 @@
     "name": "Eclipse.Editor",
     "rootNamespace": "Eclipse.Build",
     "references": [
-        "Eclipse.Core"
+        "Eclipse.Core",
+        "Eclipse.Environment",
+        "Eclipse.Player",
+        "Eclipse.Character",
+        "Eclipse.AI",
+        "Eclipse.Damage",
+        "Eclipse.Settings",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
     ],
     "includePlatforms": [
         "Editor"

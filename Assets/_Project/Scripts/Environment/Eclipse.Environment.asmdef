@@ -5,6 +5,9 @@
         "Eclipse.Core",
         "Eclipse.Settings",
         "Eclipse.Damage",
+        "Eclipse.Character",
+        "Eclipse.Player",
+        "Eclipse.AI",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Core.Runtime"
     ],

@@ -1,0 +1,21 @@
+{
+    "name": "Eclipse.UI",
+    "rootNamespace": "Eclipse.UI",
+    "references": [
+        "Eclipse.Core",
+        "Eclipse.Damage",
+        "Eclipse.Settings",
+        "Eclipse.Mobile",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -51,6 +51,61 @@
             align-items: flex-start;
             pointer-events: auto;
         }
+        
+        /* Stylized Brand Title Header */
+        .brand-header {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 12;
+            pointer-events: none;
+        }
+        .brand-title {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255, 60, 0, 0.75), 0 2px 4px #000;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            text-transform: uppercase;
+        }
+        .brand-title span.slash {
+            color: #ff3333;
+        }
+        .brand-subtitle {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: #ffb347;
+            text-shadow: 0 1px 3px #000;
+            margin-top: -2px;
+        }
+
+        .avatar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .ethan-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            border: 2px solid #b71e1e;
+            background: linear-gradient(135deg, #b71e1e, #1a1e22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(183, 30, 30, 0.5);
+            font-weight: 900;
+            font-size: 16px;
+            color: #fff;
+        }
+
         .status-panel {
             background: rgba(17, 25, 24, 0.85);
             border: 1px solid rgba(196, 155, 88, 0.35);
@@ -104,6 +159,36 @@
             font-size: 13px;
             color: #e0e5e0;
             margin-top: 4px;
+        }
+        .connectivity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(17, 25, 24, 0.90);
+            border: 1px solid rgba(76, 175, 80, 0.45);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #a5d6a7;
+            margin-top: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            box-shadow: 0 0 8px #4caf50;
+        }
+        .status-dot.offline {
+            background: #f44336;
+            box-shadow: 0 0 8px #f44336;
+        }
+        .ping-badge {
+            color: #81c784;
+            font-family: monospace;
         }
         .kill-counter {
             font-size: 12px;
@@ -390,9 +475,14 @@
             </div>
 
             <div class="mission-panel">
-                <div class="mission-tag">ECLIPSE: GREYFALL COUNTY</div>
+                <div class="mission-tag">ECLIPSE: GREYFALL CITY (BATCH B OVERHAUL)</div>
                 <div class="mission-desc">Investigate the abandoned evacuation street and survive the infected.</div>
                 <div class="kill-counter">KILLS: <span id="kill-count">0</span> | THREAT: <span id="threat-level">ACTIVE</span></div>
+                <div class="connectivity-badge" id="connectivity-badge">
+                    <span class="status-dot"></span>
+                    <span id="conn-text">CONNECTING TO BACKEND...</span>
+                    <span class="ping-badge" id="ping-text">PING: --ms</span>
+                </div>
             </div>
         </div>
 
@@ -495,8 +585,8 @@
         // --- Three.js Game Engine Initialization ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0e1413);
-        scene.fog = new THREE.FogExp2(0x0e1413, 0.018);
+        scene.background = new THREE.Color(0x2f1b29);
+        scene.fog = new THREE.FogExp2(0x2b1a26, 0.013);
 
         const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -507,11 +597,11 @@
         container.appendChild(renderer.domElement);
 
         // Lighting
-        const hemiLight = new THREE.HemisphereLight(0xddeeff, 0x111918, 0.65);
+        const hemiLight = new THREE.HemisphereLight(0xffb878, 0x3d2840, 0.90);
         scene.add(hemiLight);
 
-        const dirLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
-        dirLight.position.set(40, 60, 20);
+        const dirLight = new THREE.DirectionalLight(0xffa850, 1.75);
+        dirLight.position.set(-60, 48, -45);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = 2048;
         dirLight.shadow.mapSize.height = 2048;
@@ -530,35 +620,44 @@
 
         // PBR Environment Materials Library
         const envPBR = {
-            asphalt: new THREE.MeshStandardMaterial({ color: 0x161817, roughness: 0.88, metalness: 0.05 }),
-            asphaltWet: new THREE.MeshStandardMaterial({ color: 0x0a0c0a, roughness: 0.08, metalness: 0.35 }),
-            roadMarkingYellow: new THREE.MeshStandardMaterial({ color: 0xc49b38, roughness: 0.65 }),
-            roadMarkingWhite: new THREE.MeshStandardMaterial({ color: 0xd2d5d2, roughness: 0.70 }),
-            curbConcrete: new THREE.MeshStandardMaterial({ color: 0x444a47, roughness: 0.85 }),
-            sidewalkConcrete: new THREE.MeshStandardMaterial({ color: 0x363a38, roughness: 0.90 }),
+            asphalt: new THREE.MeshStandardMaterial({ color: 0x181a19, roughness: 0.88, metalness: 0.05 }),
+            asphaltWet: new THREE.MeshStandardMaterial({ color: 0x0c0e0c, roughness: 0.08, metalness: 0.35 }),
+            roadMarkingYellow: new THREE.MeshStandardMaterial({ color: 0xd49b28, roughness: 0.65 }),
+            roadMarkingWhite: new THREE.MeshStandardMaterial({ color: 0xd8dad8, roughness: 0.70 }),
+            curbConcrete: new THREE.MeshStandardMaterial({ color: 0x4a504d, roughness: 0.85 }),
+            sidewalkConcrete: new THREE.MeshStandardMaterial({ color: 0x3d4240, roughness: 0.90 }),
             drainIron: new THREE.MeshStandardMaterial({ color: 0x1c1e1d, roughness: 0.60, metalness: 0.80 }),
-            brickFacade: new THREE.MeshStandardMaterial({ color: 0x6e382b, roughness: 0.92 }),
-            concreteFacade: new THREE.MeshStandardMaterial({ color: 0x484d4b, roughness: 0.88 }),
-            plasterFacade: new THREE.MeshStandardMaterial({ color: 0x7a746a, roughness: 0.85 }),
+            brickFacade: new THREE.MeshStandardMaterial({ color: 0x7a3c2e, roughness: 0.90 }),
+            concreteFacade: new THREE.MeshStandardMaterial({ color: 0x505654, roughness: 0.88 }),
+            plasterFacade: new THREE.MeshStandardMaterial({ color: 0x827c70, roughness: 0.85 }),
             windowGlass: new THREE.MeshStandardMaterial({ color: 0x182633, roughness: 0.12, metalness: 0.85 }),
             windowFrame: new THREE.MeshStandardMaterial({ color: 0x1a1c1b, roughness: 0.50 }),
-            boardedWood: new THREE.MeshStandardMaterial({ color: 0x5a3e26, roughness: 0.85 }),
+            boardedWood: new THREE.MeshStandardMaterial({ color: 0x68482e, roughness: 0.85 }),
             fireEscapeMetal: new THREE.MeshStandardMaterial({ color: 0x222628, roughness: 0.55, metalness: 0.80 }),
-            awningFabric1: new THREE.MeshStandardMaterial({ color: 0x7a2820, roughness: 0.80 }),
-            awningFabric2: new THREE.MeshStandardMaterial({ color: 0x203e32, roughness: 0.80 }),
-            carPaintPolice: new THREE.MeshStandardMaterial({ color: 0x11161d, roughness: 0.35, metalness: 0.70 }),
-            carPaintSedan: new THREE.MeshStandardMaterial({ color: 0x4a2c26, roughness: 0.50, metalness: 0.45 }),
-            carPaintTruck: new THREE.MeshStandardMaterial({ color: 0x2e382e, roughness: 0.75, metalness: 0.25 }),
+            awningFabric1: new THREE.MeshStandardMaterial({ color: 0x8a2c22, roughness: 0.80 }),
+            awningFabric2: new THREE.MeshStandardMaterial({ color: 0x244638, roughness: 0.80 }),
+            carPaintPolice: new THREE.MeshStandardMaterial({ color: 0x141b24, roughness: 0.35, metalness: 0.70 }),
+            carPaintSedan: new THREE.MeshStandardMaterial({ color: 0x5a322a, roughness: 0.50, metalness: 0.45 }),
+            carPaintTruck: new THREE.MeshStandardMaterial({ color: 0x344234, roughness: 0.75, metalness: 0.25 }),
             tireRubber: new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.95 }),
             rimMetal: new THREE.MeshStandardMaterial({ color: 0x777c80, roughness: 0.35, metalness: 0.85 }),
-            jerseyConcrete: new THREE.MeshStandardMaterial({ color: 0x525654, roughness: 0.90 }),
-            sandbagFabric: new THREE.MeshStandardMaterial({ color: 0x786a50, roughness: 0.95 }),
-            woodCrate: new THREE.MeshStandardMaterial({ color: 0x583e25, roughness: 0.85 }),
-            signHazard: new THREE.MeshStandardMaterial({ color: 0xd49818, roughness: 0.45, metalness: 0.50 }),
-            foliageGreen: new THREE.MeshStandardMaterial({ color: 0x2e4428, roughness: 0.82, side: THREE.DoubleSide }),
-            treeTrunk: new THREE.MeshStandardMaterial({ color: 0x281e16, roughness: 0.92 }),
+            jerseyConcrete: new THREE.MeshStandardMaterial({ color: 0x5a5e5c, roughness: 0.90 }),
+            sandbagFabric: new THREE.MeshStandardMaterial({ color: 0x887858, roughness: 0.95 }),
+            woodCrate: new THREE.MeshStandardMaterial({ color: 0x624528, roughness: 0.85 }),
+            signHazard: new THREE.MeshStandardMaterial({ color: 0xe0a018, roughness: 0.45, metalness: 0.50 }),
+            foliageGreen: new THREE.MeshStandardMaterial({ color: 0x385430, roughness: 0.82, side: THREE.DoubleSide }),
+            treeTrunk: new THREE.MeshStandardMaterial({ color: 0x2e2218, roughness: 0.92 }),
             streetLampMetal: new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.40, metalness: 0.80 }),
-            emissiveLamp: new THREE.MeshBasicMaterial({ color: 0xffe094 })
+            emissiveLamp: new THREE.MeshBasicMaterial({ color: 0xffe094 }),
+            // Master Stylized Key Art Additions
+            timberLog: new THREE.MeshStandardMaterial({ color: 0x6d4c3d, roughness: 0.88 }),
+            barrelRed: new THREE.MeshStandardMaterial({ color: 0xaa2218, roughness: 0.55, metalness: 0.25 }),
+            ammoCrateOlive: new THREE.MeshStandardMaterial({ color: 0x3c4a34, roughness: 0.75, metalness: 0.15 }),
+            stencilRed: new THREE.MeshBasicMaterial({ color: 0xd32f2f }),
+            signSafeZone: new THREE.MeshStandardMaterial({ color: 0xd49818, roughness: 0.45, metalness: 0.35 }),
+            lanternBrass: new THREE.MeshStandardMaterial({ color: 0x8a6f3b, roughness: 0.35, metalness: 0.85 }),
+            lanternGlow: new THREE.MeshBasicMaterial({ color: 0xffaa33 }),
+            toxicGreenEye: new THREE.MeshBasicMaterial({ color: 0x00ff66 })
         };
 
         // 1. REALISTIC ASPHALT ROADWAY WITH MARKINGS & PUDDLES
@@ -728,6 +827,36 @@
                     bGroup.add(waterTower);
                 }
 
+                // Batch B: Explorable Ground-Floor Interior Details
+                if (Math.abs(i) === 26 || i === 0) {
+                    const interiorGroup = new THREE.Group();
+                    interiorGroup.position.set(-side * 2.5, 0, 0);
+
+                    // Doorway entrance indicator
+                    const doorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.8, 1.8), envPBR.fireEscapeMetal);
+                    doorFrame.position.set(-side * 5.4, 1.4, 0);
+                    interiorGroup.add(doorFrame);
+
+                    if (styleIdx === 1) { // Commercial Grocery Shopfront
+                        const counter = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.1, 3.2), envPBR.boardedWood);
+                        counter.position.set(0, 0.55, -2.5);
+                        interiorGroup.add(counter);
+
+                        const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.0, 3.5), envPBR.fireEscapeMetal);
+                        shelf.position.set(2.0, 1.0, 0);
+                        interiorGroup.add(shelf);
+                    } else if (styleIdx === 2) { // Medical Clinic
+                        const examTable = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.9, 2.6), envPBR.roadMarkingWhite);
+                        examTable.position.set(0, 0.45, 2.0);
+                        interiorGroup.add(examTable);
+                    } else { // Residential Apartment
+                        const table = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 1.2), envPBR.boardedWood);
+                        table.position.set(0, 0.4, 0);
+                        interiorGroup.add(table);
+                    }
+                    bGroup.add(interiorGroup);
+                }
+
                 buildingsGroup.add(bGroup);
             }
         }
@@ -835,6 +964,24 @@
         attachWheels(truckGroup, 1.25, 0.65, -2.2);
         vehiclesGroup.add(truckGroup);
 
+        // E. Paramedic Emergency Ambulance (open rear doors & stretcher)
+        const ambGroup = new THREE.Group();
+        ambGroup.position.set(6.0, 0, -48);
+        ambGroup.rotation.y = -0.25;
+
+        const ambBody = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.2, 5.6), envPBR.roadMarkingWhite);
+        ambBody.position.y = 1.6;
+        ambBody.castShadow = true;
+        ambGroup.add(ambBody);
+
+        const ambCross = new THREE.Mesh(new THREE.BoxGeometry(2.45, 0.5, 5.65), envPBR.awningFabric1);
+        ambCross.position.y = 1.6;
+        ambGroup.add(ambCross);
+
+        attachWheels(ambGroup, 1.15, 0.55, 1.8);
+        attachWheels(ambGroup, 1.15, 0.55, -1.8);
+        vehiclesGroup.add(ambGroup);
+
         // D. Crashed Motorcycle on Pavement Curb
         const motoGroup = new THREE.Group();
         motoGroup.position.set(-14.5, 0.25, -2);
@@ -906,6 +1053,128 @@
         checkpointGroup.add(searchlightBeam.target);
 
         scene.add(checkpointGroup);
+
+        
+        // =========================================================================
+        // MASTER CONCEPT ART FORTIFICATION: PALISADES, "SURVIVE TOGETHER", & LANTERN
+        // =========================================================================
+        const palisadeGroup = new THREE.Group();
+        palisadeGroup.position.set(0, 0, 24);
+
+        // Vertical Timber Logs Wall with Barbed Wire
+        for (let logX = -12; logX <= 12; logX += 0.42) {
+            if (Math.abs(logX) < 1.8) continue; // Gap for player combat line
+            const logH = 2.2 + Math.sin(logX * 3.7) * 0.35;
+            const logMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.20, logH, 8), envPBR.timberLog);
+            logMesh.position.set(logX, logH / 2, 0);
+            logMesh.rotation.z = (Math.sin(logX * 5.1) * 0.05);
+            logMesh.castShadow = true;
+            logMesh.receiveShadow = true;
+            palisadeGroup.add(logMesh);
+
+            // Pointed Stake Tip
+            const tipMesh = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.45, 8), envPBR.timberLog);
+            tipMesh.position.set(logX, logH + 0.22, 0);
+            tipMesh.rotation.z = logMesh.rotation.z;
+            palisadeGroup.add(tipMesh);
+        }
+
+        // Horizontal Support Beams
+        [-1, 1].forEach(beamSide => {
+            const hBeam = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.22, 0.18), envPBR.timberLog);
+            hBeam.position.set(beamSide * 7.2, 1.2, -0.22);
+            palisadeGroup.add(hBeam);
+        });
+
+        // "SURVIVE TOGETHER" Master Stencil Sign
+        const signPlank = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.9, 0.12), envPBR.boardedWood);
+        signPlank.position.set(0, 0.95, -0.2);
+        signPlank.castShadow = true;
+        palisadeGroup.add(signPlank);
+
+        // Red Stencil Face Plate
+        const stencilPlate = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.65, 0.02), envPBR.stencilRed);
+        stencilPlate.position.set(0, 0.95, -0.13);
+        palisadeGroup.add(stencilPlate);
+
+        // Red Fuel Drums with Sandbags Stacked on Top
+        [[-4.5, 0], [4.5, 0], [-13.5, -2], [13.5, -2]].forEach(pos => {
+            const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.05, 12), envPBR.barrelRed);
+            drum.position.set(pos[0], 0.525, pos[1]);
+            drum.castShadow = true;
+            palisadeGroup.add(drum);
+
+            // Sandbag on top of drum
+            const sbTop = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.32, 0.45), envPBR.sandbagFabric);
+            sbTop.position.set(pos[0], 1.20, pos[1]);
+            sbTop.castShadow = true;
+            palisadeGroup.add(sbTop);
+        });
+
+        // Military Ammunition Cans
+        [[-3.2, 0.22, -0.6], [-2.6, 0.22, -0.5], [2.8, 0.22, -0.6]].forEach(ap => {
+            const ammoCan = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.35, 0.28), envPBR.ammoCrateOlive);
+            ammoCan.position.set(ap[0], ap[1], ap[2]);
+            ammoCan.castShadow = true;
+            palisadeGroup.add(ammoCan);
+        });
+
+        // Brass Kerosene Hurricane Lantern with Warm Amber Glow (#FFAA44)
+        const lanternPole = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.4, 0.08), envPBR.timberLog);
+        lanternPole.position.set(-2.2, 1.6, -0.3);
+        palisadeGroup.add(lanternPole);
+
+        const lanternArm = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.06, 0.06), envPBR.rimMetal);
+        lanternArm.position.set(-2.0, 2.2, -0.3);
+        palisadeGroup.add(lanternArm);
+
+        const lanternBase = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.14, 0.32, 8), envPBR.lanternBrass);
+        lanternBase.position.set(-1.8, 1.95, -0.3);
+        palisadeGroup.add(lanternBase);
+
+        const lanternGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.16, 8), envPBR.lanternGlow);
+        lanternGlass.position.set(-1.8, 2.05, -0.3);
+        palisadeGroup.add(lanternGlass);
+
+        const lanternLight = new THREE.PointLight(0xff9922, 2.4, 14.0);
+        lanternLight.position.set(-1.8, 2.05, -0.3);
+        lanternLight.castShadow = true;
+        palisadeGroup.add(lanternLight);
+
+        // Water Tower ("HOPE LIVES") on distant skyline
+        const waterTowerGroup = new THREE.Group();
+        waterTowerGroup.position.set(38, 0, 75);
+
+        // 4 steel lattice legs
+        for (let lx of [-2.5, 2.5]) {
+            for (let lz of [-2.5, 2.5]) {
+                const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.24, 18), envPBR.fireEscapeMetal);
+                leg.position.set(lx, 9, lz);
+                waterTowerGroup.add(leg);
+            }
+        }
+        // Round tank
+        const tank = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 6.5, 16), envPBR.concreteFacade);
+        tank.position.set(0, 21, 0);
+        waterTowerGroup.add(tank);
+
+        // "HOPE LIVES" banner face on tank
+        const hopePlank = new THREE.Mesh(new THREE.BoxGeometry(4.8, 1.8, 0.2), envPBR.boardedWood);
+        hopePlank.position.set(0, 21, -4.2);
+        waterTowerGroup.add(hopePlank);
+        palisadeGroup.add(waterTowerGroup);
+
+        // Yellow "SAFE ZONE" Road Sign
+        const safeSignPost = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2), envPBR.streetLampMetal);
+        safeSignPost.position.set(11, 1.6, -1);
+        palisadeGroup.add(safeSignPost);
+
+        const safeSignBoard = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.06), envPBR.signSafeZone);
+        safeSignBoard.position.set(11, 2.6, -1);
+        safeSignBoard.rotation.z = 0.08;
+        palisadeGroup.add(safeSignBoard);
+
+        scene.add(palisadeGroup);
 
         // 6. STREET INFRASTRUCTURE & MUNICIPAL DETAILS
         const streetDetailsGroup = new THREE.Group();
@@ -989,6 +1258,28 @@
 
         scene.add(natureGroup);
 
+        // 8b. ENVIRONMENTAL PARTICLE VFX (Batch B Ground Mist)
+        const vfxGroup = new THREE.Group();
+        const mistCount = 80;
+        const mistGeo = new THREE.BufferGeometry();
+        const mistPos = new Float32Array(mistCount * 3);
+        for (let m = 0; m < mistCount; m++) {
+            mistPos[m * 3] = (Math.random() - 0.5) * 32;
+            mistPos[m * 3 + 1] = 0.2 + Math.random() * 0.9;
+            mistPos[m * 3 + 2] = -115 + Math.random() * 230;
+        }
+        mistGeo.setAttribute('position', new THREE.BufferAttribute(mistPos, 3));
+        const mistMat = new THREE.PointsMaterial({
+            color: 0x90a4ae,
+            size: 3.8,
+            transparent: true,
+            opacity: 0.28,
+            depthWrite: false
+        });
+        const mistPoints = new THREE.Points(mistGeo, mistMat);
+        vfxGroup.add(mistPoints);
+        scene.add(vfxGroup);
+
         // 8. EXPLOSIVE BARRELS (PRESERVED)
         const barrels = [];
         const barrelGeo = new THREE.CylinderGeometry(0.7, 0.7, 1.8, 16);
@@ -1023,7 +1314,11 @@
             recoilPitch: 0,
             walkTimer: 0,
             breathTimer: 0,
-            flinchOffset: new THREE.Vector3()
+            flinchOffset: new THREE.Vector3(),
+            bodyYaw: 0,
+            currentSpeed: 0,
+            bankAngle: 0,
+            isCrouching: false
         };
 
         // ================================================================
@@ -1032,19 +1327,20 @@
         const charPBR = {
             skin: new THREE.MeshStandardMaterial({ color: 0xdcb08c, roughness: 0.50, metalness: 0.0 }),
             head: new THREE.MeshStandardMaterial({ color: 0xd5a682, roughness: 0.46, metalness: 0.0 }),
-            hair: new THREE.MeshStandardMaterial({ color: 0x22160d, roughness: 0.85, metalness: 0.05 }),
-            stubble: new THREE.MeshStandardMaterial({ color: 0x5a4436, roughness: 0.95 }),
+            hair: new THREE.MeshStandardMaterial({ color: 0x301e12, roughness: 0.85, metalness: 0.05 }),
+            stubble: new THREE.MeshStandardMaterial({ color: 0x422d1e, roughness: 0.95 }),
             eyeSclera: new THREE.MeshBasicMaterial({ color: 0xf5f5f5 }),
             eyeIris: new THREE.MeshBasicMaterial({ color: 0x2e5270 }),
             eyePupil: new THREE.MeshBasicMaterial({ color: 0x050505 }),
-            shirt: new THREE.MeshStandardMaterial({ color: 0x2a382c, roughness: 0.72, metalness: 0.02 }),
-            vest: new THREE.MeshStandardMaterial({ color: 0x191d1b, roughness: 0.55, metalness: 0.12 }),
-            pouches: new THREE.MeshStandardMaterial({ color: 0x3d392e, roughness: 0.80 }),
-            trousers: new THREE.MeshStandardMaterial({ color: 0x222628, roughness: 0.75, metalness: 0.04 }),
-            kneePads: new THREE.MeshStandardMaterial({ color: 0x121415, roughness: 0.35, metalness: 0.28 }),
-            boots: new THREE.MeshStandardMaterial({ color: 0x141312, roughness: 0.42, metalness: 0.1 }),
+            shirt: new THREE.MeshStandardMaterial({ color: 0xb72626, roughness: 0.68, metalness: 0.02 }), // Master Crimson Red Hoodie
+            vest: new THREE.MeshStandardMaterial({ color: 0x1e2426, roughness: 0.52, metalness: 0.15 }),  // Dark Kevlar Armor
+            pouches: new THREE.MeshStandardMaterial({ color: 0x4a4336, roughness: 0.80 }),
+            trousers: new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.75, metalness: 0.04 }),
+            kneePads: new THREE.MeshStandardMaterial({ color: 0x14181a, roughness: 0.35, metalness: 0.30 }),
+            boots: new THREE.MeshStandardMaterial({ color: 0x201a14, roughness: 0.45, metalness: 0.1 }),
             gloves: new THREE.MeshStandardMaterial({ color: 0x1a1e1f, roughness: 0.62 }),
-            backpack: new THREE.MeshStandardMaterial({ color: 0x6e472e, roughness: 0.85 }),
+            backpack: new THREE.MeshStandardMaterial({ color: 0x8a623e, roughness: 0.82 }),                 // Heavy canvas rucksack
+            bedroll: new THREE.MeshStandardMaterial({ color: 0xc2a676, roughness: 0.85 }),                  // Khaki rolled sleeping pad
             metal: new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.32, metalness: 0.85 }),
             reticle: new THREE.MeshBasicMaterial({ color: 0xff1a1a })
         };
@@ -1465,11 +1761,11 @@
         // 5 ANATOMICAL INFECTED ZOMBIE CLASSES
         // ================================================================
         const ZOMBIE_TYPES = {
-            WALKER: { name: 'Walker', speed: 2.2, health: 60, damage: 12, fleshColor: 0x485848, clothesColor: 0x2e3532, scale: 1.0, eyeColor: 0xd4bc3b },
-            RUNNER: { name: 'Runner', speed: 4.8, health: 40, damage: 15, fleshColor: 0x6e382d, clothesColor: 0x36241e, scale: 0.95, eyeColor: 0xff1111 },
-            STALKER: { name: 'Stalker', speed: 3.5, health: 50, damage: 22, fleshColor: 0x2b2538, clothesColor: 0x181420, scale: 0.95, eyeColor: 0x9c27b0 },
-            BRUTE: { name: 'Brute', speed: 1.4, health: 260, damage: 45, fleshColor: 0x354035, clothesColor: 0x1c211c, scale: 1.75, eyeColor: 0xff6600 },
-            ALPHA: { name: 'Alpha Boss', speed: 3.6, health: 550, damage: 55, fleshColor: 0x8a1c1c, clothesColor: 0x151515, scale: 2.2, isBoss: true, eyeColor: 0xff0022 }
+            WALKER: { name: 'Walker', speed: 2.2, health: 60, damage: 12, fleshColor: 0x5a6b54, clothesColor: 0x363d38, scale: 1.0, eyeColor: 0x00ff66 },
+            RUNNER: { name: 'Runner', speed: 4.8, health: 40, damage: 15, fleshColor: 0x6e785a, clothesColor: 0x42382e, scale: 0.95, eyeColor: 0x00ff66 },
+            STALKER: { name: 'Stalker', speed: 3.5, health: 50, damage: 22, fleshColor: 0x423a48, clothesColor: 0x221c28, scale: 0.95, eyeColor: 0x00ff66 },
+            BRUTE: { name: 'Brute', speed: 1.4, health: 260, damage: 45, fleshColor: 0x4a584a, clothesColor: 0x242a24, scale: 1.75, eyeColor: 0x00ff66 },
+            ALPHA: { name: 'Alpha Boss', speed: 3.6, health: 550, damage: 55, fleshColor: 0x52634e, clothesColor: 0x1a1a1a, scale: 2.2, isBoss: true, eyeColor: 0x00ff66 }
         };
 
         const zombies = [];
@@ -1945,6 +2241,9 @@
         let clock = new THREE.Clock();
 
         function animate() {
+            if (typeof heliRotor !== 'undefined') {
+                heliRotor.rotation.y += 0.42;
+            }
             requestAnimationFrame(animate);
             const dt = Math.min(clock.getDelta(), 0.1);
 
@@ -1953,21 +2252,48 @@
                 tryFire();
             }
 
-            // Movement Calculation
-            let moveX = 0;
-            let moveZ = 0;
-            if (keys['w']) moveZ += 1;
-            if (keys['s']) moveZ -= 1;
-            if (keys['a']) moveX -= 1;
-            if (keys['d']) moveX += 1;
+            // 1. Normalized 360-Degree Input Vector (WASD + Mobile Joystick)
+            let rawX = 0;
+            let rawZ = 0;
+            if (keys['w']) rawZ += 1;
+            if (keys['s']) rawZ -= 1;
+            if (keys['a']) rawX -= 1;
+            if (keys['d']) rawX += 1;
 
             if (touchJoystickActive) {
-                moveX = joystickVector.x;
-                moveZ = -joystickVector.y;
+                rawX = joystickVector.x;
+                rawZ = -joystickVector.y;
             }
 
-            const isMoving = Math.abs(moveX) > 0.05 || Math.abs(moveZ) > 0.05;
-            const currentSpeed = (player.isSprinting && player.stamina > 10 ? 7.2 : 3.8);
+            const inputMag = Math.sqrt(rawX * rawX + rawZ * rawZ);
+            const isMoving = inputMag > 0.05;
+
+            let normX = rawX;
+            let normZ = rawZ;
+            if (inputMag > 1.0) {
+                normX /= inputMag;
+                normZ /= inputMag;
+            }
+
+            // 2. Target Speed calculation (Walk, Run, Sprint, Aim Strafe)
+            let targetSpeed = 0;
+            if (isMoving) {
+                if (player.isAiming) {
+                    targetSpeed = (normZ < -0.2) ? 2.4 : 3.0; // Backward combat retreat or strafe
+                } else if (player.isCrouching) {
+                    targetSpeed = 2.0;
+                } else if (player.isSprinting && player.stamina > 10) {
+                    targetSpeed = 7.5; // High-velocity sprint
+                } else if (inputMag > 0.8) {
+                    targetSpeed = 5.4; // Tactical Jog / Run
+                } else {
+                    targetSpeed = 3.6; // Controlled Walk
+                }
+            }
+
+            // Smooth Acceleration & Deceleration
+            const accelRate = isMoving ? 12 : 16;
+            player.currentSpeed = THREE.MathUtils.lerp(player.currentSpeed, targetSpeed, dt * accelRate);
 
             if (player.isSprinting && isMoving) {
                 player.stamina = Math.max(0, player.stamina - dt * 25);
@@ -1976,24 +2302,51 @@
             }
             document.getElementById('stamina-fill').style.width = `${player.stamina}%`;
 
+            // 3. Camera-Relative Movement Vector
+            const moveDir = new THREE.Vector3();
             if (isMoving) {
                 const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
                 const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
 
-                const moveDir = new THREE.Vector3()
-                    .addScaledVector(forward, moveZ)
-                    .addScaledVector(right, moveX)
-                    .normalize();
+                moveDir.addScaledVector(forward, normZ)
+                       .addScaledVector(right, normX)
+                       .normalize();
 
-                player.position.addScaledVector(moveDir, currentSpeed * dt);
+                player.position.addScaledVector(moveDir, player.currentSpeed * dt);
                 // Keep inside street bounds
                 player.position.x = Math.max(-16, Math.min(16, player.position.x));
                 player.position.z = Math.max(-110, Math.min(110, player.position.z));
             }
 
-            // Update Player Model
+            // 4. AAA 360-DEGREE SMOOTH BODY ROTATION
+            if (player.isAiming) {
+                // Combat Strafe Mode: Body smoothly locks to camera aim yaw
+                let diff = (player.yaw - player.bodyYaw) % (Math.PI * 2);
+                if (diff < -Math.PI) diff += Math.PI * 2;
+                if (diff > Math.PI) diff -= Math.PI * 2;
+                player.bodyYaw += diff * Math.min(1.0, dt * 18);
+                player.bankAngle = THREE.MathUtils.lerp(player.bankAngle, 0, dt * 10);
+            } else if (isMoving) {
+                // Free Exploration Mode: Body smoothly rotates 360 degrees to face movement direction!
+                const targetAngle = Math.atan2(-moveDir.x, -moveDir.z);
+                let diff = (targetAngle - player.bodyYaw) % (Math.PI * 2);
+                if (diff < -Math.PI) diff += Math.PI * 2;
+                if (diff > Math.PI) diff -= Math.PI * 2;
+
+                const turnSpeed = (player.isSprinting ? 16 : 12) * (1.0 + Math.abs(diff) / Math.PI * 0.5);
+                player.bodyYaw += diff * Math.min(1.0, dt * turnSpeed);
+
+                // Body Banking into turns (subtle roll)
+                const targetBank = Math.max(-0.10, Math.min(0.10, -diff * 0.22));
+                player.bankAngle = THREE.MathUtils.lerp(player.bankAngle, targetBank, dt * 8);
+            } else {
+                player.bankAngle = THREE.MathUtils.lerp(player.bankAngle, 0, dt * 10);
+            }
+
+            // Update Player Mesh Position, 360 Rotation & Banking
             player.mesh.position.copy(player.position);
-            player.mesh.rotation.y = player.yaw;
+            player.mesh.rotation.y = player.bodyYaw;
+            player.mesh.rotation.z = player.bankAngle;
 
             // Procedural Skeletal Locomotion & Weapon Stances
             const r = player.rig;
@@ -2005,7 +2358,12 @@
                     player.walkTimer = THREE.MathUtils.lerp(player.walkTimer, 0, dt * 6);
                 }
 
-                const walkAmp = isMoving ? ((player.isSprinting && player.stamina > 10) ? 0.72 : 0.48) : 0;
+                const isSprintActive = player.isSprinting && player.stamina > 10 && isMoving;
+                const walkAmp = isMoving ? (isSprintActive ? 0.76 : (player.currentSpeed > 4.5 ? 0.58 : 0.42)) : 0;
+                
+                // Spine forward lean into sprint & running
+                const targetSpineLean = isSprintActive ? 0.28 : (isMoving ? 0.12 : 0.0);
+                r.spine.rotation.x = THREE.MathUtils.lerp(r.spine.rotation.x, targetSpineLean, dt * 8);
                 const walkPhase = player.walkTimer;
 
                 // Alternating Leg Swings
@@ -2168,6 +2526,26 @@
             sirenLight.intensity = (Math.sin(clock.getElapsedTime() * 8) > 0) ? 2.5 : 0.2;
 
             renderer.render(scene, camera);
+
+            // Interpolate Remote Co-Op Players
+            for (const [id, remote] of remotePlayers.entries()) {
+                remote.mesh.position.lerp(remote.targetPos, dt * 10);
+                remote.mesh.rotation.y = THREE.MathUtils.lerp(remote.mesh.rotation.y, remote.targetYaw, dt * 12);
+            }
+
+            // Sync Local Player State to Backend (20Hz)
+            if (ws && ws.readyState === WebSocket.OPEN && (clock.getElapsedTime() - lastSyncTime > 0.05)) {
+                lastSyncTime = clock.getElapsedTime();
+                ws.send(JSON.stringify({
+                    type: 'player_sync',
+                    position: { x: player.position.x, y: player.position.y, z: player.position.z },
+                    bodyYaw: player.bodyYaw,
+                    isSprinting: player.isSprinting,
+                    isAiming: player.isAiming,
+                    health: player.health,
+                    weapon: weapons[currentWeaponIndex].name
+                }));
+            }
         }
 
         animate();

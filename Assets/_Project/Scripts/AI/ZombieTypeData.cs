@@ -41,6 +41,12 @@ namespace Eclipse.AI
         [SerializeField] private bool _canCallHorde = false;
         [SerializeField] private float _hordeCallRadius = 25f;
 
+        [Header("Stylized 3D Animated Visuals")]
+        [SerializeField] private Color _stylizedSkinColor = new Color(0.33f, 0.44f, 0.28f, 1.0f); // Sickly decayed olive
+        [SerializeField] private Color _stylizedEyeGlowColor = new Color(0.22f, 1.0f, 0.08f, 1.0f); // Vivid neon lime green
+        [SerializeField] private float _eyeGlowIntensity = 4.0f;
+        [SerializeField] private float _modelScale = 1.0f;
+
         public ZombieType Type => _type;
         public string TypeName => _typeName;
         public float MaxHealth => _maxHealth;
@@ -64,5 +70,10 @@ namespace Eclipse.AI
         public float RetreatHealthThreshold => _retreatHealthThreshold;
         public bool CanCallHorde => _canCallHorde;
         public float HordeCallRadius => _hordeCallRadius;
+
+        public Color StylizedSkinColor => _stylizedSkinColor;
+        public Color StylizedEyeGlowColor => _stylizedEyeGlowColor;
+        public float EyeGlowIntensity => _eyeGlowIntensity;
+        public float ModelScale => _modelScale;
     }
 }

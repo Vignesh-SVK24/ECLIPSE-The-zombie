@@ -11,9 +11,11 @@ namespace Eclipse.Player
     }
 
     /// <summary>
-    /// Dual-mode camera controller supporting seamless toggling between First-Person
-    /// and Third-Person Over-The-Shoulder perspectives with obstacle occlusion clipping prevention.
-    /// Compatible with Desktop Mouse Look and Mobile Touch Swipe.
+    /// AAA Dual-mode camera controller for Ethan Cross (Batch A).
+    /// Features smooth 360-degree orbit around the character, independent free-look exploration,
+    /// dynamic over-the-shoulder aiming zoom, obstacle occlusion sphere-cast clipping prevention,
+    /// and seamless first/third person toggling.
+    /// Fully compatible with Desktop Mouse Look and Mobile Touch Swipe.
     /// </summary>
     public class PlayerCameraController : MonoBehaviour
     {
@@ -26,33 +28,36 @@ namespace Eclipse.Player
 
         [Header("Third Person Configuration")]
         [SerializeField] private float _distance = 3.2f;
-        [SerializeField] private float _aimDistance = 1.8f;
-        [SerializeField] private Vector3 _shoulderOffset = new Vector3(0.55f, 1.65f, 0);
-        [SerializeField] private Vector3 _aimShoulderOffset = new Vector3(0.42f, 1.55f, 0);
-        [SerializeField] private float _collisionRadius = 0.25f;
+        [SerializeField] private float _aimDistance = 1.75f;
+        [SerializeField] private Vector3 _pivotOffset = new Vector3(0, 1.60f, 0);
+        [SerializeField] private Vector3 _shoulderOffset = new Vector3(0.55f, 0, 0);
+        [SerializeField] private Vector3 _aimShoulderOffset = new Vector3(0.40f, -0.05f, 0);
+        [SerializeField] private float _collisionRadius = 0.22f;
         [SerializeField] private LayerMask _collisionMask = ~0;
 
-        [Header("Rotation Settings")]
+        [Header("Rotation & Smoothing")]
         [SerializeField] private float _mouseSensitivity = 2.2f;
         [SerializeField] private float _minPitch = -60f;
         [SerializeField] private float _maxPitch = 70f;
-        [SerializeField] private bool _smoothRotation = true;
-        [SerializeField] private float _rotationDamping = 15f;
+        [SerializeField] private float _cameraDamping = 18f;
 
         private float _yaw;
         private float _pitch;
         private Camera _camera;
         private bool _isAiming;
+        private Vector3 _currentCameraPos;
 
         public CameraViewMode CurrentMode => _currentMode;
         public Camera Camera => _camera;
         public float Yaw => _yaw;
         public float Pitch => _pitch;
+        public bool IsAiming => _isAiming;
 
         private void Awake()
         {
             _camera = GetComponent<Camera>();
             if (_camera == null) _camera = Camera.main;
+            _currentCameraPos = transform.position;
         }
 
         private void Start()
@@ -69,7 +74,13 @@ namespace Eclipse.Player
             if (_target != null)
             {
                 _yaw = _target.eulerAngles.y;
+                _currentCameraPos = transform.position;
             }
+        }
+
+        public void SetTarget(Transform target)
+        {
+            Initialize(target);
         }
 
         public void SetAim(bool isAiming)
@@ -105,43 +116,50 @@ namespace Eclipse.Player
             _yaw += lookX;
             _pitch = Mathf.Clamp(_pitch - lookY, _minPitch, _maxPitch);
 
-            // Orient character towards camera yaw
-            _target.rotation = Quaternion.Euler(0, _yaw, 0);
+            // In First-Person mode, character body aligns immediately with camera yaw
+            if (_currentMode == CameraViewMode.FirstPerson)
+            {
+                _target.rotation = Quaternion.Euler(0, _yaw, 0);
+            }
         }
 
         private void UpdateCameraPosition()
         {
-            Quaternion rotation = Quaternion.Euler(_pitch, _yaw, 0);
+            Quaternion cameraRotation = Quaternion.Euler(_pitch, _yaw, 0);
+            float dt = Time.deltaTime;
 
             if (_currentMode == CameraViewMode.FirstPerson)
             {
-                // First Person: Fixed to eye socket height
+                // First Person View: Fixed to eye socket height
                 Vector3 eyePos = _target.position + _target.rotation * _firstPersonOffset;
                 transform.position = eyePos;
-                transform.rotation = rotation;
+                transform.rotation = cameraRotation;
             }
             else
             {
-                // Third Person Over-The-Shoulder with Obstacle Clipping Protection
+                // Third Person Over-The-Shoulder View with Obstacle Occlusion Protection
                 Vector3 currentShoulder = _isAiming ? _aimShoulderOffset : _shoulderOffset;
                 float targetDist = _isAiming ? _aimDistance : _distance;
 
-                Vector3 pivot = _target.position + _target.rotation * currentShoulder;
-                Vector3 desiredPos = pivot - (rotation * Vector3.forward * targetDist);
+                // Pivot is anchored to target torso height and rotated by camera yaw for smooth orbiting
+                Quaternion yawRotation = Quaternion.Euler(0, _yaw, 0);
+                Vector3 shoulderWorldOffset = yawRotation * currentShoulder;
+                Vector3 pivot = _target.position + _pivotOffset + shoulderWorldOffset;
 
-                // SphereCast from pivot to desired position to prevent clipping through terrain/walls
+                Vector3 desiredPos = pivot - (cameraRotation * Vector3.forward * targetDist);
+
+                // SphereCast from pivot to desired position to avoid clipping walls/pillars
                 Vector3 dir = (desiredPos - pivot).normalized;
                 if (Physics.SphereCast(pivot, _collisionRadius, dir, out RaycastHit hit, targetDist, _collisionMask, QueryTriggerInteraction.Ignore))
                 {
                     float adjustedDist = Mathf.Max(hit.distance - 0.1f, 0.4f);
-                    transform.position = pivot + dir * adjustedDist;
-                }
-                else
-                {
-                    transform.position = desiredPos;
+                    desiredPos = pivot + dir * adjustedDist;
                 }
 
-                transform.rotation = rotation;
+                // Smooth camera position damping to eliminate jitter
+                _currentCameraPos = Vector3.Lerp(_currentCameraPos, desiredPos, dt * _cameraDamping);
+                transform.position = _currentCameraPos;
+                transform.rotation = cameraRotation;
             }
         }
     }
