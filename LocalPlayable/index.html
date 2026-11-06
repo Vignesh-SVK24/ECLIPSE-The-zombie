@@ -643,62 +643,108 @@
     </div>
 
     <script>
-        // --- Web Audio Sound Synthesizer (Zero External Dependencies) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playGunshot(isRifle = false) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            const noise = audioCtx.createBufferSource();
-            
-            // Noise buffer for blast punch
-            const bufferSize = audioCtx.sampleRate * (isRifle ? 0.25 : 0.18);
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.04));
+        // Global Game & Multiplayer State
+        const remotePlayers = new Map();
+        let ws = null;
+        let lastSyncTime = 0;
+
+        // --- Web Audio Sound Synthesizer (Resilient / User-Gesture Safe) ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) {
+                        audioCtx = new AudioContextClass();
+                    }
+                } catch(err) {
+                    console.warn('AudioContext blocked or uninitialized:', err);
+                }
             }
-            noise.buffer = buffer;
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            return audioCtx;
+        }
 
-            gain.gain.setValueAtTime(isRifle ? 0.6 : 0.45, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (isRifle ? 0.25 : 0.18));
+        function playGunshot(isRifle = false) {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            try {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const noise = ctx.createBufferSource();
+                
+                const bufferSize = ctx.sampleRate * (isRifle ? 0.25 : 0.18);
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.04));
+                }
+                noise.buffer = buffer;
 
-            noise.connect(gain);
-            gain.connect(audioCtx.destination);
-            noise.start();
+                gain.gain.setValueAtTime(isRifle ? 0.6 : 0.45, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (isRifle ? 0.25 : 0.18));
+
+                noise.connect(gain);
+                gain.connect(ctx.destination);
+                noise.start();
+            } catch(e) {}
         }
 
         function playZombieGroan(isBoss = false) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            const baseFreq = isBoss ? 55 : 95 + Math.random() * 40;
-            osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(baseFreq * 0.7, audioCtx.currentTime + 0.6);
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            try {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                const baseFreq = isBoss ? 55 : 95 + Math.random() * 40;
+                osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(baseFreq * 0.7, ctx.currentTime + 0.6);
 
-            gain.gain.setValueAtTime(isBoss ? 0.4 : 0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                gain.gain.setValueAtTime(isBoss ? 0.4 : 0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.6);
+            } catch(e) {}
         }
 
         function playHitSound() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            try {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        function playClickSound() {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            try {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+            } catch(e) {}
         }
 
         // --- Three.js Game Engine Initialization ---
@@ -2169,7 +2215,14 @@
         // Mouse Controls & Pointer Lock
         let isPointerLocked = false;
         container.addEventListener('click', () => {
-            if (!isPointerLocked) container.requestPointerLock();
+            if (!isPointerLocked && typeof container.requestPointerLock === 'function') {
+                try {
+                    const req = container.requestPointerLock();
+                    if (req && typeof req.catch === 'function') {
+                        req.catch(() => {});
+                    }
+                } catch(e) {}
+            }
         });
         document.addEventListener('pointerlockchange', () => {
             isPointerLocked = (document.pointerLockElement === container);
@@ -2829,24 +2882,29 @@
 
             renderer.render(scene, camera);
 
-            // Interpolate Remote Co-Op Players
-            for (const [id, remote] of remotePlayers.entries()) {
-                remote.mesh.position.lerp(remote.targetPos, dt * 10);
-                remote.mesh.rotation.y = THREE.MathUtils.lerp(remote.mesh.rotation.y, remote.targetYaw, dt * 12);
+            // Interpolate Remote Co-Op Players (if any active)
+            if (typeof remotePlayers !== 'undefined' && remotePlayers && remotePlayers.size > 0) {
+                for (const [id, remote] of remotePlayers.entries()) {
+                    if (remote && remote.mesh) {
+                        remote.mesh.position.lerp(remote.targetPos, dt * 10);
+                        remote.mesh.rotation.y = THREE.MathUtils.lerp(remote.mesh.rotation.y, remote.targetYaw, dt * 12);
+                    }
+                }
             }
 
-            // Sync Local Player State to Backend (20Hz)
-            if (ws && ws.readyState === WebSocket.OPEN && (clock.getElapsedTime() - lastSyncTime > 0.05)) {
+            // Sync Local Player State to Backend (if WebSocket connected)
+            if (typeof ws !== 'undefined' && ws && ws.readyState === 1 && (clock.getElapsedTime() - lastSyncTime > 0.05)) {
                 lastSyncTime = clock.getElapsedTime();
-                ws.send(JSON.stringify({
-                    type: 'player_sync',
-                    position: { x: player.position.x, y: player.position.y, z: player.position.z },
-                    bodyYaw: player.bodyYaw,
-                    isSprinting: player.isSprinting,
-                    isAiming: player.isAiming,
-                    health: player.health,
-                    weapon: weapons[currentWeaponIndex].name
-                }));
+                try {
+                    ws.send(JSON.stringify({
+                        type: 'player_sync',
+                        position: { x: player.position.x, y: player.position.y, z: player.position.z },
+                        isSprinting: player.isSprinting,
+                        isAiming: player.isAiming,
+                        health: player.health,
+                        weapon: weapons[currentWeaponIndex].name
+                    }));
+                } catch(err) {}
             }
         }
 
