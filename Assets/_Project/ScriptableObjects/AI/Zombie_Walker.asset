@@ -17,7 +17,7 @@ MonoBehaviour:
   _maxHealth: 80
   _damageResistance: 0
   _walkSpeed: 1.2
-  _chaseSpeed: 2.8
+  _chaseSpeed: 2.6
   _angularSpeed: 180
   _acceleration: 6
   _visionRange: 16
@@ -35,3 +35,7 @@ MonoBehaviour:
   _retreatHealthThreshold: 0
   _canCallHorde: 0
   _hordeCallRadius: 0
+  _stylizedSkinColor: {r: 0.35, g: 0.42, b: 0.33, a: 1.0}
+  _stylizedEyeGlowColor: {r: 0.17, g: 1.0, b: 0.04, a: 1.0}
+  _eyeGlowIntensity: 3.5
+  _modelScale: 1.0

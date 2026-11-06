@@ -35,3 +35,7 @@ MonoBehaviour:
   _retreatHealthThreshold: 0
   _canCallHorde: 0
   _hordeCallRadius: 0
+  _stylizedSkinColor: {r: 0.43, g: 0.47, b: 0.35, a: 1.0}
+  _stylizedEyeGlowColor: {r: 0.0, g: 1.0, b: 0.4, a: 1.0}
+  _eyeGlowIntensity: 4.5
+  _modelScale: 0.95

@@ -1877,15 +1877,36 @@
         let isReloading = false;
 
         // ================================================================
-        // 5 ANATOMICAL INFECTED ZOMBIE CLASSES
+        // ================================================================
+        // 5 ANATOMICAL INFECTED ZOMBIE CLASSES (BATCH A - WALKER PROTOTYPE)
         // ================================================================
         const ZOMBIE_TYPES = {
-            WALKER: { name: 'Walker', speed: 2.2, health: 60, damage: 12, fleshColor: 0x5a6b54, clothesColor: 0x363d38, scale: 1.0, eyeColor: 0x00ff66 },
-            RUNNER: { name: 'Runner', speed: 4.8, health: 40, damage: 15, fleshColor: 0x6e785a, clothesColor: 0x42382e, scale: 0.95, eyeColor: 0x00ff66 },
-            STALKER: { name: 'Stalker', speed: 3.5, health: 50, damage: 22, fleshColor: 0x423a48, clothesColor: 0x221c28, scale: 0.95, eyeColor: 0x00ff66 },
-            BRUTE: { name: 'Brute', speed: 1.4, health: 260, damage: 45, fleshColor: 0x4a584a, clothesColor: 0x242a24, scale: 1.75, eyeColor: 0x00ff66 },
-            ALPHA: { name: 'Alpha Boss', speed: 3.6, health: 550, damage: 55, fleshColor: 0x52634e, clothesColor: 0x1a1a1a, scale: 2.2, isBoss: true, eyeColor: 0x00ff66 }
+            WALKER: { 
+                name: 'Walker', 
+                speed: 2.2, 
+                health: 80, 
+                damage: 12, 
+                fleshColor: 0x5a6b54, 
+                clothesColor: 0x3e4745, 
+                scale: 1.0, 
+                eyeColor: 0x2bf805, 
+                isSingleEye: true 
+            },
+            RUNNER: { name: 'Runner', speed: 4.8, health: 55, damage: 18, fleshColor: 0x6e785a, clothesColor: 0x42382e, scale: 0.95, eyeColor: 0x00ff66 },
+            STALKER: { name: 'Stalker', speed: 3.5, health: 70, damage: 24, fleshColor: 0x423a48, clothesColor: 0x221c28, scale: 0.95, eyeColor: 0x00ff66 },
+            BRUTE: { name: 'Brute', speed: 1.4, health: 350, damage: 45, fleshColor: 0x4a584a, clothesColor: 0x242a24, scale: 1.75, eyeColor: 0x2bf805 },
+            ALPHA: { name: 'Alpha Boss', speed: 3.6, health: 750, damage: 55, fleshColor: 0x52634e, clothesColor: 0x1a1a1a, scale: 2.2, isBoss: true, eyeColor: 0xff0044 }
         };
+
+        // Walker Appearance Presets (Batch A - 5 Visual Variations)
+        const WALKER_VARIANTS = [
+            { name: 'Civilian Walker', clothes: 0x3e4745, pants: 0x2b302c, flesh: 0x5a6b54, accessory: 'jacket_tear' },
+            { name: 'Security Walker', clothes: 0x263342, pants: 0x1b222b, flesh: 0x52634e, accessory: 'badge' },
+            { name: 'Military Walker', clothes: 0x373d2a, pants: 0x2d3322, flesh: 0x4f5e49, accessory: 'strap' },
+            { name: 'Industrial Walker', clothes: 0x945b2b, pants: 0x262b2e, flesh: 0x556650, accessory: 'vest_stripe' },
+            { name: 'Injured Walker', clothes: 0x4a2a2a, pants: 0x2e2525, flesh: 0x5e6e58, accessory: 'head_bandage' }
+        ];
+        let walkerVariantIndex = 0;
 
         const zombies = [];
         let killsCount = 0;
@@ -1895,10 +1916,23 @@
             const zGroup = new THREE.Group();
             const zRig = {};
 
-            const fleshMat = new THREE.MeshStandardMaterial({ color: def.fleshColor, roughness: 0.88 });
-            const clothesMat = new THREE.MeshStandardMaterial({ color: def.clothesColor, roughness: 0.92 });
+            // Walker Variant selection
+            let currentFleshColor = def.fleshColor;
+            let currentClothesColor = def.clothesColor;
+            let variant = null;
+
+            if (typeKey === 'WALKER') {
+                variant = WALKER_VARIANTS[walkerVariantIndex % WALKER_VARIANTS.length];
+                walkerVariantIndex++;
+                currentFleshColor = variant.flesh;
+                currentClothesColor = variant.clothes;
+            }
+
+            const fleshMat = new THREE.MeshStandardMaterial({ color: currentFleshColor, roughness: 0.88 });
+            const clothesMat = new THREE.MeshStandardMaterial({ color: currentClothesColor, roughness: 0.92 });
             const boneMat = new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.6 });
             const zEyeMat = new THREE.MeshBasicMaterial({ color: def.eyeColor });
+            const cloudedEyeMat = new THREE.MeshBasicMaterial({ color: 0x8a9488 }); // Cataract eye
 
             const s = def.scale;
 
@@ -1955,7 +1989,25 @@
                 zRig.spine.add(rib);
             }
 
-            // Decayed Neck & Screaming Skull Head
+            // Walker Variant Specific Accessories
+            if (variant) {
+                if (variant.accessory === 'badge') {
+                    const badge = new THREE.Mesh(new THREE.BoxGeometry(0.05 * s, 0.06 * s, 0.02 * s), new THREE.MeshStandardMaterial({ color: 0xc49b58, metalness: 0.8, roughness: 0.3 }));
+                    badge.position.set(-0.10 * s, 0.22 * s, 0.12 * s);
+                    zRig.spine.add(badge);
+                } else if (variant.accessory === 'vest_stripe') {
+                    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.37 * s, 0.04 * s, 0.23 * s), new THREE.MeshBasicMaterial({ color: 0xccaa33 }));
+                    stripe.position.set(0, 0.16 * s, 0);
+                    zRig.spine.add(stripe);
+                } else if (variant.accessory === 'strap') {
+                    const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * s, 0.36 * s, 0.23 * s), new THREE.MeshStandardMaterial({ color: 0x1b2018, roughness: 0.8 }));
+                    strap.rotation.z = 0.6;
+                    strap.position.set(0, 0.17 * s, 0);
+                    zRig.spine.add(strap);
+                }
+            }
+
+            // Decayed Neck & Skull Head
             zRig.neck = new THREE.Group();
             zRig.neck.position.set(0, 0.34 * s, 0);
             zRig.spine.add(zRig.neck);
@@ -1973,19 +2025,31 @@
             const jawOpen = new THREE.Mesh(new THREE.BoxGeometry(0.10 * s, 0.08 * s, 0.11 * s), fleshMat);
             jawOpen.position.set(0, -0.05 * s, 0.04 * s);
             zRig.head.add(jawOpen);
+            zRig.jaw = jawOpen;
 
             // Rotten Teeth
             const teeth = new THREE.Mesh(new THREE.BoxGeometry(0.08 * s, 0.02 * s, 0.02 * s), boneMat);
             teeth.position.set(0, -0.02 * s, 0.09 * s);
             zRig.head.add(teeth);
 
-            // Glowing Sunken Eye Sockets
+            // Head Bandage for Injured Walker
+            if (variant && variant.accessory === 'head_bandage') {
+                const bandage = new THREE.Mesh(new THREE.CylinderGeometry(0.13 * s, 0.13 * s, 0.06 * s, 12), new THREE.MeshStandardMaterial({ color: 0x8a8479, roughness: 0.9 }));
+                bandage.position.set(0, 0.08 * s, 0);
+                zRig.head.add(bandage);
+            }
+
+            // Glowing Sunken Eye Sockets (Walker Asymmetry: Single Toxic Eye)
             for (let side of [-1, 1]) {
                 const eyeSocket = new THREE.Mesh(new THREE.SphereGeometry(0.03 * s, 6, 6), new THREE.MeshBasicMaterial({ color: 0x0a0a0a }));
                 eyeSocket.position.set(side * 0.045 * s, 0.05 * s, 0.09 * s);
                 zRig.head.add(eyeSocket);
 
-                const zEye = new THREE.Mesh(new THREE.SphereGeometry(0.016 * s, 6, 6), zEyeMat);
+                // If Walker, only left eye glows (-1), right eye is clouded
+                const isGlowingEye = (!def.isSingleEye) || (side === -1);
+                const eyeMaterial = isGlowingEye ? zEyeMat : cloudedEyeMat;
+
+                const zEye = new THREE.Mesh(new THREE.SphereGeometry(0.016 * s, 6, 6), eyeMaterial);
                 zEye.position.set(side * 0.045 * s, 0.05 * s, 0.115 * s);
                 zRig.head.add(zEye);
             }
@@ -2014,6 +2078,18 @@
                 forearmMesh.castShadow = true;
                 forearmGroup.add(forearmMesh);
 
+                // Walker: Exposed Forearm Ulna Bone Fragment on Left Arm
+                if (typeKey === 'WALKER' && side === -1) {
+                    const ulnaBone = new THREE.Mesh(new THREE.CylinderGeometry(0.014 * s, 0.010 * s, 0.18 * s, 5), boneMat);
+                    ulnaBone.position.set(0.038 * s, -0.14 * s, 0.02 * s);
+                    ulnaBone.rotation.z = 0.22;
+                    forearmGroup.add(ulnaBone);
+
+                    const clot = new THREE.Mesh(new THREE.SphereGeometry(0.024 * s, 5, 5), new THREE.MeshStandardMaterial({ color: 0x361616, roughness: 0.6 }));
+                    clot.position.set(0.034 * s, -0.11 * s, 0.018 * s);
+                    forearmGroup.add(clot);
+                }
+
                 // Clawed Fingers
                 for (let c = -2; c <= 2; c++) {
                     const claw = new THREE.Mesh(new THREE.ConeGeometry(0.012 * s * armScale, 0.08 * s * armScale, 4), boneMat);
@@ -2022,7 +2098,7 @@
                     forearmGroup.add(claw);
                 }
 
-                // Initial hunched/reaching zombie arm posture
+                // Initial reaching posture
                 shoulderGroup.rotation.x = -0.65;
                 forearmGroup.rotation.x = -0.45;
 
@@ -2054,6 +2130,7 @@
                 group: zGroup,
                 rig: zRig,
                 type: typeKey,
+                variantName: variant ? variant.name : def.name,
                 def: def,
                 health: def.health,
                 maxHealth: def.health,
@@ -2678,6 +2755,7 @@
                     z.rig.rightThigh.rotation.x = -zWalk * 0.35; // Lame leg drag
                     z.rig.spine.rotation.z = Math.sin(z.walkTimer * 0.5) * 0.15; // Unstable torso wobble
                     z.rig.head.rotation.z = -Math.sin(z.walkTimer * 0.5) * 0.22; // Broken neck tilt
+                    if (z.rig.jaw) z.rig.jaw.rotation.x = 0.12 + Math.sin(z.walkTimer * 1.8) * 0.10; // Gaping jaw twitch
 
                     // Reaching aggressive claw lunges
                     if (z.rig.leftArm && z.rig.rightArm) {
