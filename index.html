@@ -294,75 +294,143 @@
             padding-left: max(18px, var(--sal));
             padding-right: max(18px, var(--sar));
         }
+
+        /* Floating Dynamic Left Joystick Region */
+        #touch-move-region {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 48%;
+            height: 85%;
+            pointer-events: auto;
+            z-index: 14;
+            touch-action: none;
+            user-select: none;
+        }
+
         .touch-joystick-zone {
             width: 140px;
             height: 140px;
-            position: relative;
+            position: absolute;
+            bottom: max(24px, var(--sab));
+            left: max(24px, var(--sal));
             pointer-events: auto;
+            z-index: 15;
+            transition: transform 0.08s ease, opacity 0.15s ease;
+            touch-action: none;
+            user-select: none;
+        }
+        .touch-joystick-zone.floating {
+            transition: none; /* Instant follow when dragging */
+        }
+        .touch-joystick-zone.active {
+            transform: scale(1.08);
         }
         .joystick-bg {
             width: 120px;
             height: 120px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid rgba(255, 255, 255, 0.25);
+            background: radial-gradient(circle, rgba(196, 155, 88, 0.15) 0%, rgba(17, 25, 24, 0.65) 65%, rgba(255, 255, 255, 0.1) 100%);
+            border: 2px solid rgba(196, 155, 88, 0.55);
             border-radius: 50%;
             position: absolute;
             left: 10px;
             top: 10px;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(196, 155, 88, 0.25);
+        }
+        .joystick-bg::after {
+            content: '▲ SPRINT';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 7px;
+            font-weight: 800;
+            color: rgba(196, 155, 88, 0.65);
+            letter-spacing: 1px;
         }
         .joystick-thumb {
-            width: 46px;
-            height: 46px;
-            background: rgba(196, 155, 88, 0.85);
+            width: 48px;
+            height: 48px;
+            background: radial-gradient(circle at 35% 35%, #e5a84b, #946927);
             border: 2px solid #ffffff;
             border-radius: 50%;
             position: absolute;
-            left: 47px;
-            top: 47px;
+            left: 46px;
+            top: 46px;
             transform: translate(0, 0);
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.8), 0 0 10px rgba(196, 155, 88, 0.6);
+            transition: background 0.1s ease, box-shadow 0.1s ease;
+            pointer-events: none;
+        }
+        .joystick-thumb.sprinting {
+            background: radial-gradient(circle at 35% 35%, #ff5252, #a71d1d);
+            border-color: #ffcccc;
+            box-shadow: 0 0 18px rgba(255, 60, 60, 0.9);
         }
 
         .touch-action-buttons {
             display: grid;
-            grid-template-columns: repeat(3, 54px);
-            grid-gap: 10px;
+            grid-template-columns: repeat(4, 52px);
+            grid-gap: 8px;
             pointer-events: auto;
             margin-bottom: 70px;
-            margin-right: 8px;
+            margin-right: 6px;
+            z-index: 16;
         }
         .btn-touch {
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            background: rgba(17, 25, 24, 0.78);
-            border: 2px solid rgba(196, 155, 88, 0.6);
+            background: rgba(17, 25, 24, 0.82);
+            border: 2px solid rgba(196, 155, 88, 0.65);
             color: #ffffff;
-            font-weight: 700;
-            font-size: 11px;
+            font-weight: 800;
+            font-size: 9px;
+            letter-spacing: 0.5px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: transform 0.08s, background 0.08s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            transition: transform 0.08s, background 0.08s, border-color 0.08s;
             touch-action: none;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .btn-touch .btn-sub {
+            font-size: 7.5px;
+            color: #C49B58;
+            font-weight: 700;
+            margin-top: 1px;
         }
         .btn-touch:active, .btn-touch.active {
-            transform: scale(0.92);
-            background: rgba(196, 155, 88, 0.9);
+            transform: scale(0.90);
+            background: rgba(196, 155, 88, 0.92);
+            color: #111918;
+            border-color: #ffffff;
+            box-shadow: 0 0 14px rgba(196, 155, 88, 0.7);
+        }
+        .btn-touch:active .btn-sub, .btn-touch.active .btn-sub {
             color: #111918;
         }
         .btn-touch.btn-fire {
             width: 66px;
             height: 66px;
-            background: rgba(196, 50, 50, 0.88);
-            border-color: #ff5252;
-            font-size: 12px;
+            background: radial-gradient(circle, rgba(210, 45, 45, 0.95), rgba(130, 20, 20, 0.95));
+            border-color: #ff6666;
+            font-size: 11px;
             font-weight: 900;
-            box-shadow: 0 0 14px rgba(255, 60, 60, 0.6);
+            box-shadow: 0 0 16px rgba(255, 60, 60, 0.65);
+            grid-column: span 1;
+        }
+        .btn-touch.btn-fire .btn-sub {
+            color: #ffcccc;
+        }
+        .btn-touch.btn-fire:active, .btn-touch.btn-fire.active {
+            transform: scale(0.92);
+            background: #ff3333;
+            box-shadow: 0 0 24px rgba(255, 60, 60, 1.0);
         }
 
         /* Tablet Responsive Rules (iPad 4:3, Android Tablets 16:10, Foldables) */
@@ -397,43 +465,21 @@
             .mission-panel {
                 padding: 6px 12px;
             }
-            .mission-tag {
-                font-size: 9px;
-            }
-            .mission-desc {
-                font-size: 11px;
-            }
-            .touch-joystick-zone {
-                width: 120px;
-                height: 120px;
-            }
-            .joystick-bg {
-                width: 104px;
-                height: 104px;
-                left: 8px;
-                top: 8px;
-            }
-            .joystick-thumb {
-                width: 40px;
-                height: 40px;
-                left: 40px;
-                top: 40px;
-            }
             .touch-action-buttons {
-                grid-template-columns: repeat(3, 46px);
-                grid-gap: 8px;
+                grid-template-columns: repeat(4, 46px);
+                grid-gap: 6px;
                 margin-bottom: 50px;
                 margin-right: 6px;
             }
             .btn-touch {
                 width: 46px;
                 height: 46px;
-                font-size: 9px;
+                font-size: 8px;
             }
             .btn-touch.btn-fire {
-                width: 56px;
-                height: 56px;
-                font-size: 11px;
+                width: 58px;
+                height: 58px;
+                font-size: 10px;
             }
         }
 
@@ -451,19 +497,19 @@
                 padding: 6px 8px;
             }
             .touch-action-buttons {
-                grid-template-columns: repeat(3, 42px);
-                grid-gap: 6px;
+                grid-template-columns: repeat(4, 42px);
+                grid-gap: 5px;
                 margin-bottom: 35px;
             }
             .btn-touch {
                 width: 42px;
                 height: 42px;
-                font-size: 8px;
+                font-size: 7.5px;
             }
             .btn-touch.btn-fire {
                 width: 52px;
                 height: 52px;
-                font-size: 10px;
+                font-size: 9px;
             }
         }
 
@@ -620,10 +666,23 @@
 
     <!-- Mobile Touch Controls -->
     <div id="mobile-controls">
+        <div id="touch-move-region"></div>
+
         <div class="touch-joystick-zone" id="joystick-zone">
             <div class="joystick-bg"></div>
             <div class="joystick-thumb" id="joystick-thumb"></div>
         </div>
+
+        <div class="touch-action-buttons">
+            <div class="btn-touch" id="btn-cam" title="Camera View">CAM<br><span class="btn-sub">3RD</span></div>
+            <div class="btn-touch" id="btn-light" title="Day / Night">LIGHT<br><span class="btn-sub">DUSK</span></div>
+            <div class="btn-touch" id="btn-switch" title="Switch Weapon">GUN<br><span class="btn-sub">9MM</span></div>
+            <div class="btn-touch" id="btn-reload" title="Reload Clip">RELOAD<br><span class="btn-sub">[R]</span></div>
+            <div class="btn-touch" id="btn-sprint" title="Toggle Sprint">RUN<br><span class="btn-sub">OFF</span></div>
+            <div class="btn-touch" id="btn-aim" title="Aim Down Sights">AIM<br><span class="btn-sub">ADS</span></div>
+            <div class="btn-touch btn-fire" id="btn-fire" title="Fire Weapon">FIRE<br><span class="btn-sub">SHOOT</span></div>
+        </div>
+    </div>
 
         <div class="touch-action-buttons">
             <div class="btn-touch" id="btn-cam">CAM<br>[V]</div>
@@ -2248,9 +2307,11 @@
         });
         document.addEventListener('contextmenu', e => e.preventDefault());
 
-        // --- Multi-Touch Virtual Controls & Touch Look System (Batch B) ---
+        // --- Multi-Touch Dynamic Joystick & Enhanced Mobile Controls ---
+        const moveRegion = document.getElementById('touch-move-region');
         const joystickZone = document.getElementById('joystick-zone');
         const joystickThumb = document.getElementById('joystick-thumb');
+
         let touchJoystickActive = false;
         let joystickTouchId = null;
         let cameraTouchId = null;
@@ -2259,34 +2320,111 @@
         let cameraLastPos = { x: 0, y: 0 };
         let continuousFireInterval = null;
 
+        player.isSprintLocked = false;
+
         function triggerHaptic(duration = 20) {
             if (typeof navigator !== 'undefined' && navigator.vibrate) {
                 try { navigator.vibrate(duration); } catch(err) {}
             }
         }
 
-        // Joystick Touchstart
-        joystickZone.addEventListener('touchstart', e => {
-            e.preventDefault();
-            if (joystickTouchId !== null) return;
-            const touch = e.changedTouches[0];
-            joystickTouchId = touch.identifier;
-            const rect = joystickZone.getBoundingClientRect();
-            touchStartPos = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-            handleJoystickMove(touch.clientX, touch.clientY);
-        }, { passive: false });
+        // --- Dynamic Floating Joystick Engine ---
+        function startJoystick(clientX, clientY, identifier) {
+            joystickTouchId = identifier;
+            touchJoystickActive = true;
+            touchStartPos = { x: clientX, y: clientY };
+
+            // Float joystick base under thumb location
+            joystickZone.classList.add('floating', 'active');
+            joystickZone.style.bottom = 'auto';
+            joystickZone.style.left = `${clientX - 70}px`;
+            joystickZone.style.top = `${clientY - 70}px`;
+
+            handleJoystickMove(clientX, clientY);
+        }
 
         function handleJoystickMove(clientX, clientY) {
             const dx = clientX - touchStartPos.x;
             const dy = clientY - touchStartPos.y;
-            const dist = Math.min(48, Math.hypot(dx, dy));
+            const maxRadius = 48;
+            const dist = Math.min(maxRadius, Math.hypot(dx, dy));
             const angle = Math.atan2(dy, dx);
-            joystickVector.x = (Math.cos(angle) * dist) / 48;
-            joystickVector.y = (Math.sin(angle) * dist) / 48;
+
+            joystickVector.x = (Math.cos(angle) * dist) / maxRadius;
+            joystickVector.y = (Math.sin(angle) * dist) / maxRadius;
+
             joystickThumb.style.transform = `translate(${joystickVector.x * 38}px, ${joystickVector.y * 38}px)`;
+
+            // Auto-Sprint when pushed full forward (> 82%)
+            const isFullForward = (joystickVector.y < -0.80 && Math.abs(joystickVector.x) < 0.65);
+            if (isFullForward && player.stamina > 15) {
+                player.isSprinting = true;
+                joystickThumb.classList.add('sprinting');
+                document.getElementById('btn-sprint').classList.add('active');
+                const sub = document.querySelector('#btn-sprint .btn-sub');
+                if (sub) sub.innerText = 'SPRINT';
+            } else if (!player.isSprintLocked) {
+                player.isSprinting = false;
+                joystickThumb.classList.remove('sprinting');
+                document.getElementById('btn-sprint').classList.remove('active');
+                const sub = document.querySelector('#btn-sprint .btn-sub');
+                if (sub) sub.innerText = 'OFF';
+            }
         }
 
-        // Global Touchmove with Multi-touch Isolation
+        function stopJoystick() {
+            joystickTouchId = null;
+            touchJoystickActive = false;
+            joystickVector = { x: 0, y: 0 };
+            joystickThumb.style.transform = 'translate(0, 0)';
+            joystickThumb.classList.remove('sprinting');
+            joystickZone.classList.remove('floating', 'active');
+
+            // Reset to default resting position
+            joystickZone.style.top = 'auto';
+            joystickZone.style.bottom = 'max(24px, var(--sab))';
+            joystickZone.style.left = 'max(24px, var(--sal))';
+
+            if (!player.isSprintLocked) {
+                player.isSprinting = false;
+                document.getElementById('btn-sprint').classList.remove('active');
+                const sub = document.querySelector('#btn-sprint .btn-sub');
+                if (sub) sub.innerText = 'OFF';
+            }
+        }
+
+        // 1. Touch Move Region (Left 48% of screen)
+        if (moveRegion) {
+            moveRegion.addEventListener('touchstart', e => {
+                e.preventDefault();
+                if (joystickTouchId !== null) return;
+                const touch = e.changedTouches[0];
+                startJoystick(touch.clientX, touch.clientY, touch.identifier);
+            }, { passive: false });
+
+            // Desktop Mouse Drag Testing on Joystick Region
+            moveRegion.addEventListener('mousedown', e => {
+                if (e.button === 0 && joystickTouchId === null) {
+                    startJoystick(e.clientX, e.clientY, 'mouse');
+                }
+            });
+        }
+
+        // Direct Touch on Joystick Zone fallback
+        joystickZone.addEventListener('touchstart', e => {
+            e.preventDefault();
+            if (joystickTouchId !== null) return;
+            const touch = e.changedTouches[0];
+            startJoystick(touch.clientX, touch.clientY, touch.identifier);
+        }, { passive: false });
+
+        joystickZone.addEventListener('mousedown', e => {
+            if (e.button === 0 && joystickTouchId === null) {
+                startJoystick(e.clientX, e.clientY, 'mouse');
+            }
+        });
+
+        // 2. Global Touchmove (Multi-touch Disambiguation)
         window.addEventListener('touchmove', e => {
             for (let i = 0; i < e.changedTouches.length; i++) {
                 const touch = e.changedTouches[i];
@@ -2297,7 +2435,8 @@
                     const dy = touch.clientY - cameraLastPos.y;
                     cameraLastPos = { x: touch.clientX, y: touch.clientY };
 
-                    const touchSensitivity = 0.0036;
+                    // Responsive mobile sensitivity
+                    const touchSensitivity = 0.0055;
                     player.yaw -= dx * touchSensitivity;
                     player.pitch -= dy * touchSensitivity;
                     player.pitch = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.pitch));
@@ -2305,17 +2444,35 @@
             }
         }, { passive: false });
 
-        // Touchstart for Camera Drag (Right Screen Half, with Touch Exclusion Layer)
+        // Desktop Mouse Drag Tracking
+        window.addEventListener('mousemove', e => {
+            if (touchJoystickActive && joystickTouchId === 'mouse') {
+                handleJoystickMove(e.clientX, e.clientY);
+            }
+        });
+
+        // 3. Touchstart for Right Screen Camera Look (Exclusion Layer)
         window.addEventListener('touchstart', e => {
             for (let i = 0; i < e.changedTouches.length; i++) {
                 const touch = e.changedTouches[i];
-                // Check if touch is in camera swipe area (>30% width)
-                if (touch.clientX > window.innerWidth * 0.32 && cameraTouchId === null) {
+
+                // Left 48% touch fallback for floating joystick
+                if (touch.clientX <= window.innerWidth * 0.48 && joystickTouchId === null) {
                     const target = document.elementFromPoint(touch.clientX, touch.clientY);
-                    // EXCLUSION LAYER: Ignore touches on action buttons, HUD vitals, or menus
+                    if (!target || !target.closest('.status-panel')) {
+                        startJoystick(touch.clientX, touch.clientY, touch.identifier);
+                        continue;
+                    }
+                }
+
+                // Right 52% screen touch for Camera Drag
+                if (touch.clientX > window.innerWidth * 0.45 && cameraTouchId === null) {
+                    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                    // EXCLUSION LAYER: Ignore interactive controls
                     if (target && (target.closest('.btn-touch') || target.closest('.status-panel') || 
                                    target.closest('.mission-panel') || target.closest('.modal-btn') || 
-                                   target.closest('.touch-action-buttons') || target.closest('.brand-header'))) {
+                                   target.closest('.touch-action-buttons') || target.closest('.brand-header') ||
+                                   target.closest('.weapon-hud'))) {
                         continue;
                     }
 
@@ -2325,14 +2482,12 @@
             }
         }, { passive: true });
 
-        // Touchend & Touchcancel
+        // 4. Touchend & Touchcancel
         function handleTouchEnd(e) {
             for (let i = 0; i < e.changedTouches.length; i++) {
                 const touch = e.changedTouches[i];
                 if (touch.identifier === joystickTouchId) {
-                    joystickTouchId = null;
-                    joystickVector = { x: 0, y: 0 };
-                    joystickThumb.style.transform = 'translate(0, 0)';
+                    stopJoystick();
                 }
                 if (touch.identifier === cameraTouchId) {
                     cameraTouchId = null;
@@ -2342,62 +2497,114 @@
         window.addEventListener('touchend', handleTouchEnd);
         window.addEventListener('touchcancel', handleTouchEnd);
 
-        // Touch Action Buttons with Haptic & Auto-Fire
-        document.getElementById('btn-cam').addEventListener('touchstart', e => { 
-            e.preventDefault(); 
+        window.addEventListener('mouseup', e => {
+            if (touchJoystickActive && joystickTouchId === 'mouse') {
+                stopJoystick();
+            }
+        });
+
+        // 5. Mobile Touch Action Buttons (Touch + Click Event Support)
+        function wireButton(id, onActivate, onDeactivate = null) {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+
+            let touchHandled = false;
+
+            btn.addEventListener('touchstart', e => {
+                e.preventDefault();
+                touchHandled = true;
+                onActivate(btn);
+            }, { passive: false });
+
+            if (onDeactivate) {
+                btn.addEventListener('touchend', e => { onDeactivate(btn); });
+                btn.addEventListener('touchcancel', e => { onDeactivate(btn); });
+            }
+
+            btn.addEventListener('click', e => {
+                if (touchHandled) { touchHandled = false; return; }
+                onActivate(btn);
+            });
+        }
+
+        // CAM [V]: Toggle 1st/3rd Person
+        wireButton('btn-cam', btn => {
             triggerHaptic(20);
-            toggleCameraMode(); 
-        }, { passive: false });
+            toggleCameraMode();
+            const sub = btn.querySelector('.btn-sub');
+            if (sub) sub.innerText = player.isFirstPerson ? '1ST' : '3RD';
+            btn.classList.toggle('active', player.isFirstPerson);
+        });
 
-        document.getElementById('btn-switch').addEventListener('touchstart', e => { 
-            e.preventDefault(); 
+        // LIGHT [T]: Toggle Day/Night Dusk
+        wireButton('btn-light', btn => {
             triggerHaptic(20);
-            switchWeapon((currentWeaponIndex + 1) % weapons.length); 
-        }, { passive: false });
+            toggleDayNight();
+            const sub = btn.querySelector('.btn-sub');
+            if (sub) sub.innerText = isNight ? 'NIGHT' : 'DAY';
+            btn.classList.toggle('active', !isNight);
+        });
 
-        document.getElementById('btn-reload').addEventListener('touchstart', e => { 
-            e.preventDefault(); 
-            triggerHaptic(30);
-            reloadWeapon(); 
-        }, { passive: false });
+        // GUN [1-2]: Switch Weapons
+        wireButton('btn-switch', btn => {
+            triggerHaptic(25);
+            switchWeapon((currentWeaponIndex + 1) % weapons.length);
+            const sub = btn.querySelector('.btn-sub');
+            if (sub) sub.innerText = (currentWeaponIndex === 0) ? '9MM' : 'M4';
+        });
 
-        document.getElementById('btn-sprint').addEventListener('touchstart', e => { 
-            e.preventDefault(); 
-            triggerHaptic(20);
-            player.isSprinting = !player.isSprinting; 
-            e.currentTarget.classList.toggle('active', player.isSprinting);
-        }, { passive: false });
+        // RELOAD [R]: Reload Active Weapon
+        wireButton('btn-reload', btn => {
+            triggerHaptic(35);
+            reloadWeapon();
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 250);
+        });
 
-        document.getElementById('btn-aim').addEventListener('touchstart', e => { 
-            e.preventDefault(); 
-            triggerHaptic(20);
-            player.isAiming = !player.isAiming; 
-            e.currentTarget.classList.toggle('active', player.isAiming);
-            updateCrosshair(); 
-        }, { passive: false });
+        // RUN [SHIFT]: Toggle Sprint Lock
+        wireButton('btn-sprint', btn => {
+            triggerHaptic(25);
+            player.isSprintLocked = !player.isSprintLocked;
+            player.isSprinting = player.isSprintLocked;
+            btn.classList.toggle('active', player.isSprintLocked);
+            const sub = btn.querySelector('.btn-sub');
+            if (sub) sub.innerText = player.isSprintLocked ? 'LOCK' : 'OFF';
+        });
 
+        // AIM [R-CLK]: Toggle Aim Down Sights
+        wireButton('btn-aim', btn => {
+            triggerHaptic(25);
+            player.isAiming = !player.isAiming;
+            btn.classList.toggle('active', player.isAiming);
+            const sub = btn.querySelector('.btn-sub');
+            if (sub) sub.innerText = player.isAiming ? 'ON' : 'ADS';
+            updateCrosshair();
+        });
+
+        // FIRE [L-CLK]: Auto-Fire while Held
         const btnFire = document.getElementById('btn-fire');
-        btnFire.addEventListener('touchstart', e => { 
-            e.preventDefault(); 
+        const startFire = () => {
             triggerHaptic(40);
             btnFire.classList.add('active');
             tryFire();
-
             if (continuousFireInterval) clearInterval(continuousFireInterval);
             continuousFireInterval = setInterval(() => {
                 tryFire();
-            }, 125);
-        }, { passive: false });
-
-        const stopFire = () => {
+            }, weapons[currentWeaponIndex].automatic ? 120 : 320);
+        };
+        const endFire = () => {
             btnFire.classList.remove('active');
             if (continuousFireInterval) {
                 clearInterval(continuousFireInterval);
                 continuousFireInterval = null;
             }
         };
-        btnFire.addEventListener('touchend', stopFire);
-        btnFire.addEventListener('touchcancel', stopFire);
+
+        btnFire.addEventListener('touchstart', e => { e.preventDefault(); startFire(); }, { passive: false });
+        btnFire.addEventListener('touchend', endFire);
+        btnFire.addEventListener('touchcancel', endFire);
+        btnFire.addEventListener('mousedown', e => { if (e.button === 0) startFire(); });
+        window.addEventListener('mouseup', endFire);
 
         // --- Combat & Shooting Mechanics ---
         function switchWeapon(index) {
@@ -2818,6 +3025,43 @@
                     }
                 }
             });
+
+            // Mobile Aim Assist (Gentle Magnetic Target Lock when Aiming)
+            if (player.isAiming && zombies.length > 0) {
+                let closestDist = Infinity;
+                let targetZombie = null;
+                const camDir = new THREE.Vector3();
+                camera.getWorldDirection(camDir);
+
+                for (let i = 0; i < zombies.length; i++) {
+                    const z = zombies[i];
+                    if (z.health <= 0) continue;
+                    const toZ = new THREE.Vector3().subVectors(z.group.position, camera.position);
+                    const dist = toZ.length();
+                    if (dist > 2.0 && dist < 32) {
+                        toZ.normalize();
+                        const dot = camDir.dot(toZ);
+                        if (dot > 0.965 && dist < closestDist) {
+                            closestDist = dist;
+                            targetZombie = z;
+                        }
+                    }
+                }
+
+                if (targetZombie) {
+                    const targetPos = targetZombie.group.position.clone();
+                    targetPos.y += targetZombie.def.scale * 1.15;
+                    const toTarget = new THREE.Vector3().subVectors(targetPos, camera.position).normalize();
+                    const targetYaw = Math.atan2(-toTarget.x, -toTarget.z);
+                    const targetPitch = Math.asin(toTarget.y);
+
+                    let yawDiff = (targetYaw - player.yaw) % (Math.PI * 2);
+                    if (yawDiff < -Math.PI) yawDiff += Math.PI * 2;
+                    if (yawDiff > Math.PI) yawDiff -= Math.PI * 2;
+                    player.yaw += yawDiff * Math.min(1.0, dt * 3.5);
+                    player.pitch += (targetPitch - player.pitch) * Math.min(1.0, dt * 3.0);
+                }
+            }
 
             // Camera Rig Positioning (1st vs 3rd Person)
             if (player.isFirstPerson) {
