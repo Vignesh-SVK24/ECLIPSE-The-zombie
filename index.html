@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ECLIPSE: THE LAST CIVILIZATION - Playable Edition</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <style>
         :root {
             --sat: env(safe-area-inset-top, 0px);
@@ -36,10 +39,35 @@
             top: 0;
             z-index: 1;
         }
-
+        
+        /* Tactical Menu / Armory Button */
+        .btn-tactical-menu {
+            background: linear-gradient(135deg, rgba(32, 40, 44, 0.95), rgba(18, 23, 26, 0.95));
+            border: 1px solid var(--accent-amber);
+            color: var(--accent-amber);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 8px rgba(196, 155, 88, 0.15);
+            transition: all 0.15s ease;
+            pointer-events: auto;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-tactical-menu:hover, .btn-tactical-menu:active {
+            background: var(--accent-amber);
+            color: #0b0f0e;
+            box-shadow: 0 0 16px rgba(196, 155, 88, 0.6);
+            transform: scale(1.03);
+        }
         /* HUD Overlays (Hardware Safe-Area Adapted) */
         #hud {
-
             position: absolute;
             top: 0;
             left: 0;
@@ -47,7 +75,7 @@
             height: 100%;
             z-index: 10;
             pointer-events: none;
-            display: none;
+            display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding-top: max(14px, var(--sat));
@@ -55,7 +83,6 @@
             padding-left: max(16px, var(--sal));
             padding-right: max(16px, var(--sar));
         }
-
         /* Top HUD */
         .top-bar {
             display: flex;
@@ -66,7 +93,6 @@
         
         /* Stylized Brand Title Header */
         
-
         .avatar-container {
             display: flex;
             align-items: center;
@@ -87,7 +113,6 @@
             font-size: 16px;
             color: #fff;
         }
-
         .status-panel {
             background: rgba(17, 25, 24, 0.85);
             border: 1px solid rgba(196, 155, 88, 0.35);
@@ -120,7 +145,6 @@
         }
         #health-fill { width: 100%; background: #d32f2f; }
         #stamina-fill { width: 100%; background: #388e3c; }
-
         .mission-panel {
             background: rgba(17, 25, 24, 0.85);
             border: 1px solid rgba(196, 155, 88, 0.35);
@@ -178,7 +202,6 @@
             font-weight: bold;
             margin-top: 4px;
         }
-
         /* Center Crosshair */
         #crosshair {
             position: absolute;
@@ -214,7 +237,6 @@
         }
         #crosshair.aiming::before { left: 3px; height: 8px; }
         #crosshair.aiming::after { top: 3px; width: 8px; }
-
         /* Weapon & Ammo Display */
         .weapon-hud {
             position: absolute;
@@ -247,10 +269,8 @@
             font-size: 15px;
             color: #8c9085;
         }
-
         /* Mobile Controls (Edge-to-Edge with Hardware Safe Insets) */
         #mobile-controls {
-
             position: absolute;
             bottom: 0;
             left: 0;
@@ -258,7 +278,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 15;
-            display: none;
+            display: flex;
             justify-content: space-between;
             align-items: flex-end;
             padding-top: max(14px, var(--sat));
@@ -266,7 +286,6 @@
             padding-left: max(18px, var(--sal));
             padding-right: max(18px, var(--sar));
         }
-
         /* Floating Dynamic Left Joystick Region */
         #touch-move-region {
             position: absolute;
@@ -279,7 +298,6 @@
             touch-action: none;
             user-select: none;
         }
-
         .touch-joystick-zone {
             width: 140px;
             height: 140px;
@@ -339,7 +357,6 @@
             border-color: #ffcccc;
             box-shadow: 0 0 18px rgba(255, 60, 60, 0.9);
         }
-
         .touch-action-buttons {
             display: grid;
             grid-template-columns: repeat(4, 52px);
@@ -404,7 +421,6 @@
             background: #ff3333;
             box-shadow: 0 0 24px rgba(255, 60, 60, 1.0);
         }
-
         /* Tablet Responsive Rules (iPad 4:3, Android Tablets 16:10, Foldables) */
         @media (max-aspect-ratio: 16/10) {
             #hud {
@@ -444,7 +460,6 @@
                 font-size: 10px;
             }
         }
-
         /* Compact Mobile Viewports (< 720px) */
         @media (max-width: 720px) {
             .brand-header {
@@ -474,7 +489,6 @@
                 font-size: 9px;
             }
         }
-
         /* Floating Damage Text */
         .damage-number {
             position: absolute;
@@ -494,7 +508,6 @@
             0% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-40px); }
         }
-
         /* Screen Flash for damage */
         #damage-flash {
             position: absolute;
@@ -508,7 +521,6 @@
             transition: opacity 0.25s ease-out;
             z-index: 5;
         }
-
         /* Game Over / Victory Modal */
         #modal-overlay {
             position: absolute;
@@ -563,7 +575,6 @@
             transform: scale(1.05);
             background: #e6b86a;
         }
-
         /* Instructions banner */
         .controls-hint {
             position: absolute;
@@ -596,17 +607,15 @@
             --text-light: #e6eceb;
             --text-muted: #889596;
         }
-
         /* Cinematic 3D Main Menu Overlay */
         #main-menu-overlay {
-
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 90;
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: space-between;
             pointer-events: auto;
@@ -622,7 +631,6 @@
             visibility: hidden;
             pointer-events: none;
         }
-
         /* Top Brand & Status Strip */
         .menu-top-strip {
             display: flex;
@@ -687,7 +695,6 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.8); }
         }
-
         /* Menu Middle Split: Left Nav + Right Inspector Card */
         .menu-middle-section {
             display: flex;
@@ -705,7 +712,6 @@
             pointer-events: auto;
         }
         .nav-btn {
-
             background: rgba(18, 23, 26, 0.88);
             border: 1px solid rgba(196, 155, 88, 0.28);
             padding: 11px 16px;
@@ -768,7 +774,6 @@
             color: var(--accent-amber);
             font-weight: 900;
         }
-
         /* Right Survivor Inspector Card */
         .menu-inspector-card {
             width: 280px;
@@ -832,10 +837,8 @@
             border-radius: 2px;
             border: 1px dashed rgba(212, 160, 52, 0.3);
         }
-
         /* Bottom Bar with Primary Action */
         .menu-bottom-bar {
-
             display: flex;
             pointer-events: auto;
             position: relative;
@@ -855,7 +858,6 @@
             font-weight: 600;
         }
         .menu-play-btn {
-
             background: linear-gradient(135deg, #c23828 0%, #821414 100%);
             border: 2px solid #ff7777;
             padding: 12px 36px;
@@ -879,7 +881,6 @@
             box-shadow: 0 0 32px rgba(255, 60, 60, 0.9);
             border-color: #ffffff;
         }
-
         /* Interactive Modal Screens (Missions, Weapons, Inventory, Base, Settings) */
         .survival-modal {
             position: absolute;
@@ -936,7 +937,6 @@
             color: var(--text-light);
             font-size: 11px;
         }
-
         /* Missions Sector Grid */
         .missions-grid {
             display: grid;
@@ -973,7 +973,6 @@
             letter-spacing: 1.5px;
             color: var(--accent-amber);
         }
-
         /* Weapons Armory Grid */
         .armory-grid {
             display: grid;
@@ -1011,7 +1010,6 @@
             height: 100%;
             background: var(--accent-amber);
         }
-
         /* Inventory 12-Slot Grid */
         .inventory-grid {
             display: grid;
@@ -1043,7 +1041,6 @@
             color: var(--accent-amber);
             align-self: flex-end;
         }
-
         /* Settlement Base Management */
         .base-grid {
             display: grid;
@@ -1062,7 +1059,6 @@
             color: #ffffff;
             margin-bottom: 4px;
         }
-
         /* Menu Button inside HUD */
         .hud-menu-btn {
             background: rgba(18, 23, 26, 0.85);
@@ -1081,7 +1077,6 @@
             background: var(--accent-amber);
             color: #111918;
         }
-
         /* Mobile Adjustments for Menu */
         @media (max-width: 720px) {
             .menu-inspector-card {
@@ -1108,7 +1103,6 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
-
     </style>
     <!-- Include Three.js from trusted CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1123,12 +1117,14 @@
                 <div class="menu-logo">ECLIPSE<span>:</span> SURVIVAL</div>
                 <div class="menu-sublogo">THE LAST CIVILIZATION &bull; CINEMATIC PROTOCOL</div>
             </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <button class="modal-close-btn" id="menu-btn-resume" style="padding: 6px 14px; font-size: 11px; font-weight: 800; border-color: var(--accent-amber); color: var(--accent-amber);" onclick="startSurvivalGame()" ontouchstart="startSurvivalGame()">[X] RESUME GAME</button>
+            </div>
             <div class="menu-status-chips">
                 <div class="menu-chip"><span class="pulse-dot"></span> SURVIVORS: 1,420</div>
                 <div class="menu-chip">US-EAST &bull; 24ms</div>
             </div>
         </div>
-
         <!-- Middle Section -->
         <div class="menu-middle-section">
             <!-- Left Navigation Sidebar -->
@@ -1176,7 +1172,6 @@
                     <div class="nav-icon">&plus;</div>
                 </div>
             </div>
-
             <!-- Right Hero Dossier Card -->
             <div class="menu-inspector-card">
                 <div class="inspector-badge">SURVIVOR DOSSIER &bull; ACTIVE</div>
@@ -1201,14 +1196,12 @@
                 <div class="inspector-hint">&#8644; DRAG SCREEN TO ROTATE SURVIVOR (360&deg;)</div>
             </div>
         </div>
-
         <!-- Bottom Bar -->
         <div class="menu-bottom-bar">
             <div class="menu-build-tag">ECLIPSE: THE LAST CIVILIZATION &bull; BUILD 2.0</div>
             <button class="menu-play-btn" id="btn-enter-city" onclick="startSurvivalGame()" ontouchstart="startSurvivalGame()">ENTER GREYFALL CITY</button>
         </div>
     </div>
-
     <!-- Interactive Survival Modals -->
     <!-- 1. Missions Modal -->
     <div class="survival-modal" id="modal-missions">
@@ -1241,7 +1234,6 @@
             </div>
         </div>
     </div>
-
     <!-- 2. Weapons Armory Modal -->
     <div class="survival-modal" id="modal-armory">
         <div class="modal-header-bar">
@@ -1269,7 +1261,6 @@
             </div>
         </div>
     </div>
-
     <!-- 3. Inventory Modal -->
     <div class="survival-modal" id="modal-inventory">
         <div class="modal-header-bar">
@@ -1293,7 +1284,6 @@
             </div>
         </div>
     </div>
-
     <!-- 4. Settlement Modal -->
     <div class="survival-modal" id="modal-settlement">
         <div class="modal-header-bar">
@@ -1325,7 +1315,6 @@
             </div>
         </div>
     </div>
-
     <!-- 5. Settings Modal -->
     <div class="survival-modal" id="modal-settings">
         <div class="modal-header-bar">
@@ -1354,7 +1343,6 @@
         </div>
     </div>
     <div id="damage-flash"></div>
-
     <div id="hud">
         <!-- Top Bar -->
         <div class="top-bar">
@@ -1368,7 +1356,11 @@
                     <div class="stat-bar-bg"><div id="stamina-fill" class="stat-bar-fill"></div></div>
                 </div>
             </div>
-
+            <div style="display: flex; gap: 10px; align-items: center; margin: 0 12px;">
+                <button id="btn-open-menu" class="btn-tactical-menu" onclick="toggleTacticalMenu()" ontouchstart="toggleTacticalMenu()">
+                    &#9776; ARMORY / DOSSIER
+                </button>
+            </div>
             <div class="mission-panel">
                 <div class="mission-tag">GREYFALL CITY &bull; EVACUATION SECTOR 1</div>
                 <div class="mission-desc">Investigate the abandoned evacuation street and survive the infected.</div>
@@ -1380,29 +1372,23 @@
                 </div>
             </div>
         </div>
-
         <div id="crosshair"></div>
-
         <div class="controls-hint">
             [WASD] Move | [Mouse] Look | [L-Click] Fire | [R-Click] Aim | [R] Reload | [1/2] Switch | [V] Camera (1st/3rd) | [T] Day/Night
         </div>
-
         <!-- Weapon HUD -->
         <div class="weapon-hud">
             <div id="weapon-name" class="weapon-name">9MM TACTICAL PISTOL</div>
             <div class="ammo-counter"><span id="ammo-clip">15</span> <span class="ammo-reserve">/ <span id="ammo-reserve">60</span></span></div>
         </div>
     </div>
-
     <!-- Mobile Touch Controls -->
     <div id="mobile-controls">
         <div id="touch-move-region"></div>
-
         <div class="touch-joystick-zone" id="joystick-zone">
             <div class="joystick-bg"></div>
             <div class="joystick-thumb" id="joystick-thumb"></div>
         </div>
-
         <div class="touch-action-buttons">
             <div class="btn-touch" id="btn-cam" title="Toggle 1st/3rd Person">CAM<br><span class="btn-sub">[V]</span></div>
             <div class="btn-touch" id="btn-switch" title="Switch Weapon">GUN<br><span class="btn-sub">[1-2]</span></div>
@@ -1412,22 +1398,19 @@
             <div class="btn-touch btn-fire" id="btn-fire" title="Fire Weapon">FIRE<br><span class="btn-sub">[L-CLK]</span></div>
         </div>
     </div>
-
     <!-- Modal for Game Over / Victory -->
     <div id="modal-overlay">
         <div class="modal-title" id="modal-title">SURVIVOR DOWN</div>
         <div class="modal-subtitle" id="modal-subtitle">You were overrun by the infected in Greyfall County. When the lights go out, humanity becomes the hunted.</div>
         <button class="modal-btn" onclick="resetGame()">PLAY AGAIN</button>
     </div>
-
     <script>
         // Global Game & Multiplayer State
-        let currentGameState = 'MENU'; // 'MENU' or 'PLAYING'
+        let currentGameState = 'PLAYING'; // 'MENU' or 'PLAYING'
         let touchJoystickActive = false;
         const remotePlayers = new Map();
         let ws = null;
         let lastSyncTime = 0;
-
         // --- Web Audio Sound Synthesizer (Resilient / User-Gesture Safe) ---
         let audioCtx = null;
         function getAudioContext() {
@@ -1446,7 +1429,6 @@
             }
             return audioCtx;
         }
-
         function playGunshot(isRifle = false) {
             const ctx = getAudioContext();
             if (!ctx) return;
@@ -1462,16 +1444,13 @@
                     data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.04));
                 }
                 noise.buffer = buffer;
-
                 gain.gain.setValueAtTime(isRifle ? 0.6 : 0.45, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (isRifle ? 0.25 : 0.18));
-
                 noise.connect(gain);
                 gain.connect(ctx.destination);
                 noise.start();
             } catch(e) {}
         }
-
         function playZombieGroan(isBoss = false) {
             const ctx = getAudioContext();
             if (!ctx) return;
@@ -1482,17 +1461,14 @@
                 const baseFreq = isBoss ? 55 : 95 + Math.random() * 40;
                 osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
                 osc.frequency.linearRampToValueAtTime(baseFreq * 0.7, ctx.currentTime + 0.6);
-
                 gain.gain.setValueAtTime(isBoss ? 0.4 : 0.2, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.6);
             } catch(e) {}
         }
-
         function playHitSound() {
             const ctx = getAudioContext();
             if (!ctx) return;
@@ -1510,7 +1486,6 @@
                 osc.stop(ctx.currentTime + 0.1);
             } catch(e) {}
         }
-
         function playClickSound() {
             const ctx = getAudioContext();
             if (!ctx) return;
@@ -1526,13 +1501,11 @@
                 osc.stop(ctx.currentTime + 0.05);
             } catch(e) {}
         }
-
         // --- Three.js Game Engine Initialization ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x2f1b29);
         scene.fog = new THREE.FogExp2(0x2b1a26, 0.013);
-
         const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1543,7 +1516,6 @@
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.08;
         container.appendChild(renderer.domElement);
-
         // 3-Point Cinematic Lighting Setup
         // A. Key Sunset Directional Light (Warm Golden Hour)
         const dirLight = new THREE.DirectionalLight(0xffa254, 1.85);
@@ -1560,21 +1532,17 @@
         dirLight.shadow.camera.bottom = -d;
         dirLight.shadow.bias = -0.0004;
         scene.add(dirLight);
-
         // B. Ambient Sky/Ground Hemisphere Dome
         const hemiLight = new THREE.HemisphereLight(0xffbe85, 0x221a28, 0.95);
         scene.add(hemiLight);
-
         // C. Cinematic Blue-Gray Rim Light (Sharp Silhouette Separation for Characters & Zombies)
         const rimLight = new THREE.DirectionalLight(0x729ec2, 1.20);
         rimLight.position.set(45, 32, 55);
         scene.add(rimLight);
-
         // D. Warm Ground Bounce Fill Light
         const bounceLight = new THREE.DirectionalLight(0x403024, 0.40);
         bounceLight.position.set(0, -10, 0);
         scene.add(bounceLight);
-
         // Atmospheric Dust Motes & Airborne Ash Particle Field
         const dustCount = 420;
         const dustGeo = new THREE.BufferGeometry();
@@ -1598,7 +1566,6 @@
         });
         const dustParticles = new THREE.Points(dustGeo, dustMat);
         scene.add(dustParticles);
-
         // =========================================================================
         // PROCEDURAL PBR TEXTURE SYNTHESIZER ENGINE (LEFT TO SURVIVE QUALITY)
         // =========================================================================
@@ -1607,7 +1574,6 @@
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
-
             if (type === 'skin') {
                 ctx.fillStyle = params.baseColor || '#bfa08a';
                 ctx.fillRect(0, 0, width, height);
@@ -1718,13 +1684,11 @@
                     ctx.stroke();
                 }
             }
-
             const tex = new THREE.CanvasTexture(canvas);
             tex.wrapS = THREE.RepeatWrapping;
             tex.wrapT = THREE.RepeatWrapping;
             return tex;
         }
-
         const pbrTextures = {
             skin: createProceduralTexture('skin', 128, 128, { baseColor: '#bfa08a' }),
             head: createProceduralTexture('face_stubble', 128, 128, { baseColor: '#d5a682' }),
@@ -1738,11 +1702,9 @@
             zombieBrute: createProceduralTexture('zombie_flesh', 128, 128, { baseColor: '#4a584a', rotColor: 'rgba(60,35,20,0.75)', veinColor: 'rgba(20,28,18,0.85)' })
         };
         pbrTextures.asphalt.repeat.set(8, 60);
-
         // =========================================================================
         // GREYFALL COUNTY: PROFESSIONAL PHOTOREALISTIC ABANDONED CITY OVERHAUL
         // =========================================================================
-
         // PBR Environment Materials Library
         const envPBR = {
             asphalt: new THREE.MeshStandardMaterial({ color: 0x181a19, roughness: 0.85, metalness: 0.08, map: pbrTextures.asphalt, bumpMap: pbrTextures.asphalt, bumpScale: 0.04 }),
@@ -1784,16 +1746,13 @@
             lanternGlow: new THREE.MeshBasicMaterial({ color: 0xffaa33 }),
             toxicGreenEye: new THREE.MeshBasicMaterial({ color: 0x00ff66 })
         };
-
         // 1. REALISTIC ASPHALT ROADWAY WITH MARKINGS & PUDDLES
         const roadGroup = new THREE.Group();
-
         // Main asphalt surface
         const roadMesh = new THREE.Mesh(new THREE.PlaneGeometry(32, 240), envPBR.asphalt);
         roadMesh.rotation.x = -Math.PI / 2;
         roadMesh.receiveShadow = true;
         roadGroup.add(roadMesh);
-
         // Center Double Solid Yellow Lines (with gap breaks for weathering)
         for (let side of [-0.14, 0.14]) {
             for (let z = -115; z <= 115; z += 14) {
@@ -1804,7 +1763,6 @@
                 roadGroup.add(yellowLine);
             }
         }
-
         // White Dashed Lane Dividers (Left and Right Lanes)
         for (let xLane of [-5.5, 5.5]) {
             for (let z = -110; z <= 110; z += 16) {
@@ -1815,7 +1773,6 @@
                 roadGroup.add(whiteDash);
             }
         }
-
         // Zebra Pedestrian Crosswalks (Intersection zones at z = -32 and z = 32)
         [-32, 32].forEach(zPos => {
             for (let x = -13; x <= 13; x += 2.2) {
@@ -1831,7 +1788,6 @@
             stopLine.position.set(0, 0.009, zPos + (zPos < 0 ? -4 : 4));
             roadGroup.add(stopLine);
         });
-
         // Reflective Rain Puddles & Potholes
         [[-4, 0.012, -18, 3.2, 4.5], [6, 0.012, 12, 4.0, 5.5], [-8, 0.012, 55, 3.8, 3.8], [3, 0.012, -75, 4.2, 6.0]].forEach(p => {
             const puddle = new THREE.Mesh(new THREE.CircleGeometry(p[3] * 0.5, 12), envPBR.asphaltWet);
@@ -1842,7 +1798,6 @@
             roadGroup.add(puddle);
         });
         scene.add(roadGroup);
-
         // 2. CONCRETE SIDEWALKS, CURB STONES & DRAINAGE
         const sidewalkGroup = new THREE.Group();
         for (let side of [-1, 1]) {
@@ -1852,13 +1807,11 @@
             curb.position.set(xBase, 0.175, 0);
             curb.receiveShadow = true;
             sidewalkGroup.add(curb);
-
             // Sidewalk pedestrian deck
             const swDeck = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.30, 240), envPBR.sidewalkConcrete);
             swDeck.position.set(xBase + side * 4.5, 0.15, 0);
             swDeck.receiveShadow = true;
             sidewalkGroup.add(swDeck);
-
             // Storm drain grates
             [-45, 0, 45, 90].forEach(zGrate => {
                 const drain = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.05, 1.8), envPBR.drainIron);
@@ -1867,7 +1820,6 @@
             });
         }
         scene.add(sidewalkGroup);
-
         // 3. ARCHITECTURAL MODULAR BUILDINGS & FACADES
         const buildingsGroup = new THREE.Group();
         const buildingStyles = [
@@ -1875,7 +1827,6 @@
             { mat: envPBR.concreteFacade, name: "Commercial" },
             { mat: envPBR.plasterFacade, name: "Clinic" }
         ];
-
         for (let i = -105; i <= 105; i += 26) {
             for (let side of [-1, 1]) {
                 const xPos = side * 30;
@@ -1883,17 +1834,14 @@
                 const style = buildingStyles[styleIdx];
                 const stories = 3 + (Math.abs(i) % 3);
                 const bHeight = stories * 4.2;
-
                 const bGroup = new THREE.Group();
                 bGroup.position.set(xPos, 0, i);
-
                 // Main Building Shell
                 const shell = new THREE.Mesh(new THREE.BoxGeometry(16, bHeight, 22), style.mat);
                 shell.position.y = bHeight / 2;
                 shell.castShadow = true;
                 shell.receiveShadow = true;
                 bGroup.add(shell);
-
                 // Window Rows & Frames
                 const frontFaceX = -side * 8.05;
                 for (let floor = 1; floor <= stories; floor++) {
@@ -1901,17 +1849,14 @@
                     for (let zWin = -7; zWin <= 7; zWin += 4.5) {
                         const isBroken = (Math.abs(i * zWin + floor) % 5 === 0);
                         const winMat = isBroken ? envPBR.boardedWood : envPBR.windowGlass;
-
                         const windowFrame = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.2, 1.6), envPBR.windowFrame);
                         windowFrame.position.set(frontFaceX, yFloor, zWin);
                         bGroup.add(windowFrame);
-
                         const windowPane = new THREE.Mesh(new THREE.BoxGeometry(0.06, 2.0, 1.4), winMat);
                         windowPane.position.set(frontFaceX - side * 0.02, yFloor, zWin);
                         bGroup.add(windowPane);
                     }
                 }
-
                 // Ground Floor Commercial Awning / Shutter
                 if (styleIdx === 1) {
                     const awningMat = (i > 0) ? envPBR.awningFabric1 : envPBR.awningFabric2;
@@ -1921,7 +1866,6 @@
                     awning.castShadow = true;
                     bGroup.add(awning);
                 }
-
                 // Metal Fire Escape (Apartments)
                 if (styleIdx === 0 && stories >= 3) {
                     const feX = frontFaceX - side * 0.8;
@@ -1929,7 +1873,6 @@
                         const feBalcony = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.1, 4.2), envPBR.fireEscapeMetal);
                         feBalcony.position.set(feX, f * 4.0, 3.5);
                         bGroup.add(feBalcony);
-
                         // Ladder link
                         const feLadder = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.8, 0.4), envPBR.fireEscapeMetal);
                         feLadder.rotation.z = side * 0.15;
@@ -1937,36 +1880,30 @@
                         bGroup.add(feLadder);
                     }
                 }
-
                 // Rooftop AC Unit & Water Tower
                 const roofY = bHeight;
                 const acUnit = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.8, 2.8), envPBR.streetLampMetal);
                 acUnit.position.set(0, roofY + 0.9, -4);
                 acUnit.castShadow = true;
                 bGroup.add(acUnit);
-
                 if (stories >= 4) {
                     const waterTower = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 4.5, 12), envPBR.boardedWood);
                     waterTower.position.set(0, roofY + 2.25, 4);
                     waterTower.castShadow = true;
                     bGroup.add(waterTower);
                 }
-
                 // Batch B: Explorable Ground-Floor Interior Details
                 if (Math.abs(i) === 26 || i === 0) {
                     const interiorGroup = new THREE.Group();
                     interiorGroup.position.set(-side * 2.5, 0, 0);
-
                     // Doorway entrance indicator
                     const doorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.8, 1.8), envPBR.fireEscapeMetal);
                     doorFrame.position.set(-side * 5.4, 1.4, 0);
                     interiorGroup.add(doorFrame);
-
                     if (styleIdx === 1) { // Commercial Grocery Shopfront
                         const counter = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.1, 3.2), envPBR.boardedWood);
                         counter.position.set(0, 0.55, -2.5);
                         interiorGroup.add(counter);
-
                         const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.0, 3.5), envPBR.fireEscapeMetal);
                         shelf.position.set(2.0, 1.0, 0);
                         interiorGroup.add(shelf);
@@ -1981,15 +1918,12 @@
                     }
                     bGroup.add(interiorGroup);
                 }
-
                 buildingsGroup.add(bGroup);
             }
         }
         scene.add(buildingsGroup);
-
         // 4. ABANDONED VEHICLES FLEET
         const vehiclesGroup = new THREE.Group();
-
         // Helper: Creates 4 rubber tires with rims
         function attachWheels(parent, wX, wY, wZ, isFlatFrontLeft = false) {
             for (let side of [-1, 1]) {
@@ -1997,13 +1931,11 @@
                     const isFlat = (isFlatFrontLeft && side === -1 && end === 1);
                     const tireH = isFlat ? 0.35 : 0.45;
                     const tireW = 0.26;
-
                     const tire = new THREE.Mesh(new THREE.CylinderGeometry(tireH, tireH, tireW, 12), envPBR.tireRubber);
                     tire.rotation.z = Math.PI / 2;
                     tire.position.set(side * wX, isFlat ? wY - 0.1 : wY, end * wZ);
                     tire.castShadow = true;
                     parent.add(tire);
-
                     const rim = new THREE.Mesh(new THREE.CylinderGeometry(tireH * 0.55, tireH * 0.55, tireW + 0.02, 8), envPBR.rimMetal);
                     rim.rotation.z = Math.PI / 2;
                     rim.position.copy(tire.position);
@@ -2011,54 +1943,43 @@
                 }
             }
         }
-
         // A. Abandoned Police Cruiser (Crashed diagonally with emergency light bar)
         const policeGroup = new THREE.Group();
         policeGroup.position.set(-4.5, 0, 16);
         policeGroup.rotation.y = 0.38;
-
         const policeBody = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.9, 4.8), envPBR.carPaintPolice);
         policeBody.position.y = 0.85;
         policeBody.castShadow = true;
         policeGroup.add(policeBody);
-
         const policeCabin = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.85, 2.4), envPBR.windowGlass);
         policeCabin.position.set(0, 1.65, -0.2);
         policeCabin.castShadow = true;
         policeGroup.add(policeCabin);
-
         // Open Driver Door
         const openDoor = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.85, 1.1), envPBR.carPaintPolice);
         openDoor.position.set(-1.45, 0.95, 0.2);
         openDoor.rotation.y = -0.65;
         policeGroup.add(openDoor);
-
         // Light Bar & Flashing Red Siren Light
         const lightBar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.18, 0.35), envPBR.streetLampMetal);
         lightBar.position.set(0, 2.15, -0.2);
         policeGroup.add(lightBar);
-
         const sirenLight = new THREE.PointLight(0xff1100, 2.2, 18);
         sirenLight.position.set(0, 2.35, -0.2);
         policeGroup.add(sirenLight);
-
         attachWheels(policeGroup, 1.05, 0.45, 1.45, true);
         vehiclesGroup.add(policeGroup);
-
         // B. Civilian Evacuation Sedan (Stopped with strapped roof luggage)
         const sedanGroup = new THREE.Group();
         sedanGroup.position.set(5.5, 0, -14);
         sedanGroup.rotation.y = -0.52;
-
         const sedanBody = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.85, 4.6), envPBR.carPaintSedan);
         sedanBody.position.y = 0.82;
         sedanBody.castShadow = true;
         sedanGroup.add(sedanBody);
-
         const sedanCabin = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.8, 2.3), envPBR.windowGlass);
         sedanCabin.position.set(0, 1.58, -0.15);
         sedanGroup.add(sedanCabin);
-
         // Roof Luggage Carrier with suitcases
         const roofRack = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.1, 1.8), envPBR.streetLampMetal);
         roofRack.position.set(0, 2.05, -0.15);
@@ -2070,17 +1991,14 @@
         }
         attachWheels(sedanGroup, 1.02, 0.44, 1.40);
         vehiclesGroup.add(sedanGroup);
-
         // C. Heavy Military Transport Cargo Truck (Blocking Lane)
         const truckGroup = new THREE.Group();
         truckGroup.position.set(-6.5, 0, 48);
         truckGroup.rotation.y = 0.18;
-
         const truckCab = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.2, 2.6), envPBR.carPaintTruck);
         truckCab.position.set(0, 1.8, 2.8);
         truckCab.castShadow = true;
         truckGroup.add(truckCab);
-
         const truckBed = new THREE.Mesh(new THREE.BoxGeometry(2.7, 2.8, 5.8), envPBR.streetLampMetal);
         truckBed.position.set(0, 2.2, -1.4);
         truckBed.castShadow = true;
@@ -2088,31 +2006,25 @@
         attachWheels(truckGroup, 1.25, 0.65, 2.2);
         attachWheels(truckGroup, 1.25, 0.65, -2.2);
         vehiclesGroup.add(truckGroup);
-
         // E. Paramedic Emergency Ambulance (open rear doors & stretcher)
         const ambGroup = new THREE.Group();
         ambGroup.position.set(6.0, 0, -48);
         ambGroup.rotation.y = -0.25;
-
         const ambBody = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.2, 5.6), envPBR.roadMarkingWhite);
         ambBody.position.y = 1.6;
         ambBody.castShadow = true;
         ambGroup.add(ambBody);
-
         const ambCross = new THREE.Mesh(new THREE.BoxGeometry(2.45, 0.5, 5.65), envPBR.awningFabric1);
         ambCross.position.y = 1.6;
         ambGroup.add(ambCross);
-
         attachWheels(ambGroup, 1.15, 0.55, 1.8);
         attachWheels(ambGroup, 1.15, 0.55, -1.8);
         vehiclesGroup.add(ambGroup);
-
         // D. Crashed Motorcycle on Pavement Curb
         const motoGroup = new THREE.Group();
         motoGroup.position.set(-14.5, 0.25, -2);
         motoGroup.rotation.z = Math.PI / 2.3; // Lying on side
         motoGroup.rotation.y = 0.4;
-
         const motoFrame = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.6, 1.8), envPBR.rimMetal);
         motoGroup.add(motoFrame);
         const wheelF = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.15, 10), envPBR.tireRubber);
@@ -2124,13 +2036,10 @@
         wheelR.position.set(0, -0.2, -0.85);
         motoGroup.add(wheelR);
         vehiclesGroup.add(motoGroup);
-
         scene.add(vehiclesGroup);
-
         // 5. MILITARY QUARANTINE CHECKPOINT (z = 25)
         const checkpointGroup = new THREE.Group();
         checkpointGroup.position.set(0, 0, 26);
-
         // Concrete Jersey Highway Barriers in Chicane
         [[-8, 0, 0], [-2, 0, 1.8], [4, 0, -1.8], [10, 0, 0]].forEach(pos => {
             const jBarrier = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.1, 0.8), envPBR.jerseyConcrete);
@@ -2139,7 +2048,6 @@
             jBarrier.receiveShadow = true;
             checkpointGroup.add(jBarrier);
         });
-
         // Sandbag Emplacements
         for (let sb = -1; sb <= 1; sb++) {
             const sandbags = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.85, 1.2), envPBR.sandbagFabric);
@@ -2147,16 +2055,13 @@
             sandbags.castShadow = true;
             checkpointGroup.add(sandbags);
         }
-
         // Biohazard Warning Signage
         const signPost = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6), envPBR.streetLampMetal);
         signPost.position.set(-6, 1.3, -1.8);
         checkpointGroup.add(signPost);
-
         const biohazardPlate = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.9, 0.05), envPBR.signHazard);
         biohazardPlate.position.set(-6, 2.2, -1.8);
         checkpointGroup.add(biohazardPlate);
-
         // Wooden Military Ammo Crates
         [[7, 0.35, 2], [7.8, 0.35, 1.6], [7.4, 0.95, 1.8]].forEach(cp => {
             const crate = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.9), envPBR.woodCrate);
@@ -2164,28 +2069,23 @@
             crate.castShadow = true;
             checkpointGroup.add(crate);
         });
-
         // Searchlight Rig on Tripod
         const searchlight = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.6, 10), envPBR.streetLampMetal);
         searchlight.rotation.x = Math.PI / 3;
         searchlight.position.set(-8, 2.2, 1.2);
         checkpointGroup.add(searchlight);
-
         const searchlightBeam = new THREE.SpotLight(0xfff5e6, 3.5, 30, Math.PI / 4, 0.4);
         searchlightBeam.position.set(-8, 2.2, 1.2);
         searchlightBeam.target.position.set(-4, 0, -12);
         checkpointGroup.add(searchlightBeam);
         checkpointGroup.add(searchlightBeam.target);
-
         scene.add(checkpointGroup);
-
         
         // =========================================================================
         // MASTER CONCEPT ART FORTIFICATION: PALISADES, "SURVIVE TOGETHER", & LANTERN
         // =========================================================================
         const palisadeGroup = new THREE.Group();
         palisadeGroup.position.set(0, 0, 24);
-
         // Vertical Timber Logs Wall with Barbed Wire
         for (let logX = -12; logX <= 12; logX += 0.42) {
             if (Math.abs(logX) < 1.8) continue; // Gap for player combat line
@@ -2196,46 +2096,39 @@
             logMesh.castShadow = true;
             logMesh.receiveShadow = true;
             palisadeGroup.add(logMesh);
-
             // Pointed Stake Tip
             const tipMesh = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.45, 8), envPBR.timberLog);
             tipMesh.position.set(logX, logH + 0.22, 0);
             tipMesh.rotation.z = logMesh.rotation.z;
             palisadeGroup.add(tipMesh);
         }
-
         // Horizontal Support Beams
         [-1, 1].forEach(beamSide => {
             const hBeam = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.22, 0.18), envPBR.timberLog);
             hBeam.position.set(beamSide * 7.2, 1.2, -0.22);
             palisadeGroup.add(hBeam);
         });
-
         // "SURVIVE TOGETHER" Master Stencil Sign
         const signPlank = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.9, 0.12), envPBR.boardedWood);
         signPlank.position.set(0, 0.95, -0.2);
         signPlank.castShadow = true;
         palisadeGroup.add(signPlank);
-
         // Red Stencil Face Plate
         const stencilPlate = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.65, 0.02), envPBR.stencilRed);
         stencilPlate.position.set(0, 0.95, -0.13);
         palisadeGroup.add(stencilPlate);
-
         // Red Fuel Drums with Sandbags Stacked on Top
         [[-4.5, 0], [4.5, 0], [-13.5, -2], [13.5, -2]].forEach(pos => {
             const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.05, 12), envPBR.barrelRed);
             drum.position.set(pos[0], 0.525, pos[1]);
             drum.castShadow = true;
             palisadeGroup.add(drum);
-
             // Sandbag on top of drum
             const sbTop = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.32, 0.45), envPBR.sandbagFabric);
             sbTop.position.set(pos[0], 1.20, pos[1]);
             sbTop.castShadow = true;
             palisadeGroup.add(sbTop);
         });
-
         // Military Ammunition Cans
         [[-3.2, 0.22, -0.6], [-2.6, 0.22, -0.5], [2.8, 0.22, -0.6]].forEach(ap => {
             const ammoCan = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.35, 0.28), envPBR.ammoCrateOlive);
@@ -2243,33 +2136,26 @@
             ammoCan.castShadow = true;
             palisadeGroup.add(ammoCan);
         });
-
         // Brass Kerosene Hurricane Lantern with Warm Amber Glow (#FFAA44)
         const lanternPole = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.4, 0.08), envPBR.timberLog);
         lanternPole.position.set(-2.2, 1.6, -0.3);
         palisadeGroup.add(lanternPole);
-
         const lanternArm = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.06, 0.06), envPBR.rimMetal);
         lanternArm.position.set(-2.0, 2.2, -0.3);
         palisadeGroup.add(lanternArm);
-
         const lanternBase = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.14, 0.32, 8), envPBR.lanternBrass);
         lanternBase.position.set(-1.8, 1.95, -0.3);
         palisadeGroup.add(lanternBase);
-
         const lanternGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.16, 8), envPBR.lanternGlow);
         lanternGlass.position.set(-1.8, 2.05, -0.3);
         palisadeGroup.add(lanternGlass);
-
         const lanternLight = new THREE.PointLight(0xff9922, 2.4, 14.0);
         lanternLight.position.set(-1.8, 2.05, -0.3);
         lanternLight.castShadow = true;
         palisadeGroup.add(lanternLight);
-
         // Water Tower ("HOPE LIVES") on distant skyline
         const waterTowerGroup = new THREE.Group();
         waterTowerGroup.position.set(38, 0, 75);
-
         // 4 steel lattice legs
         for (let lx of [-2.5, 2.5]) {
             for (let lz of [-2.5, 2.5]) {
@@ -2282,28 +2168,22 @@
         const tank = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 6.5, 16), envPBR.concreteFacade);
         tank.position.set(0, 21, 0);
         waterTowerGroup.add(tank);
-
         // "HOPE LIVES" banner face on tank
         const hopePlank = new THREE.Mesh(new THREE.BoxGeometry(4.8, 1.8, 0.2), envPBR.boardedWood);
         hopePlank.position.set(0, 21, -4.2);
         waterTowerGroup.add(hopePlank);
         palisadeGroup.add(waterTowerGroup);
-
         // Yellow "SAFE ZONE" Road Sign
         const safeSignPost = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2), envPBR.streetLampMetal);
         safeSignPost.position.set(11, 1.6, -1);
         palisadeGroup.add(safeSignPost);
-
         const safeSignBoard = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.06), envPBR.signSafeZone);
         safeSignBoard.position.set(11, 2.6, -1);
         safeSignBoard.rotation.z = 0.08;
         palisadeGroup.add(safeSignBoard);
-
         scene.add(palisadeGroup);
-
         // 6. STREET INFRASTRUCTURE & MUNICIPAL DETAILS
         const streetDetailsGroup = new THREE.Group();
-
         // Municipal Streetlights with curved heads along both curbs
         const streetLightsList = [];
         for (let side of [-1, 1]) {
@@ -2313,21 +2193,17 @@
                 pole.position.set(xLight, 3.25, zL);
                 pole.castShadow = true;
                 streetDetailsGroup.add(pole);
-
                 const arm = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.08, 0.08), envPBR.streetLampMetal);
                 arm.position.set(xLight - side * 1.0, 6.5, zL);
                 streetDetailsGroup.add(arm);
-
                 const fixture = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.18, 0.4), envPBR.emissiveLamp);
                 fixture.position.set(xLight - side * 2.0, 6.4, zL);
                 streetDetailsGroup.add(fixture);
-
                 const lampLight = new THREE.PointLight(0xffe299, 1.4, 18);
                 lampLight.position.set(xLight - side * 2.0, 6.1, zL);
                 streetDetailsGroup.add(lampLight);
                 streetLightsList.push(lampLight);
             });
-
             // Fire Hydrants
             [-50, 60].forEach(zH => {
                 const hydrant = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.9, 10), envPBR.awningFabric1);
@@ -2336,7 +2212,6 @@
                 streetDetailsGroup.add(hydrant);
             });
         }
-
         // Scattered Personal Belongings & Luggage
         [[-13, 0.22, -18], [-12.5, 0.22, -19.5], [13.2, 0.22, 10], [13.8, 0.22, 11]].forEach(pos => {
             const bag = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.35, 0.45), envPBR.awningFabric2);
@@ -2344,12 +2219,9 @@
             bag.rotation.y = Math.random() * 2;
             streetDetailsGroup.add(bag);
         });
-
         scene.add(streetDetailsGroup);
-
         // 7. OVERGROWN RECLAIMING NATURE (Trees, Bushes, Road-crack Grass)
         const natureGroup = new THREE.Group();
-
         // Mature Roadside Trees with Dense Foliage
         for (let side of [-1, 1]) {
             const xTree = side * 18.5;
@@ -2358,7 +2230,6 @@
                 trunk.position.set(xTree, 3.0, zTree);
                 trunk.castShadow = true;
                 natureGroup.add(trunk);
-
                 // Multi-tiered foliage canopies
                 for (let tier = 0; tier < 3; tier++) {
                     const canopy = new THREE.Mesh(new THREE.SphereGeometry(2.4 - tier * 0.4, 10, 8), envPBR.foliageGreen);
@@ -2369,7 +2240,6 @@
                 }
             });
         }
-
         // Weeds and Grass Clumps Bursting Through Pavement & Cracks
         const grassGeo = new THREE.ConeGeometry(0.28, 0.65, 4);
         for (let g = 0; g < 45; g++) {
@@ -2380,9 +2250,7 @@
             grassClump.rotation.y = Math.random() * Math.PI;
             natureGroup.add(grassClump);
         }
-
         scene.add(natureGroup);
-
         // 8b. ENVIRONMENTAL PARTICLE VFX (Batch B Ground Mist)
         const vfxGroup = new THREE.Group();
         const mistCount = 80;
@@ -2404,7 +2272,6 @@
         const mistPoints = new THREE.Points(mistGeo, mistMat);
         vfxGroup.add(mistPoints);
         scene.add(vfxGroup);
-
         // 8. EXPLOSIVE BARRELS (PRESERVED)
         const barrels = [];
         const barrelGeo = new THREE.CylinderGeometry(0.7, 0.7, 1.8, 16);
@@ -2418,7 +2285,6 @@
             scene.add(barrel);
             barrels.push(barrel);
         });
-
         // --- Player (Ethan Cross) ---
         const player = {
             position: new THREE.Vector3(0, 0, -50),
@@ -2445,7 +2311,6 @@
             bankAngle: 0,
             isCrouching: false
         };
-
         // ================================================================
         // ULTRA-REALISTIC ETHAN CROSS ANATOMICAL MODEL & 65-BONE RIG
         // ================================================================
@@ -2471,146 +2336,115 @@
             knifeBlade: new THREE.MeshStandardMaterial({ color: 0x778287, roughness: 0.20, metalness: 0.95 }),
             reticle: new THREE.MeshBasicMaterial({ color: 0xff1a1a })
         };
-
         const playerGroup = new THREE.Group();
         const rig = {};
-
         // 1. Hips Root (Pelvis)
         rig.hips = new THREE.Group();
         rig.hips.position.y = 0.96;
         playerGroup.add(rig.hips);
-
         const pelvis = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.18, 0.22), charPBR.trousers);
         pelvis.castShadow = true;
         rig.hips.add(pelvis);
-
         const belt = new THREE.Mesh(new THREE.BoxGeometry(0.33, 0.06, 0.23), charPBR.vest);
         belt.position.y = 0.08;
         rig.hips.add(belt);
-
         const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.24), charPBR.metal);
         buckle.position.set(0, 0.08, 0);
         rig.hips.add(buckle);
-
         // 2. Left Leg Chain
         rig.leftThigh = new THREE.Group();
         rig.leftThigh.position.set(-0.11, -0.06, 0);
         rig.hips.add(rig.leftThigh);
-
         const lThighMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.078, 0.065, 0.38, 12), charPBR.trousers);
         lThighMesh.position.y = -0.19;
         lThighMesh.castShadow = true;
         rig.leftThigh.add(lThighMesh);
-
         const lPocket = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.10), charPBR.trousers);
         lPocket.position.set(-0.075, -0.18, 0);
         rig.leftThigh.add(lPocket);
-
         rig.leftCalf = new THREE.Group();
         rig.leftCalf.position.set(0, -0.38, 0);
         rig.leftThigh.add(rig.leftCalf);
-
         const lCalfMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.052, 0.36, 12), charPBR.trousers);
         lCalfMesh.position.y = -0.18;
         lCalfMesh.castShadow = true;
         rig.leftCalf.add(lCalfMesh);
-
         const lKneePad = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.10, 0.04), charPBR.kneePads);
         lKneePad.position.set(0, -0.01, 0.06);
         rig.leftCalf.add(lKneePad);
-
         rig.leftFoot = new THREE.Group();
         rig.leftFoot.position.set(0, -0.36, 0.03);
         rig.leftCalf.add(rig.leftFoot);
-
         const lBootAnkle = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.12, 0.12), charPBR.boots);
         lBootAnkle.position.y = 0.06;
         lBootAnkle.castShadow = true;
         rig.leftFoot.add(lBootAnkle);
-
         const lBootSole = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.05, 0.20), charPBR.boots);
         lBootSole.position.set(0, 0.025, 0.04);
         lBootSole.castShadow = true;
         rig.leftFoot.add(lBootSole);
-
         // 3. Right Leg Chain
         rig.rightThigh = new THREE.Group();
         rig.rightThigh.position.set(0.11, -0.06, 0);
         rig.hips.add(rig.rightThigh);
-
         const rThighMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.078, 0.065, 0.38, 12), charPBR.trousers);
         rThighMesh.position.y = -0.19;
         rThighMesh.castShadow = true;
         rig.rightThigh.add(rThighMesh);
-
         const rDropHolster = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.08), charPBR.vest);
         rDropHolster.position.set(0.075, -0.16, 0.02);
         rig.rightThigh.add(rDropHolster);
-
         rig.rightCalf = new THREE.Group();
         rig.rightCalf.position.set(0, -0.38, 0);
         rig.rightThigh.add(rig.rightCalf);
-
         const rCalfMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.052, 0.36, 12), charPBR.trousers);
         rCalfMesh.position.y = -0.18;
         rCalfMesh.castShadow = true;
         rig.rightCalf.add(rCalfMesh);
-
         const rKneePad = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.10, 0.04), charPBR.kneePads);
         rKneePad.position.set(0, -0.01, 0.06);
         rig.rightCalf.add(rKneePad);
-
         rig.rightFoot = new THREE.Group();
         rig.rightFoot.position.set(0, -0.36, 0.03);
         rig.rightCalf.add(rig.rightFoot);
-
         const rBootAnkle = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.12, 0.12), charPBR.boots);
         rBootAnkle.position.y = 0.06;
         rBootAnkle.castShadow = true;
         rig.rightFoot.add(rBootAnkle);
-
         const rBootSole = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.05, 0.20), charPBR.boots);
         rBootSole.position.set(0, 0.025, 0.04);
         rBootSole.castShadow = true;
         rig.rightFoot.add(rBootSole);
-
         // 4. Spine & Abdomen
         rig.spine = new THREE.Group();
         rig.spine.position.set(0, 0.12, 0);
         rig.hips.add(rig.spine);
-
         const abdomen = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.16, 0.18, 12), charPBR.shirt);
         abdomen.position.y = 0.09;
         abdomen.castShadow = true;
         rig.spine.add(abdomen);
-
         // 5. Chest & Tactical Gear
         rig.chest = new THREE.Group();
         rig.chest.position.set(0, 0.18, 0);
         rig.spine.add(rig.chest);
-
         const torsoPecs = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.28, 0.22), charPBR.shirt);
         torsoPecs.position.y = 0.14;
         torsoPecs.castShadow = true;
         rig.chest.add(torsoPecs);
-
         const vestFront = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.30, 0.06), charPBR.vest);
         vestFront.position.set(0, 0.14, 0.11);
         vestFront.castShadow = true;
         rig.chest.add(vestFront);
-
         const vestBack = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.30, 0.06), charPBR.vest);
         vestBack.position.set(0, 0.14, -0.11);
         vestBack.castShadow = true;
         rig.chest.add(vestBack);
-
         // 3 Ammo Pouches
         for (let p = -1; p <= 1; p++) {
             const pouch = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.11, 0.04), charPBR.pouches);
             pouch.position.set(p * 0.08, 0.07, 0.15);
             rig.chest.add(pouch);
         }
-
         // Tactical Radio & Antenna on Left Shoulder
         const radio = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.10, 0.04), charPBR.vest);
         radio.position.set(-0.13, 0.24, 0.10);
@@ -2618,180 +2452,142 @@
         const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.18), charPBR.metal);
         antenna.position.set(-0.13, 0.36, 0.10);
         rig.chest.add(antenna);
-
         // Combat Knife in Kydex Sheath on Left Shoulder
         const knifeSheath = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.16, 0.025), charPBR.vest);
         knifeSheath.position.set(-0.10, 0.22, 0.14);
         knifeSheath.rotation.z = -0.15;
         rig.chest.add(knifeSheath);
-
         const knifeGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.009, 0.08, 8), charPBR.gloves);
         knifeGrip.position.set(-0.09, 0.31, 0.15);
         knifeGrip.rotation.z = -0.15;
         rig.chest.add(knifeGrip);
-
         const knifePommel = new THREE.Mesh(new THREE.SphereGeometry(0.011, 6, 6), charPBR.metal);
         knifePommel.position.set(-0.08, 0.35, 0.15);
         rig.chest.add(knifePommel);
-
         // Survival Canteen on Rucksack Left Side
         const canteen = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.14, 10), charPBR.metal);
         canteen.position.set(-0.19, 0.12, -0.20);
         rig.chest.add(canteen);
-
         // Survival Axe / Hatchet on Rucksack Right Side
         const axeHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.009, 0.34), charPBR.backpack);
         axeHandle.position.set(0.19, 0.16, -0.20);
         rig.chest.add(axeHandle);
-
         const axeHead = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.08, 0.07), charPBR.knifeBlade);
         axeHead.position.set(0.19, 0.30, -0.20);
         rig.chest.add(axeHead);
-
         // Tactical Field Backpack on Back
         const backpackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.38, 0.18), charPBR.backpack);
         backpackMesh.position.set(0, 0.14, -0.22);
         backpackMesh.castShadow = true;
         rig.chest.add(backpackMesh);
-
         const bedroll = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.34, 10), charPBR.shirt);
         bedroll.rotation.z = Math.PI / 2;
         bedroll.position.set(0, 0.34, -0.22);
         rig.chest.add(bedroll);
-
         // 6. Neck & Head
         rig.neck = new THREE.Group();
         rig.neck.position.set(0, 0.28, 0);
         rig.chest.add(rig.neck);
-
         const neckMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.075, 0.10, 12), charPBR.skin);
         neckMesh.position.y = 0.05;
         neckMesh.castShadow = true;
         rig.neck.add(neckMesh);
-
         rig.head = new THREE.Group();
         rig.head.position.set(0, 0.10, 0);
         rig.neck.add(rig.head);
-
         const cranium = new THREE.Mesh(new THREE.SphereGeometry(0.115, 16, 16), charPBR.head);
         cranium.position.y = 0.05;
         cranium.castShadow = true;
         rig.head.add(cranium);
-
         const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.09, 0.13), charPBR.head);
         jaw.position.set(0, -0.02, 0.025);
         rig.head.add(jaw);
-
         const stubble = new THREE.Mesh(new THREE.BoxGeometry(0.125, 0.07, 0.135), charPBR.stubble);
         stubble.position.set(0, -0.035, 0.025);
         rig.head.add(stubble);
-
         const nose = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.055, 4), charPBR.head);
         nose.rotation.x = Math.PI / 2;
         nose.position.set(0, 0.03, 0.12);
         rig.head.add(nose);
-
         // Survivor Facial Battle Scar across Left Eyebrow & Cheek
         const facialScar = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.065, 0.008), charPBR.scar);
         facialScar.position.set(-0.045, 0.052, 0.115);
         facialScar.rotation.z = 0.32;
         rig.head.add(facialScar);
-
         // Operator Tactical Communications Headset with Boom Mic
         const headsetBand = new THREE.Mesh(new THREE.TorusGeometry(0.122, 0.010, 6, 16, Math.PI), charPBR.metal);
         headsetBand.rotation.x = Math.PI / 2;
         headsetBand.position.set(0, 0.085, 0);
         rig.head.add(headsetBand);
-
         const earCup = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.034, 0.022, 12), charPBR.vest);
         earCup.rotation.z = Math.PI / 2;
         earCup.position.set(0.125, 0.045, 0);
         rig.head.add(earCup);
-
         const boomMic = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.11), charPBR.metal);
         boomMic.rotation.x = 1.25;
         boomMic.rotation.z = -0.28;
         boomMic.position.set(0.105, 0.012, 0.065);
         rig.head.add(boomMic);
-
         const micTip = new THREE.Mesh(new THREE.SphereGeometry(0.009, 6, 6), charPBR.vest);
         micTip.position.set(0.068, -0.040, 0.115);
         rig.head.add(micTip);
-
         // Sculpted 3D Eyes
         for (let side of [-1, 1]) {
             const eyeGroup = new THREE.Group();
             eyeGroup.position.set(side * 0.042, 0.045, 0.105);
-
             const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), charPBR.eyeSclera);
             eyeGroup.add(sclera);
-
             const iris = new THREE.Mesh(new THREE.CylinderGeometry(0.010, 0.010, 0.005), charPBR.eyeIris);
             iris.rotation.x = Math.PI / 2;
             iris.position.z = 0.014;
             eyeGroup.add(iris);
-
             const pupil = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.006), charPBR.eyePupil);
             pupil.rotation.x = Math.PI / 2;
             pupil.position.z = 0.015;
             eyeGroup.add(pupil);
-
             rig.head.add(eyeGroup);
         }
-
         // Layered Hair
         const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.125, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), charPBR.hair);
         hairCap.position.y = 0.06;
         rig.head.add(hairCap);
-
         const hairLocks = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.04, 0.04), charPBR.hair);
         hairLocks.position.set(-0.02, 0.11, 0.09);
         rig.head.add(hairLocks);
-
         // 7. Left Arm Chain
         rig.leftShoulder = new THREE.Group();
         rig.leftShoulder.position.set(-0.24, 0.22, 0);
         rig.chest.add(rig.leftShoulder);
-
         rig.leftUpperArm = new THREE.Group();
         rig.leftShoulder.add(rig.leftUpperArm);
-
         const lUpperArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.048, 0.28, 10), charPBR.shirt);
         lUpperArmMesh.position.y = -0.14;
         lUpperArmMesh.castShadow = true;
         rig.leftUpperArm.add(lUpperArmMesh);
-
         rig.leftForearm = new THREE.Group();
         rig.leftForearm.position.set(0, -0.28, 0);
         rig.leftUpperArm.add(rig.leftForearm);
-
         const lElbowPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.03), charPBR.kneePads);
         lElbowPad.position.set(0, -0.02, -0.04);
         rig.leftForearm.add(lElbowPad);
-
         // Tactical Field Watch on Left Forearm
         const watchBand = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.048, 0.035, 10), charPBR.vest);
         watchBand.position.y = -0.22;
         rig.leftForearm.add(watchBand);
-
         const watchBezel = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.01, 10), charPBR.metal);
         watchBezel.rotation.x = Math.PI / 2;
         watchBezel.position.set(0, -0.22, 0.048);
         rig.leftForearm.add(watchBezel);
-
         const lForearmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.040, 0.26, 10), charPBR.skin);
         lForearmMesh.position.y = -0.13;
         lForearmMesh.castShadow = true;
         rig.leftForearm.add(lForearmMesh);
-
         rig.leftHand = new THREE.Group();
         rig.leftHand.position.set(0, -0.26, 0);
         rig.leftForearm.add(rig.leftHand);
-
         const lGlovePalm = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.075, 0.035), charPBR.gloves);
         lGlovePalm.position.y = -0.035;
         rig.leftHand.add(lGlovePalm);
-
         // 5 Articulated Fingers (Thumb + 4 fingers)
         for (let f = 0; f < 4; f++) {
             const finger = new THREE.Mesh(new THREE.BoxGeometry(0.013, 0.038, 0.013), charPBR.skin);
@@ -2801,41 +2597,32 @@
         const lThumb = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.032, 0.015), charPBR.skin);
         lThumb.position.set(0.032, -0.05, 0.012);
         rig.leftHand.add(lThumb);
-
         // 8. Right Arm Chain
         rig.rightShoulder = new THREE.Group();
         rig.rightShoulder.position.set(0.24, 0.22, 0);
         rig.chest.add(rig.rightShoulder);
-
         rig.rightUpperArm = new THREE.Group();
         rig.rightShoulder.add(rig.rightUpperArm);
-
         const rUpperArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.048, 0.28, 10), charPBR.shirt);
         rUpperArmMesh.position.y = -0.14;
         rUpperArmMesh.castShadow = true;
         rig.rightUpperArm.add(rUpperArmMesh);
-
         rig.rightForearm = new THREE.Group();
         rig.rightForearm.position.set(0, -0.28, 0);
         rig.rightUpperArm.add(rig.rightForearm);
-
         const rElbowPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.03), charPBR.kneePads);
         rElbowPad.position.set(0, -0.02, -0.04);
         rig.rightForearm.add(rElbowPad);
-
         const rForearmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.040, 0.26, 10), charPBR.skin);
         rForearmMesh.position.y = -0.13;
         rForearmMesh.castShadow = true;
         rig.rightForearm.add(rForearmMesh);
-
         rig.rightHand = new THREE.Group();
         rig.rightHand.position.set(0, -0.26, 0);
         rig.rightForearm.add(rig.rightHand);
-
         const rGlovePalm = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.075, 0.035), charPBR.gloves);
         rGlovePalm.position.y = -0.035;
         rig.rightHand.add(rGlovePalm);
-
         // 5 Articulated Fingers
         for (let f = 0; f < 4; f++) {
             const finger = new THREE.Mesh(new THREE.BoxGeometry(0.013, 0.038, 0.013), charPBR.skin);
@@ -2845,12 +2632,10 @@
         const rThumb = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.032, 0.015), charPBR.skin);
         rThumb.position.set(-0.032, -0.05, 0.012);
         rig.rightHand.add(rThumb);
-
         // Weapon Attachment Socket
         rig.weaponSocket = new THREE.Group();
         rig.weaponSocket.position.set(0, -0.05, 0.08);
         rig.rightHand.add(rig.weaponSocket);
-
         // ================================================================
         // WEAPON 3D MODELS (9mm Tactical Pistol & M4 Tactical Rifle)
         // ================================================================
@@ -2859,88 +2644,71 @@
             const slide = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.05, 0.22), charPBR.metal);
             slide.position.set(0, 0.04, 0.05);
             pGroup.add(slide);
-
             const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.06), charPBR.metal);
             barrel.rotation.x = Math.PI / 2;
             barrel.position.set(0, 0.04, 0.18);
             pGroup.add(barrel);
-
             const grip = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.11, 0.055), charPBR.metal);
             grip.rotation.x = 0.22;
             grip.position.set(0, -0.03, -0.02);
             pGroup.add(grip);
-
             const triggerGuard = new THREE.Mesh(new THREE.TorusGeometry(0.025, 0.005, 6, 12, Math.PI), charPBR.metal);
             triggerGuard.rotation.y = Math.PI / 2;
             triggerGuard.position.set(0, 0.005, 0.03);
             pGroup.add(triggerGuard);
-
             pGroup.position.set(0, 0, 0.05);
             return pGroup;
         }
-
         function buildRifleMesh() {
             const rGroup = new THREE.Group();
             // Receiver
             const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.11, 0.32), charPBR.metal);
             receiver.position.set(0, 0.03, 0.05);
             rGroup.add(receiver);
-
             // Shrouded Barrel & Rail
             const shroud = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.40, 10), charPBR.metal);
             shroud.rotation.x = Math.PI / 2;
             shroud.position.set(0, 0.05, 0.38);
             rGroup.add(shroud);
-
             const flashHider = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.06, 8), charPBR.metal);
             flashHider.rotation.x = Math.PI / 2;
             flashHider.position.set(0, 0.05, 0.60);
             rGroup.add(flashHider);
-
             // Holographic Optic Sight with Glowing Red Reticle
             const opticBody = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.06, 0.10), charPBR.metal);
             opticBody.position.set(0, 0.11, 0.08);
             rGroup.add(opticBody);
-
             const reticleDot = new THREE.Mesh(new THREE.SphereGeometry(0.005, 6, 6), charPBR.reticle);
             reticleDot.position.set(0, 0.11, 0.13);
             rGroup.add(reticleDot);
-
             // Curved 30-round Magazine
             const mag = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.18, 0.07), charPBR.metal);
             mag.rotation.x = -0.25;
             mag.position.set(0, -0.09, 0.12);
             rGroup.add(mag);
-
             // Pistol Grip
             const pGrip = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.05), charPBR.metal);
             pGrip.rotation.x = 0.28;
             pGrip.position.set(0, -0.05, -0.06);
             rGroup.add(pGrip);
-
             // Tactical Crane Stock
             const stock = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.13, 0.24), charPBR.vest);
             stock.position.set(0, 0.03, -0.22);
             rGroup.add(stock);
-
             // Forward Handguard Grip (Left Hand target)
             const fGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.08), charPBR.metal);
             fGrip.position.set(0, -0.02, 0.32);
             rGroup.add(fGrip);
-
             rGroup.position.set(0, 0, 0.05);
             return rGroup;
         }
-
         player.pistolMesh = buildPistolMesh();
         player.rifleMesh = buildRifleMesh();
         rig.weaponSocket.add(player.pistolMesh);
         player.activeWeaponMesh = player.pistolMesh;
-
         scene.add(playerGroup);
         player.mesh = playerGroup;
         player.rig = rig;
-
         // Weapons Configuration
         const weapons = [
             { name: "9mm Tactical Pistol", damage: 35, fireRate: 250, clipSize: 15, reserve: 60, currentClip: 15, automatic: false },
@@ -2949,7 +2717,6 @@
         let currentWeaponIndex = 0;
         let lastFireTime = 0;
         let isReloading = false;
-
         // ================================================================
         // ================================================================
         // 5 ANATOMICAL INFECTED ZOMBIE CLASSES (BATCH A - WALKER PROTOTYPE)
@@ -2971,7 +2738,6 @@
             BRUTE: { name: 'Brute', speed: 1.4, health: 350, damage: 45, fleshColor: 0x4a584a, clothesColor: 0x242a24, scale: 1.75, eyeColor: 0x2bf805 },
             ALPHA: { name: 'Alpha Boss', speed: 3.6, health: 750, damage: 55, fleshColor: 0x52634e, clothesColor: 0x1a1a1a, scale: 2.2, isBoss: true, eyeColor: 0xff0044 }
         };
-
         // Walker Appearance Presets (Batch A - 5 Visual Variations)
         const WALKER_VARIANTS = [
             { name: 'Civilian Walker', clothes: 0x3e4745, pants: 0x2b302c, flesh: 0x5a6b54, accessory: 'jacket_tear' },
@@ -2981,53 +2747,43 @@
             { name: 'Injured Walker', clothes: 0x4a2a2a, pants: 0x2e2525, flesh: 0x5e6e58, accessory: 'head_bandage' }
         ];
         let walkerVariantIndex = 0;
-
         const zombies = [];
         let killsCount = 0;
-
         function spawnZombie(typeKey, x, z) {
             const def = ZOMBIE_TYPES[typeKey];
             const zGroup = new THREE.Group();
             const zRig = {};
-
             // Walker Variant selection
             let currentFleshColor = def.fleshColor;
             let currentClothesColor = def.clothesColor;
             let variant = null;
-
             if (typeKey === 'WALKER') {
                 variant = WALKER_VARIANTS[walkerVariantIndex % WALKER_VARIANTS.length];
                 walkerVariantIndex++;
                 currentFleshColor = variant.flesh;
                 currentClothesColor = variant.clothes;
             }
-
             // Class-specific procedural texture assignment
             let assignedTex = pbrTextures.zombieWalker;
             if (typeKey === 'RUNNER') assignedTex = pbrTextures.zombieRunner;
             else if (typeKey === 'STALKER') assignedTex = pbrTextures.zombieStalker;
             else if (typeKey === 'BRUTE' || typeKey === 'ALPHA') assignedTex = pbrTextures.zombieBrute;
-
             const fleshMat = new THREE.MeshStandardMaterial({ color: currentFleshColor, roughness: 0.82, map: assignedTex, bumpMap: assignedTex, bumpScale: 0.03 });
             const clothesMat = new THREE.MeshStandardMaterial({ color: currentClothesColor, roughness: 0.88, map: pbrTextures.pants });
             const boneMat = new THREE.MeshStandardMaterial({ color: 0xded6c4, roughness: 0.52, metalness: 0.1 });
             const zEyeMat = new THREE.MeshBasicMaterial({ color: def.eyeColor });
             const cloudedEyeMat = new THREE.MeshBasicMaterial({ color: 0x9ba498 }); // Cataract necrotic eye
-
             const s = def.scale;
             const isBrute = (typeKey === 'BRUTE' || typeKey === 'ALPHA');
             const isRunner = (typeKey === 'RUNNER');
             const isStalker = (typeKey === 'STALKER');
-
             // 1. Pelvis / Hips (Stalker is hunched low; Brute is massive)
             zRig.hips = new THREE.Group();
             zRig.hips.position.y = isStalker ? (0.76 * s) : (0.94 * s);
             zGroup.add(zRig.hips);
-
             const pelvisWidth = isBrute ? (0.52 * s) : (0.30 * s);
             const zPelvis = new THREE.Mesh(new THREE.BoxGeometry(pelvisWidth, 0.16 * s, 0.22 * s), clothesMat);
             zRig.hips.add(zPelvis);
-
             // 2. Shambling Legs (Runner has taut tendons, Brute has tree trunks)
             for (let side of [-1, 1]) {
                 const thighGroup = new THREE.Group();
@@ -3035,53 +2791,44 @@
                 thighGroup.position.set(sideOffset, -0.05 * s, 0);
                 if (isStalker) thighGroup.rotation.x = -0.42; // Deep predatory crouch
                 zRig.hips.add(thighGroup);
-
                 const thighRad = isBrute ? (0.12 * s) : (isRunner ? 0.06 * s : 0.075 * s);
                 const thighMesh = new THREE.Mesh(new THREE.CylinderGeometry(thighRad, thighRad * 0.82, 0.38 * s, 8), clothesMat);
                 thighMesh.position.y = -0.19 * s;
                 thighMesh.castShadow = true;
                 thighGroup.add(thighMesh);
-
                 const calfGroup = new THREE.Group();
                 calfGroup.position.set(0, -0.38 * s, 0);
                 if (isStalker) calfGroup.rotation.x = 0.75;
                 thighGroup.add(calfGroup);
-
                 const calfRad = isBrute ? (0.10 * s) : (isRunner ? 0.048 * s : 0.055 * s);
                 const calfMesh = new THREE.Mesh(new THREE.CylinderGeometry(calfRad, calfRad * 0.78, 0.36 * s, 8), fleshMat);
                 calfMesh.position.y = -0.18 * s;
                 calfMesh.castShadow = true;
                 calfGroup.add(calfMesh);
-
                 // Walker blood-stained leg bandage
                 if (typeKey === 'WALKER' && side === 1) {
                     const bandage = new THREE.Mesh(new THREE.CylinderGeometry(calfRad * 1.08, calfRad * 1.08, 0.14 * s, 8), new THREE.MeshStandardMaterial({ color: 0x9a8878, roughness: 0.9 }));
                     bandage.position.y = -0.16 * s;
                     calfGroup.add(bandage);
                 }
-
                 const footMesh = new THREE.Mesh(new THREE.BoxGeometry(0.09 * s, 0.06 * s, 0.19 * s), clothesMat);
                 footMesh.position.set(0, -0.38 * s, 0.04 * s);
                 calfGroup.add(footMesh);
-
                 if (side === -1) zRig.leftThigh = thighGroup;
                 else zRig.rightThigh = thighGroup;
             }
-
             // 3. Spine & Torso (Runner leans forward, Brute is gigantic)
             zRig.spine = new THREE.Group();
             zRig.spine.position.set(0, 0.12 * s, 0);
             if (isRunner) zRig.spine.rotation.x = 0.28; // Forward aggressive attack lean
             if (isStalker) zRig.spine.rotation.x = 0.38;
             zRig.hips.add(zRig.spine);
-
             const torsoWidth = isBrute ? (0.68 * s) : (isRunner ? 0.32 * s : 0.36 * s);
             const torsoDepth = isBrute ? (0.38 * s) : (isRunner ? 0.19 * s : 0.22 * s);
             const zTorso = new THREE.Mesh(new THREE.BoxGeometry(torsoWidth, 0.35 * s, torsoDepth), clothesMat);
             zTorso.position.y = 0.17 * s;
             zTorso.castShadow = true;
             zRig.spine.add(zTorso);
-
             // Exposed Ribs on Walker
             if (typeKey === 'WALKER') {
                 for (let r = 0; r < 3; r++) {
@@ -3090,7 +2837,6 @@
                     zRig.spine.add(rib);
                 }
             }
-
             // 4. Arms (Brute has huge asymmetrical mutated right arm + bone spikes)
             // Left Arm Chain
             const lArmGroup = new THREE.Group();
@@ -3101,18 +2847,15 @@
             lArmMesh.castShadow = true;
             lArmGroup.add(lArmMesh);
             zRig.leftArm = lArmGroup;
-
             // Right Arm Chain (Brute: Mutated Arm with Calcified Spikes and Cable)
             const rArmGroup = new THREE.Group();
             rArmGroup.position.set(torsoWidth * 0.55, 0.30 * s, 0);
             zRig.spine.add(rArmGroup);
-
             const rArmRad = isBrute ? (0.11 * s) : (0.052 * s);
             const rArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(rArmRad, rArmRad * 0.85, 0.58 * s, 8), fleshMat);
             rArmMesh.position.y = -0.27 * s;
             rArmMesh.castShadow = true;
             rArmGroup.add(rArmMesh);
-
             if (isBrute) {
                 // Calcified Bone Spikes bursting from right shoulder and forearm
                 for (let sp = 0; sp < 3; sp++) {
@@ -3127,7 +2870,6 @@
                 rArmGroup.add(cable);
             }
             zRig.rightArm = rArmGroup;
-
             // Claws for Runner
             if (isRunner) {
                 for (let c = 0; c < 3; c++) {
@@ -3139,21 +2881,17 @@
                     rArmGroup.add(clawR);
                 }
             }
-
             // 5. Neck & Head
             zRig.neck = new THREE.Group();
             zRig.neck.position.set(0, 0.35 * s, 0);
             zRig.spine.add(zRig.neck);
-
             zRig.head = new THREE.Group();
             zRig.head.position.set(0, 0.08 * s, 0);
             zRig.neck.add(zRig.head);
-
             const zCranium = new THREE.Mesh(new THREE.SphereGeometry(0.12 * s, 12, 12), fleshMat);
             zCranium.position.y = 0.05 * s;
             zCranium.castShadow = true;
             zRig.head.add(zCranium);
-
             // Stalker Tattered Hood Cowl
             if (isStalker) {
                 const cowl = new THREE.Mesh(new THREE.SphereGeometry(0.145 * s, 10, 10, 0, Math.PI * 2, 0, Math.PI * 0.75), clothesMat);
@@ -3161,30 +2899,24 @@
                 cowl.material.side = THREE.DoubleSide;
                 zRig.head.add(cowl);
             }
-
             // Gaping Jaw
             const jawOpen = new THREE.Mesh(new THREE.BoxGeometry(0.10 * s, 0.08 * s, 0.11 * s), fleshMat);
             jawOpen.position.set(0, -0.05 * s, 0.04 * s);
             zRig.head.add(jawOpen);
             zRig.jaw = jawOpen;
-
             // Rotten Teeth / Fangs
             const teeth = new THREE.Mesh(new THREE.BoxGeometry(0.08 * s, 0.02 * s, 0.02 * s), boneMat);
             teeth.position.set(0, -0.02 * s, 0.09 * s);
             zRig.head.add(teeth);
-
             // Eyes (Clouded cataract left eye + glowing infected tapetum lucidum right eye)
             const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.018 * s, 6, 6), cloudedEyeMat);
             leftEye.position.set(-0.042 * s, 0.045 * s, 0.108 * s);
             zRig.head.add(leftEye);
-
             const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.018 * s, 6, 6), zEyeMat);
             rightEye.position.set(0.042 * s, 0.045 * s, 0.108 * s);
             zRig.head.add(rightEye);
-
             zGroup.position.set(x, 0, z);
             scene.add(zGroup);
-
             zombies.push({
                 group: zGroup,
                 rig: zRig,
@@ -3199,7 +2931,6 @@
                 walkTimer: Math.random() * 10
             });
         }
-
         // Initial Sector Spawns
         function resetZombies() {
             for (let i = 0; i < zombies.length; i++) {
@@ -3217,22 +2948,31 @@
             resetZombies();
         }
         spawnInitialEnemies();
-
         // --- Controls Input Handling ---
         const keys = {};
         window.addEventListener('keydown', e => {
+            const k = e.key.toLowerCase();
+            if (e.key === 'Escape' || k === 'm') {
+                toggleTacticalMenu();
+                return;
+            }
             if (currentGameState !== 'PLAYING') return;
-            keys[e.key.toLowerCase()] = true;
-            if (e.key.toLowerCase() === 'v') toggleCameraMode();
-            if (e.key.toLowerCase() === 'r') reloadWeapon();
+            keys[k] = true;
+            if (k === 'v') toggleCameraMode();
+            if (k === 'r') reloadWeapon();
             if (e.key === '1') switchWeapon(0);
             if (e.key === '2') switchWeapon(1);
-            if (e.key.toLowerCase() === 't') toggleDayNight();
+            if (k === 't') toggleDayNight();
+            if (e.code === 'Space' || e.key === ' ') {
+                e.preventDefault();
+                tryFire();
+            }
+            if (k === 'shift') player.isSprinting = true;
+            if (k === 'c') player.isCrouching = !player.isCrouching;
         });
         window.addEventListener('keyup', e => {
             keys[e.key.toLowerCase()] = false;
         });
-
         // Mouse Controls & Pointer Lock
         let isPointerLocked = false;
         container.addEventListener('click', () => {
@@ -3249,17 +2989,15 @@
         document.addEventListener('pointerlockchange', () => {
             isPointerLocked = (document.pointerLockElement === container);
         });
-
         document.addEventListener('mousemove', e => {
             if (currentGameState !== 'PLAYING') return;
-            if (isPointerLocked) {
-                const sensitivity = 0.0022;
+            if (isPointerLocked || e.buttons === 1 || e.buttons === 2) {
+                const sensitivity = 0.0024;
                 player.yaw -= e.movementX * sensitivity;
                 player.pitch -= e.movementY * sensitivity;
                 player.pitch = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.pitch));
             }
         });
-
         let isMouseDown = false;
         document.addEventListener('mousedown', e => {
             if (currentGameState !== 'PLAYING') return;
@@ -3271,12 +3009,10 @@
             if (e.button === 2) { player.isAiming = false; updateCrosshair(); }
         });
         document.addEventListener('contextmenu', e => e.preventDefault());
-
         // --- Multi-Touch Dynamic Joystick & Enhanced Mobile Controls ---
         const moveRegion = document.getElementById('touch-move-region');
         const joystickZone = document.getElementById('joystick-zone');
         const joystickThumb = document.getElementById('joystick-thumb');
-
         touchJoystickActive = false;
         let joystickTouchId = null;
         let cameraTouchId = null;
@@ -3284,42 +3020,33 @@
         let joystickVector = { x: 0, y: 0 };
         let cameraLastPos = { x: 0, y: 0 };
         let continuousFireInterval = null;
-
         player.isSprintLocked = false;
-
         function triggerHaptic(duration = 20) {
             if (typeof navigator !== 'undefined' && navigator.vibrate) {
                 try { navigator.vibrate(duration); } catch(err) {}
             }
         }
-
         // --- Dynamic Floating Joystick Engine ---
         function startJoystick(clientX, clientY, identifier) {
             joystickTouchId = identifier;
             touchJoystickActive = true;
             touchStartPos = { x: clientX, y: clientY };
-
             // Float joystick base under thumb location
             joystickZone.classList.add('floating', 'active');
             joystickZone.style.bottom = 'auto';
             joystickZone.style.left = `${clientX - 70}px`;
             joystickZone.style.top = `${clientY - 70}px`;
-
             handleJoystickMove(clientX, clientY);
         }
-
         function handleJoystickMove(clientX, clientY) {
             const dx = clientX - touchStartPos.x;
             const dy = clientY - touchStartPos.y;
             const maxRadius = 48;
             const dist = Math.min(maxRadius, Math.hypot(dx, dy));
             const angle = Math.atan2(dy, dx);
-
             joystickVector.x = (Math.cos(angle) * dist) / maxRadius;
             joystickVector.y = (Math.sin(angle) * dist) / maxRadius;
-
             joystickThumb.style.transform = `translate(${joystickVector.x * 38}px, ${joystickVector.y * 38}px)`;
-
             // Auto-Sprint when pushed full forward (> 82%)
             const isFullForward = (joystickVector.y < -0.80 && Math.abs(joystickVector.x) < 0.65);
             const sprintBtn = document.getElementById('btn-sprint');
@@ -3336,7 +3063,6 @@
                 if (sprintSub) sprintSub.innerText = 'OFF';
             }
         }
-
         function stopJoystick() {
             joystickTouchId = null;
             touchJoystickActive = false;
@@ -3344,12 +3070,10 @@
             joystickThumb.style.transform = 'translate(0, 0)';
             joystickThumb.classList.remove('sprinting');
             joystickZone.classList.remove('floating', 'active');
-
             // Reset to default resting position
             joystickZone.style.top = 'auto';
             joystickZone.style.bottom = 'max(24px, var(--sab))';
             joystickZone.style.left = 'max(24px, var(--sal))';
-
             if (!player.isSprintLocked) {
                 player.isSprinting = false;
                 const sprintBtn = document.getElementById('btn-sprint');
@@ -3358,7 +3082,6 @@
                 if (sprintSub) sprintSub.innerText = 'OFF';
             }
         }
-
         // 1. Touch Move Region (Left 48% of screen)
         if (moveRegion) {
             moveRegion.addEventListener('touchstart', e => {
@@ -3368,7 +3091,6 @@
                 const touch = e.changedTouches[0];
                 startJoystick(touch.clientX, touch.clientY, touch.identifier);
             }, { passive: false });
-
             // Desktop Mouse Drag Testing on Joystick Region
             moveRegion.addEventListener('mousedown', e => {
                 if (e.button === 0 && joystickTouchId === null) {
@@ -3376,7 +3098,6 @@
                 }
             });
         }
-
         // Direct Touch on Joystick Zone fallback
         joystickZone.addEventListener('touchstart', e => {
             if (currentGameState !== 'PLAYING') return;
@@ -3385,13 +3106,11 @@
             const touch = e.changedTouches[0];
             startJoystick(touch.clientX, touch.clientY, touch.identifier);
         }, { passive: false });
-
         joystickZone.addEventListener('mousedown', e => {
             if (e.button === 0 && joystickTouchId === null) {
                 startJoystick(e.clientX, e.clientY, 'mouse');
             }
         });
-
         // 2. Global Touchmove (Multi-touch Disambiguation)
         window.addEventListener('touchmove', e => {
             if (currentGameState !== 'PLAYING') return;
@@ -3403,7 +3122,6 @@
                     const dx = touch.clientX - cameraLastPos.x;
                     const dy = touch.clientY - cameraLastPos.y;
                     cameraLastPos = { x: touch.clientX, y: touch.clientY };
-
                     // Responsive mobile sensitivity
                     const touchSensitivity = 0.0055;
                     player.yaw -= dx * touchSensitivity;
@@ -3412,20 +3130,17 @@
                 }
             }
         }, { passive: false });
-
         // Desktop Mouse Drag Tracking
         window.addEventListener('mousemove', e => {
             if (touchJoystickActive && joystickTouchId === 'mouse') {
                 handleJoystickMove(e.clientX, e.clientY);
             }
         });
-
         // 3. Touchstart for Right Screen Camera Look (Exclusion Layer)
         window.addEventListener('touchstart', e => {
             if (currentGameState !== 'PLAYING') return;
             for (let i = 0; i < e.changedTouches.length; i++) {
                 const touch = e.changedTouches[i];
-
                 // Left 48% touch fallback for floating joystick
                 if (touch.clientX <= window.innerWidth * 0.48 && joystickTouchId === null) {
                     const target = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -3434,7 +3149,6 @@
                         continue;
                     }
                 }
-
                 // Right 52% screen touch for Camera Drag
                 if (touch.clientX > window.innerWidth * 0.45 && cameraTouchId === null) {
                     const target = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -3444,13 +3158,11 @@
                                    target.closest('.touch-action-buttons') || target.closest('.weapon-hud'))) {
                         continue;
                     }
-
                     cameraTouchId = touch.identifier;
                     cameraLastPos = { x: touch.clientX, y: touch.clientY };
                 }
             }
         }, { passive: true });
-
         // 4. Touchend & Touchcancel
         function handleTouchEnd(e) {
             for (let i = 0; i < e.changedTouches.length; i++) {
@@ -3465,37 +3177,30 @@
         }
         window.addEventListener('touchend', handleTouchEnd);
         window.addEventListener('touchcancel', handleTouchEnd);
-
         window.addEventListener('mouseup', e => {
             if (touchJoystickActive && joystickTouchId === 'mouse') {
                 stopJoystick();
             }
         });
-
         // 5. Mobile Touch Action Buttons (Touch + Click Event Support)
         function wireButton(id, onActivate, onDeactivate = null) {
             const btn = document.getElementById(id);
             if (!btn) return;
-
             let touchHandled = false;
-
             btn.addEventListener('touchstart', e => {
                 e.preventDefault();
                 touchHandled = true;
                 onActivate(btn);
             }, { passive: false });
-
             if (onDeactivate) {
                 btn.addEventListener('touchend', e => { onDeactivate(btn); });
                 btn.addEventListener('touchcancel', e => { onDeactivate(btn); });
             }
-
             btn.addEventListener('click', e => {
                 if (touchHandled) { touchHandled = false; return; }
                 onActivate(btn);
             });
         }
-
         // CAM [V]: Toggle 1st/3rd Person
         wireButton('btn-cam', btn => {
             triggerHaptic(20);
@@ -3504,7 +3209,6 @@
             if (sub) sub.innerText = player.isFirstPerson ? '1ST' : '3RD';
             btn.classList.toggle('active', player.isFirstPerson);
         });
-
         // LIGHT [T]: Toggle Day/Night Dusk
         wireButton('btn-light', btn => {
             triggerHaptic(20);
@@ -3513,7 +3217,6 @@
             if (sub) sub.innerText = isNight ? 'NIGHT' : 'DAY';
             btn.classList.toggle('active', !isNight);
         });
-
         // GUN [1-2]: Switch Weapons
         wireButton('btn-switch', btn => {
             triggerHaptic(25);
@@ -3521,7 +3224,6 @@
             const sub = btn.querySelector('.btn-sub');
             if (sub) sub.innerText = (currentWeaponIndex === 0) ? '9MM' : 'M4';
         });
-
         // RELOAD [R]: Reload Active Weapon
         wireButton('btn-reload', btn => {
             triggerHaptic(35);
@@ -3529,7 +3231,6 @@
             btn.classList.add('active');
             setTimeout(() => btn.classList.remove('active'), 250);
         });
-
         // RUN [SHIFT]: Toggle Sprint Lock
         wireButton('btn-sprint', btn => {
             triggerHaptic(25);
@@ -3539,7 +3240,6 @@
             const sub = btn.querySelector('.btn-sub');
             if (sub) sub.innerText = player.isSprintLocked ? 'LOCK' : 'OFF';
         });
-
         // AIM [R-CLK]: Toggle Aim Down Sights
         wireButton('btn-aim', btn => {
             triggerHaptic(25);
@@ -3549,7 +3249,6 @@
             if (sub) sub.innerText = player.isAiming ? 'ON' : 'ADS';
             updateCrosshair();
         });
-
         // FIRE [L-CLK]: Auto-Fire while Held
         const btnFire = document.getElementById('btn-fire');
         const startFire = () => {
@@ -3568,7 +3267,6 @@
                 continuousFireInterval = null;
             }
         };
-
         if (btnFire) {
             btnFire.addEventListener('touchstart', e => { e.preventDefault(); startFire(); }, { passive: false });
             btnFire.addEventListener('touchend', endFire);
@@ -3576,12 +3274,10 @@
             btnFire.addEventListener('mousedown', e => { if (e.button === 0) startFire(); });
         }
         window.addEventListener('mouseup', endFire);
-
         // --- Combat & Shooting Mechanics ---
         // Dynamic Muzzle Flash Point Light
         const muzzleLight = new THREE.PointLight(0xffb844, 0, 15);
         scene.add(muzzleLight);
-
         // Procedural Star-Burst Muzzle Flash Mesh
         const flashMat = new THREE.MeshBasicMaterial({ color: 0xffea78, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
         const flashGroup = new THREE.Group();
@@ -3591,13 +3287,11 @@
         flashGroup.add(flashPlane1);
         flashGroup.add(flashPlane2);
         scene.add(flashGroup);
-
         // Dynamic Blood & Spark Particle System
         const fxParticles = [];
         const fxGeo = new THREE.SphereGeometry(0.024, 4, 4);
         const bloodMat = new THREE.MeshBasicMaterial({ color: 0x8a0b0b });
         const sparkMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
-
         function emitParticles(pos, isBlood = true, count = 8) {
             for (let i = 0; i < count; i++) {
                 const p = new THREE.Mesh(fxGeo, isBlood ? bloodMat : sparkMat);
@@ -3616,7 +3310,6 @@
             const cur = weapons[currentWeaponIndex];
             document.getElementById('weapon-name').innerText = cur.name;
             updateAmmoHUD();
-
             // Swap visual model in socket
             if (player.rig && player.rig.weaponSocket) {
                 while (player.rig.weaponSocket.children.length > 0) {
@@ -3627,11 +3320,9 @@
                 player.activeWeaponMesh = activeMesh;
             }
         }
-
         function reloadWeapon() {
             const cur = weapons[currentWeaponIndex];
             if (isReloading || cur.currentClip === cur.clipSize || cur.reserve <= 0) return;
-
             isReloading = true;
             document.getElementById('weapon-name').innerText = "RELOADING...";
             setTimeout(() => {
@@ -3644,7 +3335,6 @@
                 updateAmmoHUD();
             }, 1200);
         }
-
         function tryFire() {
             const cur = weapons[currentWeaponIndex];
             const now = Date.now();
@@ -3653,17 +3343,14 @@
                 reloadWeapon();
                 return;
             }
-
             lastFireTime = now;
             cur.currentClip--;
             updateAmmoHUD();
             playGunshot(currentWeaponIndex === 1);
-
             // Realistic Weapon Recoil & Muzzle Rise
             player.pitch += 0.025;
             player.recoilKick = (currentWeaponIndex === 1) ? 0.09 : 0.055;
             player.recoilPitch = (currentWeaponIndex === 1) ? 0.07 : 0.045;
-
             // Trigger Dynamic Muzzle Light & Star-burst Flash
             const muzzlePos = new THREE.Vector3();
             if (player.activeWeaponMesh) {
@@ -3679,11 +3366,9 @@
                     flashMat.opacity = 0;
                 }, 55);
             }
-
             // Raycast shot from camera center
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-
             // Check barrels
             const barrelHits = raycaster.intersectObjects(barrels);
             if (barrelHits.length > 0) {
@@ -3695,7 +3380,6 @@
                 }
                 return;
             }
-
             // Check zombies with recursive descendant intersection
             const hitTargets = [];
             zombies.forEach(z => {
@@ -3704,41 +3388,33 @@
                     hitTargets.push({ zombie: z, distance: hits[0].distance, isHead: hits[0].point.y > (z.group.position.y + z.def.scale * 1.3) });
                 }
             });
-
             if (hitTargets.length > 0) {
                 hitTargets.sort((a, b) => a.distance - b.distance);
                 const target = hitTargets[0];
                 const isHeadshot = target.isHead;
                 const finalDamage = Math.round(cur.damage * (isHeadshot ? 2.5 : 1.0));
-
                 target.zombie.health -= finalDamage;
                 playHitSound();
                 emitParticles(target.zombie.group.position.clone().add(new THREE.Vector3(0, target.zombie.def.scale * 1.1, 0)), true, 12);
-
                 createDamageText(isHeadshot ? `HEADSHOT! ${finalDamage}` : `${finalDamage}`, target.zombie.group.position, isHeadshot);
-
                 // Hit reaction flinch
                 target.zombie.group.position.z += Math.cos(player.yaw) * 0.4;
                 target.zombie.group.position.x -= Math.sin(player.yaw) * 0.4;
-
                 // Boss phase 2 enrage
                 if (target.zombie.def.isBoss && target.zombie.health <= target.zombie.maxHealth * 0.5 && !target.zombie.isEnraged) {
                     target.zombie.isEnraged = true;
                     target.zombie.speed *= 1.45;
                     createDamageText("ALPHA ENRAGED!", target.zombie.group.position, true);
                 }
-
                 if (target.zombie.health <= 0) {
                     killZombie(target.zombie);
                 }
             }
         }
-
         function explodeBarrel(barrel) {
             scene.remove(barrel);
             barrels.splice(barrels.indexOf(barrel), 1);
             playGunshot(true);
-
             // Area damage
             zombies.forEach(z => {
                 const dist = z.group.position.distanceTo(barrel.position);
@@ -3749,25 +3425,21 @@
                 }
             });
         }
-
         function killZombie(z) {
             scene.remove(z.group);
             zombies.splice(zombies.indexOf(z), 1);
             killsCount++;
             document.getElementById('kill-count').innerText = killsCount;
-
             if (zombies.length === 0) {
                 // Victory!
                 showModal("SECTOR CLEARED", `You survived the Greyfall County outbreak with ${killsCount} infected eliminated.`);
             }
         }
-
         function createDamageText(text, worldPos, isCrit) {
             const screenPos = worldPos.clone().project(camera);
             if (screenPos.z > 1) return;
             const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
             const y = (-(screenPos.y * 0.5) + 0.5) * window.innerHeight;
-
             const div = document.createElement('div');
             div.className = `damage-number ${isCrit ? 'crit' : ''}`;
             div.innerText = text;
@@ -3776,24 +3448,20 @@
             document.body.appendChild(div);
             setTimeout(() => div.remove(), 800);
         }
-
         function updateAmmoHUD() {
             const cur = weapons[currentWeaponIndex];
             document.getElementById('ammo-clip').innerText = cur.currentClip;
             document.getElementById('ammo-reserve').innerText = cur.reserve;
         }
-
         function updateCrosshair() {
             const crosshair = document.getElementById('crosshair');
             if (player.isAiming) crosshair.classList.add('aiming');
             else crosshair.classList.remove('aiming');
         }
-
         function toggleCameraMode() {
             player.isFirstPerson = !player.isFirstPerson;
             player.mesh.visible = !player.isFirstPerson;
         }
-
         let isNight = true;
         function toggleDayNight() {
             isNight = !isNight;
@@ -3802,57 +3470,58 @@
             dirLight.color.set(isNight ? 0x90a4ae : 0xfff4e0);
             dirLight.intensity = isNight ? 0.45 : 1.3;
         }
-
         function flashDamage() {
             const flash = document.getElementById('damage-flash');
             flash.style.opacity = '1';
             setTimeout(() => { flash.style.opacity = '0'; }, 150);
         }
-
         function showModal(title, subtitle) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-subtitle').innerText = subtitle;
             document.getElementById('modal-overlay').classList.add('active');
             if (document.exitPointerLock) document.exitPointerLock();
         }
-
         function resetGame() {
             window.location.reload();
         }
-
         // --- Main Animation Loop ---
         let clock = new THREE.Clock();
-
         // --- Game State & Cinematic Main Menu Controller ---
         // (currentGameState is declared at top of script)
         let menuRotationYaw = 0;
         let isDraggingMenuHero = false;
         let menuDragStartX = 0;
-
+        
+        function toggleTacticalMenu() {
+            triggerHaptic(20);
+            const menuOverlay = document.getElementById('main-menu-overlay');
+            if (!menuOverlay) return;
+            if (currentGameState === 'PLAYING') {
+                returnToMainMenu();
+            } else {
+                startSurvivalGame();
+            }
+        }
         function startSurvivalGame() {
             triggerHaptic(40);
             currentGameState = 'PLAYING';
-
             const menuOverlay = document.getElementById('main-menu-overlay');
             if (menuOverlay) {
                 menuOverlay.classList.add('hidden');
                 menuOverlay.style.display = 'none';
             }
-
             const hud = document.getElementById('hud');
             if (hud) {
                 hud.style.display = 'flex';
                 hud.style.visibility = 'visible';
                 hud.style.opacity = '1';
             }
-
             const mobileControls = document.getElementById('mobile-controls');
             if (mobileControls) {
                 mobileControls.style.display = 'flex';
                 mobileControls.style.visibility = 'visible';
                 mobileControls.style.opacity = '1';
             }
-
             // Reset player vital stats
             player.health = 100;
             player.stamina = 100;
@@ -3860,20 +3529,16 @@
             player.isAiming = false;
             player.yaw = 0;
             player.pitch = 0;
-
             const healthFill = document.getElementById('health-fill');
             if (healthFill) healthFill.style.width = '100%';
             const staminaFill = document.getElementById('stamina-fill');
             if (staminaFill) staminaFill.style.width = '100%';
-
             // Respawn enemies cleanly
             if (typeof resetZombies === 'function') {
                 resetZombies();
             }
-
             // Reset clock delta
             clock.getDelta();
-
             // Auto-focus pointer lock on desktop if requested
             if (window.innerWidth > 900 && typeof container.requestPointerLock === 'function') {
                 try {
@@ -3882,46 +3547,37 @@
                 } catch(e) {}
             }
         }
-
         function returnToMainMenu() {
             triggerHaptic(20);
             currentGameState = 'MENU';
-
             const menuOverlay = document.getElementById('main-menu-overlay');
             if (menuOverlay) {
                 menuOverlay.classList.remove('hidden');
                 menuOverlay.style.display = 'flex';
             }
-
             const hud = document.getElementById('hud');
             if (hud) hud.style.display = 'none';
-
             const mobileControls = document.getElementById('mobile-controls');
             if (mobileControls) mobileControls.style.display = 'none';
-
             if (document.exitPointerLock) {
                 try { document.exitPointerLock(); } catch(e) {}
             }
         }
-
         function openModal(modalId) {
             triggerHaptic(20);
             const m = document.getElementById('modal-' + modalId);
             if (m) m.classList.add('active');
         }
-
         function closeModal(modalId) {
             triggerHaptic(15);
             const m = document.getElementById('modal-' + modalId);
             if (m) m.classList.remove('active');
         }
-
         // Expose to window for inline onclick handlers
         window.startSurvivalGame = startSurvivalGame;
         window.returnToMainMenu = returnToMainMenu;
         window.openModal = openModal;
         window.closeModal = closeModal;
-
         // Wire explicit multi-touch & pointer handlers directly to buttons
         function setupMenuButtons() {
             const bindStart = (btn) => {
@@ -3934,12 +3590,10 @@
                 btn.addEventListener('touchend', activate);
                 btn.addEventListener('pointerup', activate);
             };
-
             bindStart(document.getElementById('menu-btn-play'));
             bindStart(document.querySelector('.menu-play-btn'));
         }
         setupMenuButtons();
-
         // Close modal on Escape
         window.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
@@ -3953,7 +3607,6 @@
                 }
             }
         });
-
         // Menu 360-degree Drag Rotation for Ethan Cross showcase
         window.addEventListener('mousedown', e => {
             if (currentGameState === 'MENU' && e.clientX > window.innerWidth * 0.35) {
@@ -3964,7 +3617,6 @@
                 }
             }
         });
-
         window.addEventListener('mousemove', e => {
             if (currentGameState === 'MENU' && isDraggingMenuHero) {
                 const dx = e.clientX - menuDragStartX;
@@ -3972,9 +3624,7 @@
                 menuRotationYaw += dx * 0.012;
             }
         });
-
         window.addEventListener('mouseup', () => { isDraggingMenuHero = false; });
-
         // Touch drag for 360 showcase
         window.addEventListener('touchstart', e => {
             if (currentGameState === 'MENU' && e.touches[0].clientX > window.innerWidth * 0.35) {
@@ -3985,7 +3635,6 @@
                 }
             }
         }, { passive: true });
-
         window.addEventListener('touchmove', e => {
             if (currentGameState === 'MENU' && isDraggingMenuHero && e.touches.length > 0) {
                 const dx = e.touches[0].clientX - menuDragStartX;
@@ -3993,9 +3642,7 @@
                 menuRotationYaw += dx * 0.012;
             }
         }, { passive: true });
-
         window.addEventListener('touchend', () => { isDraggingMenuHero = false; });
-
         function animate() {
             if (typeof heliRotor !== 'undefined') {
                 heliRotor.rotation.y += 0.42;
@@ -4010,7 +3657,6 @@
                 dustGeo.attributes.position.needsUpdate = true;
             }
             requestAnimationFrame(animate);
-
             // Check Game State (Cinematic 3D Menu Showcase vs Active Gameplay)
             if (currentGameState === 'MENU') {
                 const menuCamDist = 2.8;
@@ -4020,44 +3666,37 @@
                 camera.position.z = player.position.z + Math.cos(orbitAngle) * menuCamDist;
                 camera.position.y = player.position.y + menuCamHeight;
                 camera.lookAt(player.position.x, player.position.y + 1.15, player.position.z);
-
                 // Idle hero breathing
                 if (player.mesh) player.mesh.rotation.y = orbitAngle - Math.PI;
                 if (rig.chest) rig.chest.rotation.x = Math.sin(clock.getElapsedTime() * 2.2) * 0.03;
-
                 renderer.render(scene, camera);
                 return; // DO NOT EXECUTE GAMEPLAY PHYSICS OR ZOMBIE ATTACKS DURING MENU
             }
             const dt = Math.min(clock.getDelta(), 0.1);
-
             // Handle automatic rifle hold
             if (isMouseDown && weapons[currentWeaponIndex].automatic) {
                 tryFire();
             }
-
             // 1. Normalized 360-Degree Input Vector (WASD + Mobile Joystick)
             let rawX = 0;
             let rawZ = 0;
-            if (keys['w']) rawZ += 1;
-            if (keys['s']) rawZ -= 1;
-            if (keys['a']) rawX -= 1;
-            if (keys['d']) rawX += 1;
-
+            if (keys['w'] || keys['arrowup']) rawZ += 1;
+            if (keys['s'] || keys['arrowdown']) rawZ -= 1;
+            if (keys['a'] || keys['arrowleft']) rawX -= 1;
+            if (keys['d'] || keys['arrowright']) rawX += 1;
+            if (keys['shift']) player.isSprinting = true;
             if (touchJoystickActive) {
                 rawX = joystickVector.x;
                 rawZ = -joystickVector.y;
             }
-
             const inputMag = Math.sqrt(rawX * rawX + rawZ * rawZ);
             const isMoving = inputMag > 0.05;
-
             let normX = rawX;
             let normZ = rawZ;
             if (inputMag > 1.0) {
                 normX /= inputMag;
                 normZ /= inputMag;
             }
-
             // 2. Target Speed calculation (Walk, Run, Sprint, Aim Strafe)
             let targetSpeed = 0;
             if (isMoving) {
@@ -4073,34 +3712,28 @@
                     targetSpeed = 3.6; // Controlled Walk
                 }
             }
-
             // Smooth Acceleration & Deceleration
-            const accelRate = isMoving ? 12 : 16;
+            const accelRate = isMoving ? 24 : 20;
             player.currentSpeed = THREE.MathUtils.lerp(player.currentSpeed, targetSpeed, dt * accelRate);
-
             if (player.isSprinting && isMoving) {
                 player.stamina = Math.max(0, player.stamina - dt * 25);
             } else {
                 player.stamina = Math.min(100, player.stamina + dt * 15);
             }
             document.getElementById('stamina-fill').style.width = `${player.stamina}%`;
-
             // 3. Camera-Relative Movement Vector
             const moveDir = new THREE.Vector3();
             if (isMoving) {
                 const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
                 const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
-
                 moveDir.addScaledVector(forward, normZ)
                        .addScaledVector(right, normX)
                        .normalize();
-
                 player.position.addScaledVector(moveDir, player.currentSpeed * dt);
                 // Keep inside street bounds
                 player.position.x = Math.max(-16, Math.min(16, player.position.x));
                 player.position.z = Math.max(-110, Math.min(110, player.position.z));
             }
-
             // 4. AAA 360-DEGREE SMOOTH BODY ROTATION
             if (player.isAiming) {
                 // Combat Strafe Mode: Body smoothly locks to camera aim yaw
@@ -4115,22 +3748,18 @@
                 let diff = (targetAngle - player.bodyYaw) % (Math.PI * 2);
                 if (diff < -Math.PI) diff += Math.PI * 2;
                 if (diff > Math.PI) diff -= Math.PI * 2;
-
                 const turnSpeed = (player.isSprinting ? 16 : 12) * (1.0 + Math.abs(diff) / Math.PI * 0.5);
                 player.bodyYaw += diff * Math.min(1.0, dt * turnSpeed);
-
                 // Body Banking into turns (subtle roll)
                 const targetBank = Math.max(-0.10, Math.min(0.10, -diff * 0.22));
                 player.bankAngle = THREE.MathUtils.lerp(player.bankAngle, targetBank, dt * 8);
             } else {
                 player.bankAngle = THREE.MathUtils.lerp(player.bankAngle, 0, dt * 10);
             }
-
             // Update Player Mesh Position, 360 Rotation & Banking
             player.mesh.position.copy(player.position);
             player.mesh.rotation.y = player.bodyYaw;
             player.mesh.rotation.z = player.bankAngle;
-
             // Procedural Skeletal Locomotion & Weapon Stances
             const r = player.rig;
             if (r) {
@@ -4140,7 +3769,6 @@
                 } else {
                     player.walkTimer = THREE.MathUtils.lerp(player.walkTimer, 0, dt * 6);
                 }
-
                 const isSprintActive = player.isSprinting && player.stamina > 10 && isMoving;
                 const walkAmp = isMoving ? (isSprintActive ? 0.76 : (player.currentSpeed > 4.5 ? 0.58 : 0.42)) : 0;
                 
@@ -4148,59 +3776,48 @@
                 const targetSpineLean = isSprintActive ? 0.28 : (isMoving ? 0.12 : 0.0);
                 r.spine.rotation.x = THREE.MathUtils.lerp(r.spine.rotation.x, targetSpineLean, dt * 8);
                 const walkPhase = player.walkTimer;
-
                 // Alternating Leg Swings
                 r.leftThigh.rotation.x = Math.sin(walkPhase) * walkAmp;
                 r.rightThigh.rotation.x = -Math.sin(walkPhase) * walkAmp;
-
                 // Knee & Calf Flexion
                 r.leftCalf.rotation.x = Math.max(0, -Math.sin(walkPhase) * walkAmp * 0.95);
                 r.rightCalf.rotation.x = Math.max(0, Math.sin(walkPhase) * walkAmp * 0.95);
-
                 // Hip bounce & sway
                 const bounce = isMoving ? Math.abs(Math.sin(walkPhase * 2)) * 0.035 : 0;
                 r.hips.position.y = 0.96 + bounce;
                 r.hips.rotation.y = isMoving ? Math.sin(walkPhase) * 0.08 : 0;
-
                 // Breathing Idle
                 player.breathTimer += dt * 1.6;
                 const breathVal = Math.sin(player.breathTimer) * 0.015;
                 r.chest.position.y = 0.18 + breathVal;
-
                 // Recoil damping
                 player.recoilKick = THREE.MathUtils.lerp(player.recoilKick, 0, dt * 18);
                 player.recoilPitch = THREE.MathUtils.lerp(player.recoilPitch, 0, dt * 18);
-
                 // Tactical Aiming / Firing Stances
                 if (player.isAiming || isMouseDown) {
                     // Upper body leans and tracks camera pitch
                     r.spine.rotation.x = player.pitch * 0.45 - player.recoilPitch;
                     r.chest.rotation.x = player.pitch * 0.35;
                     r.head.rotation.x = player.pitch * 0.20;
-
                     if (currentWeaponIndex === 1) {
                         // M4 Tactical Rifle Two-Handed Stance
                         r.rightShoulder.rotation.set(-1.35 + player.recoilPitch, 0.25, -0.15);
                         r.rightUpperArm.rotation.set(0, 0, 0);
                         r.rightForearm.rotation.set(-0.25, 0, 0);
-
                         // Left arm reaches across to grip forward rifle handguard
                         r.leftShoulder.rotation.set(-1.25, -0.42, 0.35);
                         r.leftUpperArm.rotation.set(0, 0, 0);
                         r.leftForearm.rotation.set(-0.65, 0.35, 0);
-
                         r.weaponSocket.position.set(0, -0.05, 0.08 - player.recoilKick);
                     } else {
                         // 9mm Pistol Tactical Two-Handed Weaver Stance
                         r.rightShoulder.rotation.set(-1.40 + player.recoilPitch, 0.12, 0);
                         r.rightUpperArm.rotation.set(0, 0, 0);
                         r.rightForearm.rotation.set(-0.15, 0, 0);
-
                         // Left hand supports pistol grip base
                         r.leftShoulder.rotation.set(-1.35, -0.25, 0.22);
                         r.leftUpperArm.rotation.set(0, 0, 0);
                         r.leftForearm.rotation.set(-0.35, 0.20, 0);
-
                         r.weaponSocket.position.set(0, -0.05, 0.08 - player.recoilKick);
                     }
                 } else {
@@ -4208,7 +3825,6 @@
                     r.spine.rotation.x = isMoving ? 0.10 : 0;
                     r.chest.rotation.x = 0;
                     r.head.rotation.x = 0;
-
                     if (currentWeaponIndex === 1) {
                         // Tactical low-ready with rifle
                         r.rightShoulder.rotation.set(-0.65, 0.20, -0.10);
@@ -4225,20 +3841,17 @@
                     }
                 }
             }
-
             // Animate Zombies (Erratic Limb Shambles & Attacks)
             zombies.forEach(z => {
                 if (z.rig) {
                     z.walkTimer += dt * (z.speed * 1.8);
                     const zWalk = Math.sin(z.walkTimer);
-
                     // Erratic shambling leg limp
                     z.rig.leftThigh.rotation.x = zWalk * 0.55;
                     z.rig.rightThigh.rotation.x = -zWalk * 0.35; // Lame leg drag
                     z.rig.spine.rotation.z = Math.sin(z.walkTimer * 0.5) * 0.15; // Unstable torso wobble
                     z.rig.head.rotation.z = -Math.sin(z.walkTimer * 0.5) * 0.22; // Broken neck tilt
                     if (z.rig.jaw) z.rig.jaw.rotation.x = 0.12 + Math.sin(z.walkTimer * 1.8) * 0.10; // Gaping jaw twitch
-
                     // Reaching aggressive claw lunges
                     if (z.rig.leftArm && z.rig.rightArm) {
                         z.rig.leftArm.rotation.x = -0.75 + Math.sin(z.walkTimer) * 0.25;
@@ -4246,14 +3859,12 @@
                     }
                 }
             });
-
             // Mobile Aim Assist (Gentle Magnetic Target Lock when Aiming)
             if (player.isAiming && zombies.length > 0) {
                 let closestDist = Infinity;
                 let targetZombie = null;
                 const camDir = new THREE.Vector3();
                 camera.getWorldDirection(camDir);
-
                 for (let i = 0; i < zombies.length; i++) {
                     const z = zombies[i];
                     if (z.health <= 0) continue;
@@ -4268,14 +3879,12 @@
                         }
                     }
                 }
-
                 if (targetZombie) {
                     const targetPos = targetZombie.group.position.clone();
                     targetPos.y += targetZombie.def.scale * 1.15;
                     const toTarget = new THREE.Vector3().subVectors(targetPos, camera.position).normalize();
                     const targetYaw = Math.atan2(-toTarget.x, -toTarget.z);
                     const targetPitch = Math.asin(toTarget.y);
-
                     let yawDiff = (targetYaw - player.yaw) % (Math.PI * 2);
                     if (yawDiff < -Math.PI) yawDiff += Math.PI * 2;
                     if (yawDiff > Math.PI) yawDiff -= Math.PI * 2;
@@ -4283,7 +3892,6 @@
                     player.pitch += (targetPitch - player.pitch) * Math.min(1.0, dt * 3.0);
                 }
             }
-
             // Camera Rig Positioning (1st vs 3rd Person)
             if (player.isFirstPerson) {
                 camera.position.set(player.position.x, player.position.y + 1.95, player.position.z);
@@ -4295,19 +3903,15 @@
                 const shoulderOffset = player.isAiming ? 0.6 : 0.85;
                 const camDist = player.isAiming ? 2.0 : 3.6;
                 const camHeight = player.isAiming ? 1.8 : 2.1;
-
                 const camDir = new THREE.Vector3(
                     Math.sin(player.yaw) * camDist * Math.cos(player.pitch),
                     -Math.sin(player.pitch) * camDist + camHeight,
                     Math.cos(player.yaw) * camDist * Math.cos(player.pitch)
                 );
-
                 const shoulder = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw)).multiplyScalar(shoulderOffset);
-
                 camera.position.copy(player.position).add(camDir).add(shoulder);
                 camera.lookAt(player.position.x + shoulder.x, player.position.y + 1.6, player.position.z + shoulder.z);
             }
-
             // Zombie AI Logic
             const now = Date.now();
             zombies.forEach(z => {
@@ -4315,10 +3919,8 @@
                 const dist = toPlayer.length();
                 toPlayer.y = 0;
                 toPlayer.normalize();
-
                 // Rotate towards player
                 z.group.rotation.y = Math.atan2(toPlayer.x, toPlayer.z);
-
                 // AI States: Chase & Attack
                 if (dist > 1.8) {
                     z.group.position.addScaledVector(toPlayer, z.speed * dt);
@@ -4330,19 +3932,16 @@
                         flashDamage();
                         playZombieGroan(z.def.isBoss);
                         document.getElementById('health-fill').style.width = `${Math.max(0, player.health)}%`;
-
                         if (player.health <= 0) {
                             showModal("YOU DIED", "Ethan Cross was killed by the Greyfall infected.");
                         }
                     }
                 }
-
                 // Random periodic groaning
                 if (Math.random() < 0.002) {
                     playZombieGroan(z.def.isBoss);
                 }
             });
-
             // Update Combat VFX Particles (Blood & Sparks)
             for (let i = fxParticles.length - 1; i >= 0; i--) {
                 const p = fxParticles[i];
@@ -4354,12 +3953,9 @@
                     fxParticles.splice(i, 1);
                 }
             }
-
             // Flashing siren light on police car
             sirenLight.intensity = (Math.sin(clock.getElapsedTime() * 8) > 0) ? 2.5 : 0.2;
-
             renderer.render(scene, camera);
-
             // Interpolate Remote Co-Op Players (if any active)
             if (typeof remotePlayers !== 'undefined' && remotePlayers && remotePlayers.size > 0) {
                 for (const [id, remote] of remotePlayers.entries()) {
@@ -4369,7 +3965,6 @@
                     }
                 }
             }
-
             // Sync Local Player State to Backend (if WebSocket connected)
             if (typeof ws !== 'undefined' && ws && ws.readyState === 1 && (clock.getElapsedTime() - lastSyncTime > 0.05)) {
                 lastSyncTime = clock.getElapsedTime();
@@ -4385,9 +3980,7 @@
                 } catch(err) {}
             }
         }
-
         animate();
-
         // Responsive window resizing
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
