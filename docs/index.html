@@ -1534,18 +1534,19 @@
         scene.fog = new THREE.FogExp2(0x2b1a26, 0.013);
 
         const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        // AAA Filmic Tonemapping (Left to Survive / The Last of Us Color Curve)
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.08;
         container.appendChild(renderer.domElement);
 
-        // Lighting
-        const hemiLight = new THREE.HemisphereLight(0xffb878, 0x3d2840, 0.90);
-        scene.add(hemiLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffa850, 1.75);
+        // 3-Point Cinematic Lighting Setup
+        // A. Key Sunset Directional Light (Warm Golden Hour)
+        const dirLight = new THREE.DirectionalLight(0xffa254, 1.85);
         dirLight.position.set(-60, 48, -45);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = 2048;
@@ -1557,7 +1558,186 @@
         dirLight.shadow.camera.right = d;
         dirLight.shadow.camera.top = d;
         dirLight.shadow.camera.bottom = -d;
+        dirLight.shadow.bias = -0.0004;
         scene.add(dirLight);
+
+        // B. Ambient Sky/Ground Hemisphere Dome
+        const hemiLight = new THREE.HemisphereLight(0xffbe85, 0x221a28, 0.95);
+        scene.add(hemiLight);
+
+        // C. Cinematic Blue-Gray Rim Light (Sharp Silhouette Separation for Characters & Zombies)
+        const rimLight = new THREE.DirectionalLight(0x729ec2, 1.20);
+        rimLight.position.set(45, 32, 55);
+        scene.add(rimLight);
+
+        // D. Warm Ground Bounce Fill Light
+        const bounceLight = new THREE.DirectionalLight(0x403024, 0.40);
+        bounceLight.position.set(0, -10, 0);
+        scene.add(bounceLight);
+
+        // Atmospheric Dust Motes & Airborne Ash Particle Field
+        const dustCount = 420;
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPositions = new Float32Array(dustCount * 3);
+        const dustVelocities = new Float32Array(dustCount * 3);
+        for (let i = 0; i < dustCount; i++) {
+            dustPositions[i * 3 + 0] = (Math.random() - 0.5) * 60;
+            dustPositions[i * 3 + 1] = Math.random() * 14 + 0.5;
+            dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 160;
+            dustVelocities[i * 3 + 0] = (Math.random() - 0.5) * 0.35;
+            dustVelocities[i * 3 + 1] = -Math.random() * 0.25 - 0.08;
+            dustVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.35;
+        }
+        dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+        const dustMat = new THREE.PointsMaterial({
+            color: 0xdec6ad,
+            size: 0.14,
+            transparent: true,
+            opacity: 0.48,
+            blending: THREE.AdditiveBlending
+        });
+        const dustParticles = new THREE.Points(dustGeo, dustMat);
+        scene.add(dustParticles);
+
+        // =========================================================================
+        // PROCEDURAL PBR TEXTURE SYNTHESIZER ENGINE (LEFT TO SURVIVE QUALITY)
+        // =========================================================================
+        function createProceduralTexture(type, width, height, params = {}) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            if (type === 'skin') {
+                ctx.fillStyle = params.baseColor || '#bfa08a';
+                ctx.fillRect(0, 0, width, height);
+                const imgData = ctx.getImageData(0, 0, width, height);
+                const d = imgData.data;
+                for (let i = 0; i < d.length; i += 4) {
+                    const noise = (Math.random() - 0.5) * 18;
+                    d[i] = Math.min(255, Math.max(0, d[i] + noise + 2));
+                    d[i+1] = Math.min(255, Math.max(0, d[i+1] + noise));
+                    d[i+2] = Math.min(255, Math.max(0, d[i+2] + noise - 2));
+                }
+                ctx.putImageData(imgData, 0, 0);
+            } else if (type === 'face_stubble') {
+                ctx.fillStyle = params.baseColor || '#d5a682';
+                ctx.fillRect(0, 0, width, height);
+                const grad = ctx.createLinearGradient(0, height * 0.35, 0, height);
+                grad.addColorStop(0, 'rgba(40, 26, 18, 0.0)');
+                grad.addColorStop(0.5, 'rgba(45, 30, 20, 0.45)');
+                grad.addColorStop(1.0, 'rgba(35, 22, 14, 0.75)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(25, 16, 10, 0.55)';
+                for (let i = 0; i < 400; i++) {
+                    const x = Math.random() * width;
+                    const y = height * 0.45 + Math.random() * height * 0.55;
+                    ctx.fillRect(x, y, 1.5, 1.5);
+                }
+            } else if (type === 'fabric_jacket') {
+                ctx.fillStyle = params.baseColor || '#6e2624';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+                for (let x = 0; x < width; x += 3) ctx.fillRect(x, 0, 1, height);
+                for (let y = 0; y < height; y += 3) ctx.fillRect(0, y, width, 1);
+                const g = ctx.createRadialGradient(width*0.5, height*0.5, 10, width*0.5, height*0.5, width*0.7);
+                g.addColorStop(0, 'rgba(0,0,0,0)');
+                g.addColorStop(1, 'rgba(20,12,8,0.35)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, width, height);
+            } else if (type === 'vest_molle') {
+                ctx.fillStyle = params.baseColor || '#232729';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(15, 18, 20, 0.85)';
+                for (let y = 8; y < height; y += 18) {
+                    ctx.fillRect(0, y, width, 10);
+                    ctx.fillStyle = 'rgba(60, 68, 70, 0.9)';
+                    for (let x = 12; x < width; x += 24) ctx.fillRect(x, y, 2, 10);
+                    ctx.fillStyle = 'rgba(15, 18, 20, 0.85)';
+                }
+            } else if (type === 'cargo_camo') {
+                ctx.fillStyle = params.baseColor || '#2c332e';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+                for (let x = 0; x < width; x += 6) ctx.fillRect(x, 0, 1, height);
+                for (let y = 0; y < height; y += 6) ctx.fillRect(0, y, width, 1);
+                ctx.fillStyle = 'rgba(40, 32, 22, 0.25)';
+                for (let i = 0; i < 25; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 20 + 8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else if (type === 'zombie_flesh') {
+                ctx.fillStyle = params.baseColor || '#5a6b54';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = params.rotColor || 'rgba(38, 48, 35, 0.55)';
+                for (let i = 0; i < 35; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 24 + 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.strokeStyle = params.veinColor || 'rgba(30, 20, 38, 0.75)';
+                ctx.lineWidth = 1.8;
+                for (let v = 0; v < 8; v++) {
+                    ctx.beginPath();
+                    let vx = Math.random() * width;
+                    let vy = Math.random() * height;
+                    ctx.moveTo(vx, vy);
+                    for (let seg = 0; seg < 5; seg++) {
+                        vx += (Math.random() - 0.5) * 28;
+                        vy += (Math.random() - 0.5) * 28;
+                        ctx.lineTo(vx, vy);
+                    }
+                    ctx.stroke();
+                }
+            } else if (type === 'asphalt_cracked') {
+                ctx.fillStyle = '#181a19';
+                ctx.fillRect(0, 0, width, height);
+                const img = ctx.getImageData(0, 0, width, height);
+                const d = img.data;
+                for (let i = 0; i < d.length; i += 4) {
+                    const n = (Math.random() - 0.5) * 26;
+                    d[i] = Math.min(255, Math.max(0, d[i] + n));
+                    d[i+1] = Math.min(255, Math.max(0, d[i+1] + n));
+                    d[i+2] = Math.min(255, Math.max(0, d[i+2] + n));
+                }
+                ctx.putImageData(img, 0, 0);
+                ctx.strokeStyle = '#0b0c0b';
+                ctx.lineWidth = 1.2;
+                for (let c = 0; c < 5; c++) {
+                    ctx.beginPath();
+                    let cx = Math.random() * width;
+                    let cy = Math.random() * height;
+                    ctx.moveTo(cx, cy);
+                    for (let s = 0; s < 7; s++) {
+                        cx += (Math.random() - 0.5) * 45;
+                        cy += (Math.random() - 0.5) * 45;
+                        ctx.lineTo(cx, cy);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            return tex;
+        }
+
+        const pbrTextures = {
+            skin: createProceduralTexture('skin', 128, 128, { baseColor: '#bfa08a' }),
+            head: createProceduralTexture('face_stubble', 128, 128, { baseColor: '#d5a682' }),
+            jacket: createProceduralTexture('fabric_jacket', 128, 128, { baseColor: '#6e2624' }),
+            vest: createProceduralTexture('vest_molle', 128, 128, { baseColor: '#232729' }),
+            pants: createProceduralTexture('cargo_camo', 128, 128, { baseColor: '#2c332e' }),
+            asphalt: createProceduralTexture('asphalt_cracked', 256, 256),
+            zombieWalker: createProceduralTexture('zombie_flesh', 128, 128, { baseColor: '#5a6b54', rotColor: 'rgba(38,48,35,0.6)', veinColor: 'rgba(25,18,35,0.8)' }),
+            zombieRunner: createProceduralTexture('zombie_flesh', 128, 128, { baseColor: '#6e785a', rotColor: 'rgba(55,25,25,0.7)', veinColor: 'rgba(40,15,15,0.85)' }),
+            zombieStalker: createProceduralTexture('zombie_flesh', 128, 128, { baseColor: '#423a48', rotColor: 'rgba(25,20,30,0.75)', veinColor: 'rgba(15,10,22,0.9)' }),
+            zombieBrute: createProceduralTexture('zombie_flesh', 128, 128, { baseColor: '#4a584a', rotColor: 'rgba(60,35,20,0.75)', veinColor: 'rgba(20,28,18,0.85)' })
+        };
+        pbrTextures.asphalt.repeat.set(8, 60);
 
         // =========================================================================
         // GREYFALL COUNTY: PROFESSIONAL PHOTOREALISTIC ABANDONED CITY OVERHAUL
@@ -1565,7 +1745,7 @@
 
         // PBR Environment Materials Library
         const envPBR = {
-            asphalt: new THREE.MeshStandardMaterial({ color: 0x181a19, roughness: 0.88, metalness: 0.05 }),
+            asphalt: new THREE.MeshStandardMaterial({ color: 0x181a19, roughness: 0.85, metalness: 0.08, map: pbrTextures.asphalt, bumpMap: pbrTextures.asphalt, bumpScale: 0.04 }),
             asphaltWet: new THREE.MeshStandardMaterial({ color: 0x0c0e0c, roughness: 0.08, metalness: 0.35 }),
             roadMarkingYellow: new THREE.MeshStandardMaterial({ color: 0xd49b28, roughness: 0.65 }),
             roadMarkingWhite: new THREE.MeshStandardMaterial({ color: 0xd8dad8, roughness: 0.70 }),
@@ -2270,23 +2450,25 @@
         // ULTRA-REALISTIC ETHAN CROSS ANATOMICAL MODEL & 65-BONE RIG
         // ================================================================
         const charPBR = {
-            skin: new THREE.MeshStandardMaterial({ color: 0xbfa08a, roughness: 0.48, metalness: 0.0 }),
-            head: new THREE.MeshStandardMaterial({ color: 0xd5a682, roughness: 0.46, metalness: 0.0 }),
-            hair: new THREE.MeshStandardMaterial({ color: 0x301e12, roughness: 0.85, metalness: 0.05 }),
-            stubble: new THREE.MeshStandardMaterial({ color: 0x422d1e, roughness: 0.95 }),
+            skin: new THREE.MeshStandardMaterial({ color: 0xbfa08a, roughness: 0.45, metalness: 0.0, map: pbrTextures.skin }),
+            head: new THREE.MeshStandardMaterial({ color: 0xd5a682, roughness: 0.44, metalness: 0.0, map: pbrTextures.head }),
+            hair: new THREE.MeshStandardMaterial({ color: 0x24160d, roughness: 0.85, metalness: 0.05 }),
+            stubble: new THREE.MeshStandardMaterial({ color: 0x301e14, roughness: 0.95 }),
             eyeSclera: new THREE.MeshBasicMaterial({ color: 0xf5f5f5 }),
             eyeIris: new THREE.MeshBasicMaterial({ color: 0x2e5270 }),
             eyePupil: new THREE.MeshBasicMaterial({ color: 0x050505 }),
-            shirt: new THREE.MeshStandardMaterial({ color: 0x6e2624, roughness: 0.65, metalness: 0.04 }), // Master Crimson Red Hoodie
-            vest: new THREE.MeshStandardMaterial({ color: 0x232729, roughness: 0.50, metalness: 0.18 }),  // Dark Kevlar Armor
-            pouches: new THREE.MeshStandardMaterial({ color: 0x4a4336, roughness: 0.80 }),
-            trousers: new THREE.MeshStandardMaterial({ color: 0x2c332e, roughness: 0.72, metalness: 0.04 }),
-            kneePads: new THREE.MeshStandardMaterial({ color: 0x14181a, roughness: 0.35, metalness: 0.30 }),
-            boots: new THREE.MeshStandardMaterial({ color: 0x1e1814, roughness: 0.42, metalness: 0.12 }),
-            gloves: new THREE.MeshStandardMaterial({ color: 0x1a1e1f, roughness: 0.62 }),
-            backpack: new THREE.MeshStandardMaterial({ color: 0x8a623e, roughness: 0.82 }),                 // Heavy canvas rucksack
-            bedroll: new THREE.MeshStandardMaterial({ color: 0xc2a676, roughness: 0.85 }),                  // Khaki rolled sleeping pad
-            metal: new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.32, metalness: 0.85 }),
+            scar: new THREE.MeshStandardMaterial({ color: 0x8f4d45, roughness: 0.70 }),
+            shirt: new THREE.MeshStandardMaterial({ color: 0x6e2624, roughness: 0.62, metalness: 0.04, map: pbrTextures.jacket }),
+            vest: new THREE.MeshStandardMaterial({ color: 0x232729, roughness: 0.48, metalness: 0.22, map: pbrTextures.vest }),
+            pouches: new THREE.MeshStandardMaterial({ color: 0x3d372c, roughness: 0.75 }),
+            trousers: new THREE.MeshStandardMaterial({ color: 0x2c332e, roughness: 0.68, metalness: 0.04, map: pbrTextures.pants }),
+            kneePads: new THREE.MeshStandardMaterial({ color: 0x14181a, roughness: 0.32, metalness: 0.35 }),
+            boots: new THREE.MeshStandardMaterial({ color: 0x1e1814, roughness: 0.40, metalness: 0.15 }),
+            gloves: new THREE.MeshStandardMaterial({ color: 0x1a1e1f, roughness: 0.58 }),
+            backpack: new THREE.MeshStandardMaterial({ color: 0x8a623e, roughness: 0.80 }),
+            bedroll: new THREE.MeshStandardMaterial({ color: 0xc2a676, roughness: 0.82 }),
+            metal: new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.28, metalness: 0.88 }),
+            knifeBlade: new THREE.MeshStandardMaterial({ color: 0x778287, roughness: 0.20, metalness: 0.95 }),
             reticle: new THREE.MeshBasicMaterial({ color: 0xff1a1a })
         };
 
@@ -2437,6 +2619,35 @@
         antenna.position.set(-0.13, 0.36, 0.10);
         rig.chest.add(antenna);
 
+        // Combat Knife in Kydex Sheath on Left Shoulder
+        const knifeSheath = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.16, 0.025), charPBR.vest);
+        knifeSheath.position.set(-0.10, 0.22, 0.14);
+        knifeSheath.rotation.z = -0.15;
+        rig.chest.add(knifeSheath);
+
+        const knifeGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.009, 0.08, 8), charPBR.gloves);
+        knifeGrip.position.set(-0.09, 0.31, 0.15);
+        knifeGrip.rotation.z = -0.15;
+        rig.chest.add(knifeGrip);
+
+        const knifePommel = new THREE.Mesh(new THREE.SphereGeometry(0.011, 6, 6), charPBR.metal);
+        knifePommel.position.set(-0.08, 0.35, 0.15);
+        rig.chest.add(knifePommel);
+
+        // Survival Canteen on Rucksack Left Side
+        const canteen = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.14, 10), charPBR.metal);
+        canteen.position.set(-0.19, 0.12, -0.20);
+        rig.chest.add(canteen);
+
+        // Survival Axe / Hatchet on Rucksack Right Side
+        const axeHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.009, 0.34), charPBR.backpack);
+        axeHandle.position.set(0.19, 0.16, -0.20);
+        rig.chest.add(axeHandle);
+
+        const axeHead = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.08, 0.07), charPBR.knifeBlade);
+        axeHead.position.set(0.19, 0.30, -0.20);
+        rig.chest.add(axeHead);
+
         // Tactical Field Backpack on Back
         const backpackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.38, 0.18), charPBR.backpack);
         backpackMesh.position.set(0, 0.14, -0.22);
@@ -2479,6 +2690,33 @@
         nose.rotation.x = Math.PI / 2;
         nose.position.set(0, 0.03, 0.12);
         rig.head.add(nose);
+
+        // Survivor Facial Battle Scar across Left Eyebrow & Cheek
+        const facialScar = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.065, 0.008), charPBR.scar);
+        facialScar.position.set(-0.045, 0.052, 0.115);
+        facialScar.rotation.z = 0.32;
+        rig.head.add(facialScar);
+
+        // Operator Tactical Communications Headset with Boom Mic
+        const headsetBand = new THREE.Mesh(new THREE.TorusGeometry(0.122, 0.010, 6, 16, Math.PI), charPBR.metal);
+        headsetBand.rotation.x = Math.PI / 2;
+        headsetBand.position.set(0, 0.085, 0);
+        rig.head.add(headsetBand);
+
+        const earCup = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.034, 0.022, 12), charPBR.vest);
+        earCup.rotation.z = Math.PI / 2;
+        earCup.position.set(0.125, 0.045, 0);
+        rig.head.add(earCup);
+
+        const boomMic = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.11), charPBR.metal);
+        boomMic.rotation.x = 1.25;
+        boomMic.rotation.z = -0.28;
+        boomMic.position.set(0.105, 0.012, 0.065);
+        rig.head.add(boomMic);
+
+        const micTip = new THREE.Mesh(new THREE.SphereGeometry(0.009, 6, 6), charPBR.vest);
+        micTip.position.set(0.068, -0.040, 0.115);
+        rig.head.add(micTip);
 
         // Sculpted 3D Eyes
         for (let side of [-1, 1]) {
@@ -2530,6 +2768,16 @@
         const lElbowPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.03), charPBR.kneePads);
         lElbowPad.position.set(0, -0.02, -0.04);
         rig.leftForearm.add(lElbowPad);
+
+        // Tactical Field Watch on Left Forearm
+        const watchBand = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.048, 0.035, 10), charPBR.vest);
+        watchBand.position.y = -0.22;
+        rig.leftForearm.add(watchBand);
+
+        const watchBezel = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.01, 10), charPBR.metal);
+        watchBezel.rotation.x = Math.PI / 2;
+        watchBezel.position.set(0, -0.22, 0.048);
+        rig.leftForearm.add(watchBezel);
 
         const lForearmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.040, 0.26, 10), charPBR.skin);
         lForearmMesh.position.y = -0.13;
@@ -2754,43 +3002,65 @@
                 currentClothesColor = variant.clothes;
             }
 
-            const fleshMat = new THREE.MeshStandardMaterial({ color: currentFleshColor, roughness: 0.88 });
-            const clothesMat = new THREE.MeshStandardMaterial({ color: currentClothesColor, roughness: 0.92 });
-            const boneMat = new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.6 });
+            // Class-specific procedural texture assignment
+            let assignedTex = pbrTextures.zombieWalker;
+            if (typeKey === 'RUNNER') assignedTex = pbrTextures.zombieRunner;
+            else if (typeKey === 'STALKER') assignedTex = pbrTextures.zombieStalker;
+            else if (typeKey === 'BRUTE' || typeKey === 'ALPHA') assignedTex = pbrTextures.zombieBrute;
+
+            const fleshMat = new THREE.MeshStandardMaterial({ color: currentFleshColor, roughness: 0.82, map: assignedTex, bumpMap: assignedTex, bumpScale: 0.03 });
+            const clothesMat = new THREE.MeshStandardMaterial({ color: currentClothesColor, roughness: 0.88, map: pbrTextures.pants });
+            const boneMat = new THREE.MeshStandardMaterial({ color: 0xded6c4, roughness: 0.52, metalness: 0.1 });
             const zEyeMat = new THREE.MeshBasicMaterial({ color: def.eyeColor });
-            const cloudedEyeMat = new THREE.MeshBasicMaterial({ color: 0x8a9488 }); // Cataract eye
+            const cloudedEyeMat = new THREE.MeshBasicMaterial({ color: 0x9ba498 }); // Cataract necrotic eye
 
             const s = def.scale;
+            const isBrute = (typeKey === 'BRUTE' || typeKey === 'ALPHA');
+            const isRunner = (typeKey === 'RUNNER');
+            const isStalker = (typeKey === 'STALKER');
 
-            // Hips & Decayed Pelvis
+            // 1. Pelvis / Hips (Stalker is hunched low; Brute is massive)
             zRig.hips = new THREE.Group();
-            zRig.hips.position.y = 0.94 * s;
+            zRig.hips.position.y = isStalker ? (0.76 * s) : (0.94 * s);
             zGroup.add(zRig.hips);
 
-            const zPelvis = new THREE.Mesh(new THREE.BoxGeometry(0.30 * s, 0.16 * s, 0.20 * s), clothesMat);
+            const pelvisWidth = isBrute ? (0.52 * s) : (0.30 * s);
+            const zPelvis = new THREE.Mesh(new THREE.BoxGeometry(pelvisWidth, 0.16 * s, 0.22 * s), clothesMat);
             zRig.hips.add(zPelvis);
 
-            // Shambling Decayed Legs
+            // 2. Shambling Legs (Runner has taut tendons, Brute has tree trunks)
             for (let side of [-1, 1]) {
                 const thighGroup = new THREE.Group();
-                thighGroup.position.set(side * 0.10 * s, -0.05 * s, 0);
+                const sideOffset = isBrute ? (side * 0.18 * s) : (side * 0.10 * s);
+                thighGroup.position.set(sideOffset, -0.05 * s, 0);
+                if (isStalker) thighGroup.rotation.x = -0.42; // Deep predatory crouch
                 zRig.hips.add(thighGroup);
 
-                const thighMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * s, 0.055 * s, 0.38 * s, 8), clothesMat);
+                const thighRad = isBrute ? (0.12 * s) : (isRunner ? 0.06 * s : 0.075 * s);
+                const thighMesh = new THREE.Mesh(new THREE.CylinderGeometry(thighRad, thighRad * 0.82, 0.38 * s, 8), clothesMat);
                 thighMesh.position.y = -0.19 * s;
                 thighMesh.castShadow = true;
                 thighGroup.add(thighMesh);
 
                 const calfGroup = new THREE.Group();
                 calfGroup.position.set(0, -0.38 * s, 0);
+                if (isStalker) calfGroup.rotation.x = 0.75;
                 thighGroup.add(calfGroup);
 
-                const calfMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.055 * s, 0.045 * s, 0.36 * s, 8), fleshMat);
+                const calfRad = isBrute ? (0.10 * s) : (isRunner ? 0.048 * s : 0.055 * s);
+                const calfMesh = new THREE.Mesh(new THREE.CylinderGeometry(calfRad, calfRad * 0.78, 0.36 * s, 8), fleshMat);
                 calfMesh.position.y = -0.18 * s;
                 calfMesh.castShadow = true;
                 calfGroup.add(calfMesh);
 
-                const footMesh = new THREE.Mesh(new THREE.BoxGeometry(0.08 * s, 0.06 * s, 0.18 * s), clothesMat);
+                // Walker blood-stained leg bandage
+                if (typeKey === 'WALKER' && side === 1) {
+                    const bandage = new THREE.Mesh(new THREE.CylinderGeometry(calfRad * 1.08, calfRad * 1.08, 0.14 * s, 8), new THREE.MeshStandardMaterial({ color: 0x9a8878, roughness: 0.9 }));
+                    bandage.position.y = -0.16 * s;
+                    calfGroup.add(bandage);
+                }
+
+                const footMesh = new THREE.Mesh(new THREE.BoxGeometry(0.09 * s, 0.06 * s, 0.19 * s), clothesMat);
                 footMesh.position.set(0, -0.38 * s, 0.04 * s);
                 calfGroup.add(footMesh);
 
@@ -2798,44 +3068,81 @@
                 else zRig.rightThigh = thighGroup;
             }
 
-            // Spine & Exposed Ribcage
+            // 3. Spine & Torso (Runner leans forward, Brute is gigantic)
             zRig.spine = new THREE.Group();
             zRig.spine.position.set(0, 0.12 * s, 0);
+            if (isRunner) zRig.spine.rotation.x = 0.28; // Forward aggressive attack lean
+            if (isStalker) zRig.spine.rotation.x = 0.38;
             zRig.hips.add(zRig.spine);
 
-            const zTorso = new THREE.Mesh(new THREE.BoxGeometry(0.36 * s, 0.34 * s, 0.22 * s), clothesMat);
+            const torsoWidth = isBrute ? (0.68 * s) : (isRunner ? 0.32 * s : 0.36 * s);
+            const torsoDepth = isBrute ? (0.38 * s) : (isRunner ? 0.19 * s : 0.22 * s);
+            const zTorso = new THREE.Mesh(new THREE.BoxGeometry(torsoWidth, 0.35 * s, torsoDepth), clothesMat);
             zTorso.position.y = 0.17 * s;
             zTorso.castShadow = true;
             zRig.spine.add(zTorso);
 
-            // Exposed Rib bones
-            for (let r = 0; r < 3; r++) {
-                const rib = new THREE.Mesh(new THREE.BoxGeometry(0.24 * s, 0.025 * s, 0.05 * s), boneMat);
-                rib.position.set(0, (0.10 + r * 0.055) * s, 0.11 * s);
-                zRig.spine.add(rib);
-            }
-
-            // Walker Variant Specific Accessories
-            if (variant) {
-                if (variant.accessory === 'badge') {
-                    const badge = new THREE.Mesh(new THREE.BoxGeometry(0.05 * s, 0.06 * s, 0.02 * s), new THREE.MeshStandardMaterial({ color: 0xc49b58, metalness: 0.8, roughness: 0.3 }));
-                    badge.position.set(-0.10 * s, 0.22 * s, 0.12 * s);
-                    zRig.spine.add(badge);
-                } else if (variant.accessory === 'vest_stripe') {
-                    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.37 * s, 0.04 * s, 0.23 * s), new THREE.MeshBasicMaterial({ color: 0xccaa33 }));
-                    stripe.position.set(0, 0.16 * s, 0);
-                    zRig.spine.add(stripe);
-                } else if (variant.accessory === 'strap') {
-                    const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * s, 0.36 * s, 0.23 * s), new THREE.MeshStandardMaterial({ color: 0x1b2018, roughness: 0.8 }));
-                    strap.rotation.z = 0.6;
-                    strap.position.set(0, 0.17 * s, 0);
-                    zRig.spine.add(strap);
+            // Exposed Ribs on Walker
+            if (typeKey === 'WALKER') {
+                for (let r = 0; r < 3; r++) {
+                    const rib = new THREE.Mesh(new THREE.BoxGeometry(0.24 * s, 0.025 * s, 0.05 * s), boneMat);
+                    rib.position.set(0, (0.10 + r * 0.055) * s, 0.11 * s);
+                    zRig.spine.add(rib);
                 }
             }
 
-            // Decayed Neck & Skull Head
+            // 4. Arms (Brute has huge asymmetrical mutated right arm + bone spikes)
+            // Left Arm Chain
+            const lArmGroup = new THREE.Group();
+            lArmGroup.position.set(-torsoWidth * 0.55, 0.30 * s, 0);
+            zRig.spine.add(lArmGroup);
+            const lArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.052 * s, 0.042 * s, 0.55 * s, 8), fleshMat);
+            lArmMesh.position.y = -0.25 * s;
+            lArmMesh.castShadow = true;
+            lArmGroup.add(lArmMesh);
+            zRig.leftArm = lArmGroup;
+
+            // Right Arm Chain (Brute: Mutated Arm with Calcified Spikes and Cable)
+            const rArmGroup = new THREE.Group();
+            rArmGroup.position.set(torsoWidth * 0.55, 0.30 * s, 0);
+            zRig.spine.add(rArmGroup);
+
+            const rArmRad = isBrute ? (0.11 * s) : (0.052 * s);
+            const rArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(rArmRad, rArmRad * 0.85, 0.58 * s, 8), fleshMat);
+            rArmMesh.position.y = -0.27 * s;
+            rArmMesh.castShadow = true;
+            rArmGroup.add(rArmMesh);
+
+            if (isBrute) {
+                // Calcified Bone Spikes bursting from right shoulder and forearm
+                for (let sp = 0; sp < 3; sp++) {
+                    const spike = new THREE.Mesh(new THREE.ConeGeometry(0.038 * s, 0.16 * s, 5), boneMat);
+                    spike.rotation.z = Math.PI / 2 + (sp - 1) * 0.35;
+                    spike.position.set(0.12 * s, (-0.12 - sp * 0.10) * s, 0);
+                    rArmGroup.add(spike);
+                }
+                // Coiled Rusted Cable on Wrist
+                const cable = new THREE.Mesh(new THREE.TorusGeometry(rArmRad * 1.15, 0.02 * s, 6, 12), charPBR.metal);
+                cable.position.set(0, -0.42 * s, 0);
+                rArmGroup.add(cable);
+            }
+            zRig.rightArm = rArmGroup;
+
+            // Claws for Runner
+            if (isRunner) {
+                for (let c = 0; c < 3; c++) {
+                    const claw = new THREE.Mesh(new THREE.ConeGeometry(0.008 * s, 0.045 * s, 4), boneMat);
+                    claw.rotation.x = Math.PI;
+                    claw.position.set((c - 1) * 0.02 * s, -0.56 * s, 0.02 * s);
+                    lArmGroup.add(claw);
+                    const clawR = claw.clone();
+                    rArmGroup.add(clawR);
+                }
+            }
+
+            // 5. Neck & Head
             zRig.neck = new THREE.Group();
-            zRig.neck.position.set(0, 0.34 * s, 0);
+            zRig.neck.position.set(0, 0.35 * s, 0);
             zRig.spine.add(zRig.neck);
 
             zRig.head = new THREE.Group();
@@ -2847,107 +3154,33 @@
             zCranium.castShadow = true;
             zRig.head.add(zCranium);
 
+            // Stalker Tattered Hood Cowl
+            if (isStalker) {
+                const cowl = new THREE.Mesh(new THREE.SphereGeometry(0.145 * s, 10, 10, 0, Math.PI * 2, 0, Math.PI * 0.75), clothesMat);
+                cowl.position.y = 0.06 * s;
+                cowl.material.side = THREE.DoubleSide;
+                zRig.head.add(cowl);
+            }
+
             // Gaping Jaw
             const jawOpen = new THREE.Mesh(new THREE.BoxGeometry(0.10 * s, 0.08 * s, 0.11 * s), fleshMat);
             jawOpen.position.set(0, -0.05 * s, 0.04 * s);
             zRig.head.add(jawOpen);
             zRig.jaw = jawOpen;
 
-            // Rotten Teeth
+            // Rotten Teeth / Fangs
             const teeth = new THREE.Mesh(new THREE.BoxGeometry(0.08 * s, 0.02 * s, 0.02 * s), boneMat);
             teeth.position.set(0, -0.02 * s, 0.09 * s);
             zRig.head.add(teeth);
 
-            // Head Bandage for Injured Walker
-            if (variant && variant.accessory === 'head_bandage') {
-                const bandage = new THREE.Mesh(new THREE.CylinderGeometry(0.13 * s, 0.13 * s, 0.06 * s, 12), new THREE.MeshStandardMaterial({ color: 0x8a8479, roughness: 0.9 }));
-                bandage.position.set(0, 0.08 * s, 0);
-                zRig.head.add(bandage);
-            }
+            // Eyes (Clouded cataract left eye + glowing infected tapetum lucidum right eye)
+            const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.018 * s, 6, 6), cloudedEyeMat);
+            leftEye.position.set(-0.042 * s, 0.045 * s, 0.108 * s);
+            zRig.head.add(leftEye);
 
-            // Glowing Sunken Eye Sockets (Walker Asymmetry: Single Toxic Eye)
-            for (let side of [-1, 1]) {
-                const eyeSocket = new THREE.Mesh(new THREE.SphereGeometry(0.03 * s, 6, 6), new THREE.MeshBasicMaterial({ color: 0x0a0a0a }));
-                eyeSocket.position.set(side * 0.045 * s, 0.05 * s, 0.09 * s);
-                zRig.head.add(eyeSocket);
-
-                // If Walker, only left eye glows (-1), right eye is clouded
-                const isGlowingEye = (!def.isSingleEye) || (side === -1);
-                const eyeMaterial = isGlowingEye ? zEyeMat : cloudedEyeMat;
-
-                const zEye = new THREE.Mesh(new THREE.SphereGeometry(0.016 * s, 6, 6), eyeMaterial);
-                zEye.position.set(side * 0.045 * s, 0.05 * s, 0.115 * s);
-                zRig.head.add(zEye);
-            }
-
-            // Decayed Arms with Claw Hands
-            for (let side of [-1, 1]) {
-                const shoulderGroup = new THREE.Group();
-                shoulderGroup.position.set(side * 0.22 * s, 0.28 * s, 0);
-                zRig.spine.add(shoulderGroup);
-
-                // Alpha Boss mutated massive left arm!
-                const isAlphaArm = (def.isBoss && side === -1);
-                const armScale = isAlphaArm ? 2.2 : 1.0;
-
-                const armMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.055 * s * armScale, 0.045 * s * armScale, 0.32 * s, 8), fleshMat);
-                armMesh.position.y = -0.16 * s;
-                armMesh.castShadow = true;
-                shoulderGroup.add(armMesh);
-
-                const forearmGroup = new THREE.Group();
-                forearmGroup.position.set(0, -0.32 * s, 0);
-                shoulderGroup.add(forearmGroup);
-
-                const forearmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.048 * s * armScale, 0.038 * s * armScale, 0.30 * s, 8), fleshMat);
-                forearmMesh.position.y = -0.15 * s;
-                forearmMesh.castShadow = true;
-                forearmGroup.add(forearmMesh);
-
-                // Walker: Exposed Forearm Ulna Bone Fragment on Left Arm
-                if (typeKey === 'WALKER' && side === -1) {
-                    const ulnaBone = new THREE.Mesh(new THREE.CylinderGeometry(0.014 * s, 0.010 * s, 0.18 * s, 5), boneMat);
-                    ulnaBone.position.set(0.038 * s, -0.14 * s, 0.02 * s);
-                    ulnaBone.rotation.z = 0.22;
-                    forearmGroup.add(ulnaBone);
-
-                    const clot = new THREE.Mesh(new THREE.SphereGeometry(0.024 * s, 5, 5), new THREE.MeshStandardMaterial({ color: 0x361616, roughness: 0.6 }));
-                    clot.position.set(0.034 * s, -0.11 * s, 0.018 * s);
-                    forearmGroup.add(clot);
-                }
-
-                // Clawed Fingers
-                for (let c = -2; c <= 2; c++) {
-                    const claw = new THREE.Mesh(new THREE.ConeGeometry(0.012 * s * armScale, 0.08 * s * armScale, 4), boneMat);
-                    claw.rotation.x = -Math.PI / 2;
-                    claw.position.set(c * 0.018 * s * armScale, -0.32 * s, 0.03 * s);
-                    forearmGroup.add(claw);
-                }
-
-                // Initial reaching posture
-                shoulderGroup.rotation.x = -0.65;
-                forearmGroup.rotation.x = -0.45;
-
-                if (side === -1) zRig.leftArm = shoulderGroup;
-                else zRig.rightArm = shoulderGroup;
-            }
-
-            // Alpha Boss Corrupted Spores / Spikes
-            if (def.isBoss) {
-                const sporeMat = new THREE.MeshBasicMaterial({ color: 0xff0044 });
-                for (let b = 0; b < 6; b++) {
-                    const spore = new THREE.Mesh(new THREE.SphereGeometry(0.08 * s, 6, 6), sporeMat);
-                    spore.position.set((Math.random() - 0.5) * 0.4 * s, 0.2 * s + Math.random() * 0.3 * s, (Math.random() - 0.5) * 0.3 * s);
-                    zRig.spine.add(spore);
-                }
-            }
-
-            // Brute Osseous Bone Plates
-            if (typeKey === 'BRUTE') {
-                const armorPlate = new THREE.Mesh(new THREE.BoxGeometry(0.42 * s, 0.28 * s, 0.08 * s), boneMat);
-                armorPlate.position.set(0, 0.20 * s, 0.14 * s);
-                zRig.spine.add(armorPlate);
-            }
+            const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.018 * s, 6, 6), zEyeMat);
+            rightEye.position.set(0.042 * s, 0.045 * s, 0.108 * s);
+            zRig.head.add(rightEye);
 
             zGroup.position.set(x, 0, z);
             scene.add(zGroup);
@@ -3345,6 +3578,39 @@
         window.addEventListener('mouseup', endFire);
 
         // --- Combat & Shooting Mechanics ---
+        // Dynamic Muzzle Flash Point Light
+        const muzzleLight = new THREE.PointLight(0xffb844, 0, 15);
+        scene.add(muzzleLight);
+
+        // Procedural Star-Burst Muzzle Flash Mesh
+        const flashMat = new THREE.MeshBasicMaterial({ color: 0xffea78, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+        const flashGroup = new THREE.Group();
+        const flashPlane1 = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.28), flashMat);
+        const flashPlane2 = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.28), flashMat);
+        flashPlane2.rotation.z = Math.PI / 4;
+        flashGroup.add(flashPlane1);
+        flashGroup.add(flashPlane2);
+        scene.add(flashGroup);
+
+        // Dynamic Blood & Spark Particle System
+        const fxParticles = [];
+        const fxGeo = new THREE.SphereGeometry(0.024, 4, 4);
+        const bloodMat = new THREE.MeshBasicMaterial({ color: 0x8a0b0b });
+        const sparkMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+
+        function emitParticles(pos, isBlood = true, count = 8) {
+            for (let i = 0; i < count; i++) {
+                const p = new THREE.Mesh(fxGeo, isBlood ? bloodMat : sparkMat);
+                p.position.copy(pos);
+                const vel = new THREE.Vector3(
+                    (Math.random() - 0.5) * 4.5,
+                    Math.random() * 3.5 + 0.5,
+                    (Math.random() - 0.5) * 4.5
+                );
+                scene.add(p);
+                fxParticles.push({ mesh: p, vel: vel, life: 1.0, isBlood });
+            }
+        }
         function switchWeapon(index) {
             currentWeaponIndex = index;
             const cur = weapons[currentWeaponIndex];
@@ -3398,6 +3664,22 @@
             player.recoilKick = (currentWeaponIndex === 1) ? 0.09 : 0.055;
             player.recoilPitch = (currentWeaponIndex === 1) ? 0.07 : 0.045;
 
+            // Trigger Dynamic Muzzle Light & Star-burst Flash
+            const muzzlePos = new THREE.Vector3();
+            if (player.activeWeaponMesh) {
+                player.activeWeaponMesh.getWorldPosition(muzzlePos);
+                muzzlePos.y += 0.04;
+                muzzleLight.position.copy(muzzlePos);
+                muzzleLight.intensity = (currentWeaponIndex === 1) ? 3.8 : 2.6;
+                flashGroup.position.copy(muzzlePos);
+                flashGroup.rotation.z = Math.random() * Math.PI;
+                flashMat.opacity = 0.95;
+                setTimeout(() => {
+                    muzzleLight.intensity = 0;
+                    flashMat.opacity = 0;
+                }, 55);
+            }
+
             // Raycast shot from camera center
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -3431,6 +3713,7 @@
 
                 target.zombie.health -= finalDamage;
                 playHitSound();
+                emitParticles(target.zombie.group.position.clone().add(new THREE.Vector3(0, target.zombie.def.scale * 1.1, 0)), true, 12);
 
                 createDamageText(isHeadshot ? `HEADSHOT! ${finalDamage}` : `${finalDamage}`, target.zombie.group.position, isHeadshot);
 
@@ -3716,6 +3999,15 @@
         function animate() {
             if (typeof heliRotor !== 'undefined') {
                 heliRotor.rotation.y += 0.42;
+            }
+            if (typeof dustParticles !== 'undefined') {
+                const pos = dustGeo.attributes.position.array;
+                for (let i = 0; i < dustCount; i++) {
+                    pos[i * 3 + 1] += dustVelocities[i * 3 + 1] * 0.03;
+                    pos[i * 3 + 0] += Math.sin(clock.getElapsedTime() + i) * 0.008;
+                    if (pos[i * 3 + 1] < 0.2) pos[i * 3 + 1] = 14;
+                }
+                dustGeo.attributes.position.needsUpdate = true;
             }
             requestAnimationFrame(animate);
 
@@ -4050,6 +4342,18 @@
                     playZombieGroan(z.def.isBoss);
                 }
             });
+
+            // Update Combat VFX Particles (Blood & Sparks)
+            for (let i = fxParticles.length - 1; i >= 0; i--) {
+                const p = fxParticles[i];
+                p.life -= dt * 2.2;
+                p.vel.y -= 9.8 * dt; // Gravity
+                p.mesh.position.addScaledVector(p.vel, dt);
+                if (p.life <= 0 || p.mesh.position.y <= 0) {
+                    scene.remove(p.mesh);
+                    fxParticles.splice(i, 1);
+                }
+            }
 
             // Flashing siren light on police car
             sirenLight.intensity = (Math.sin(clock.getElapsedTime() * 8) > 0) ? 2.5 : 0.2;
