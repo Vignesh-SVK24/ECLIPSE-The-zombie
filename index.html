@@ -693,6 +693,57 @@
             }
         }
         
+        
+        .btn-micro-badge {
+            font-size: 7px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #d4a034;
+            margin-top: 1px;
+            text-transform: uppercase;
+            pointer-events: none;
+            line-height: 1;
+            transition: color 0.1s ease;
+        }
+        .touch-pressed,
+        .btn-touch:active,
+        .btn-touch.active {
+            transform: scale(0.92) !important;
+            border-color: #ffffff !important;
+            background: rgba(196, 155, 88, 0.90) !important;
+            color: #0b0f0e !important;
+            box-shadow: 0 0 18px rgba(196, 155, 88, 0.9) !important;
+        }
+        .touch-pressed .btn-icon,
+        .btn-touch:active .btn-icon,
+        .btn-touch.active .btn-icon {
+            stroke: #0b0f0e !important;
+        }
+        .touch-pressed .btn-micro-badge,
+        .btn-touch:active .btn-micro-badge,
+        .btn-touch.active .btn-micro-badge {
+            color: #0b0f0e !important;
+        }
+        .btn-touch.disabled-state {
+            opacity: 0.40 !important;
+            filter: grayscale(0.8) !important;
+        }
+        @keyframes spinReload {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .btn-touch.btn-reload.reloading .btn-icon {
+            animation: spinReload 0.75s linear infinite !important;
+            stroke: #d4a034 !important;
+        }
+        @keyframes pulseAlert {
+            0%, 100% { border-color: #ff4d4d; box-shadow: 0 0 12px rgba(255, 77, 77, 0.7); }
+            50% { border-color: #d4a034; box-shadow: 0 0 20px rgba(212, 160, 52, 0.9); }
+        }
+        .btn-touch.btn-reload.needs-reload {
+            animation: pulseAlert 1.0s infinite !important;
+        }
+
         /* Ergonomic Tactical Combat Cluster */
         .touch-combat-cluster {
             position: absolute;
@@ -1676,28 +1727,34 @@
         <div class="touch-combat-cluster" id="combat-cluster">
             <!-- Weapon Switch & Camera Toggle -->
             <button class="btn-touch btn-switch" id="btn-switch" title="Switch Weapon">
-                <svg viewBox="0 0 24 24" class="btn-icon"><rect x="2" y="8" width="15" height="5" rx="1"/><line x1="6" y1="13" x2="6" y2="18"/><line x1="9" y1="13" x2="9" y2="16"/><line x1="17" y1="10" x2="22" y2="10"/></svg>
+                <svg viewBox="0 0 24 24" class="btn-icon" id="btn-switch-icon"><rect x="2" y="8" width="15" height="5" rx="1"/><line x1="6" y1="13" x2="6" y2="18"/><line x1="9" y1="13" x2="9" y2="16"/><line x1="17" y1="10" x2="22" y2="10"/></svg>
+                <span class="btn-micro-badge" id="btn-switch-label">9MM</span>
             </button>
             <button class="btn-touch btn-cam" id="btn-cam" title="Toggle 1st/3rd Person">
                 <svg viewBox="0 0 24 24" class="btn-icon"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span class="btn-micro-badge" id="btn-cam-label">3RD</span>
             </button>
             <!-- Combat Actions: Jump, Crouch, Reload, Aim -->
             <button class="btn-touch btn-crouch" id="btn-crouch" title="Crouch / Low Profile">
                 <svg viewBox="0 0 24 24" class="btn-icon"><circle cx="12" cy="5" r="2.5"/><path d="M7 13l3-2 2 3 4-2"/><path d="M10 14l-2 5M14 14l3 6"/></svg>
+                <span class="btn-micro-badge" id="btn-crouch-label">STAND</span>
             </button>
             <button class="btn-touch btn-jump" id="btn-jump" title="Tactical Leap / Vault">
                 <svg viewBox="0 0 24 24" class="btn-icon"><polyline points="18 15 12 9 6 15"/><polyline points="18 9 12 3 6 9"/><line x1="12" y1="15" x2="12" y2="21"/></svg>
+                <span class="btn-micro-badge" id="btn-jump-label">JUMP</span>
             </button>
             <button class="btn-touch btn-reload" id="btn-reload" title="Tactical Reload">
                 <svg viewBox="0 0 24 24" class="btn-icon"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span class="btn-micro-badge" id="btn-reload-label">RELOAD</span>
             </button>
             <button class="btn-touch btn-aim" id="btn-aim" title="Aim Down Sights (ADS)">
                 <svg viewBox="0 0 24 24" class="btn-icon"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+                <span class="btn-micro-badge" id="btn-aim-label">AIM</span>
             </button>
             <!-- Contextual Gate / Interact Button -->
             <button class="btn-touch btn-interact" id="btn-door" style="display: none;" title="Interact">
                 <svg viewBox="0 0 24 24" class="btn-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span class="btn-action-label">GATE</span>
+                <span class="btn-action-label" id="btn-door-label">OPEN</span>
             </button>
             <!-- Primary Fire Button -->
             <button class="btn-touch btn-fire" id="btn-fire" title="Fire Weapon">
@@ -2930,6 +2987,7 @@
             if (btnDoor) {
                 btnDoor.classList.toggle('active', doorState.isOpen);
             }
+            updateMobileButtonsState();
             return true;
         }
 
@@ -3988,20 +4046,92 @@
             const btn = document.getElementById(id);
             if (!btn) return;
             let touchHandled = false;
-            btn.addEventListener('touchstart', e => {
-                e.preventDefault();
+            
+            const handlePressDown = (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 touchHandled = true;
+                btn.classList.add('touch-pressed');
+                triggerHaptic(20);
                 onActivate(btn);
-            }, { passive: false });
-            if (onDeactivate) {
-                btn.addEventListener('touchend', e => { onDeactivate(btn); });
-                btn.addEventListener('touchcancel', e => { onDeactivate(btn); });
-            }
+            };
+            
+            const handlePressUp = (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                btn.classList.remove('touch-pressed');
+                if (onDeactivate) onDeactivate(btn);
+            };
+
+            btn.addEventListener('touchstart', handlePressDown, { passive: false });
+            btn.addEventListener('touchend', handlePressUp, { passive: false });
+            btn.addEventListener('touchcancel', handlePressUp, { passive: false });
+
+            btn.addEventListener('mousedown', handlePressDown);
+            btn.addEventListener('mouseup', handlePressUp);
+            btn.addEventListener('mouseleave', handlePressUp);
+
             btn.addEventListener('click', e => {
                 if (touchHandled) { touchHandled = false; return; }
                 onActivate(btn);
             });
         }
+        // --- Dynamic Mobile Button State Engine ---
+        function updateMobileButtonsState() {
+            const curWeapon = (typeof weapons !== 'undefined' && weapons && weapons[currentWeaponIndex]) ? weapons[currentWeaponIndex] : null;
+
+            // 1. Weapon Switch Button (Dynamic Icon & Badge)
+            const switchLabel = document.getElementById('btn-switch-label');
+            const switchIcon = document.getElementById('btn-switch-icon');
+            if (switchLabel) {
+                switchLabel.innerText = (currentWeaponIndex === 0) ? '9MM' : 'M4';
+            }
+            if (switchIcon) {
+                switchIcon.innerHTML = (currentWeaponIndex === 0)
+                    ? '<rect x="2" y="8" width="15" height="5" rx="1"/><line x1="6" y1="13" x2="6" y2="18"/><line x1="9" y1="13" x2="9" y2="16"/><line x1="17" y1="10" x2="22" y2="10"/>'
+                    : '<rect x="2" y="7" width="18" height="4" rx="1"/><line x1="6" y1="11" x2="6" y2="17"/><line x1="11" y1="11" x2="11" y2="16"/><path d="M14 7l2-4h4v4"/><line x1="20" y1="9" x2="23" y2="9"/>';
+            }
+
+            // 2. Camera View Button
+            const camBtn = document.getElementById('btn-cam');
+            const camLabel = document.getElementById('btn-cam-label');
+            if (camBtn) camBtn.classList.toggle('active', player.isFirstPerson);
+            if (camLabel) camLabel.innerText = player.isFirstPerson ? '1ST' : '3RD';
+
+            // 3. Aim Down Sights (ADS) Button
+            const aimBtn = document.getElementById('btn-aim');
+            const aimLabel = document.getElementById('btn-aim-label');
+            if (aimBtn) aimBtn.classList.toggle('active', player.isAiming);
+            if (aimLabel) aimLabel.innerText = player.isAiming ? 'ADS' : 'AIM';
+
+            // 4. Crouch Button
+            const crouchBtn = document.getElementById('btn-crouch');
+            const crouchLabel = document.getElementById('btn-crouch-label');
+            if (crouchBtn) crouchBtn.classList.toggle('active', player.isCrouching);
+            if (crouchLabel) crouchLabel.innerText = player.isCrouching ? 'CROUCH' : 'STAND';
+
+            // 5. Jump Button
+            const jumpBtn = document.getElementById('btn-jump');
+            if (jumpBtn) {
+                const canJump = player.isGrounded && player.stamina >= 10;
+                jumpBtn.classList.toggle('disabled-state', !canJump);
+            }
+
+            // 6. Reload Button (Spinning reload or alert pulse)
+            const reloadBtn = document.getElementById('btn-reload');
+            if (reloadBtn && curWeapon) {
+                reloadBtn.classList.toggle('reloading', isReloading);
+                const needsReload = (curWeapon.currentClip <= 0 && curWeapon.reserve > 0);
+                reloadBtn.classList.toggle('needs-reload', needsReload && !isReloading);
+            }
+
+            // 7. Contextual Gate Interact Button
+            const doorBtn = document.getElementById('btn-door');
+            const doorLabel = document.getElementById('btn-door-label');
+            if (doorBtn && typeof doorState !== 'undefined') {
+                doorBtn.classList.toggle('active', doorState.isOpen);
+                if (doorLabel) doorLabel.innerText = doorState.isOpen ? 'CLOSE' : 'OPEN';
+            }
+        }
+
         // --- Tactical Combat Actions Engine ---
         function triggerJump() {
             if (player.isGrounded && player.stamina >= 10) {
@@ -4150,6 +4280,7 @@
             const cur = weapons[currentWeaponIndex];
             document.getElementById('weapon-name').innerText = cur.name;
             updateAmmoHUD();
+            updateMobileButtonsState();
             // Swap visual model in socket
             if (player.rig && player.rig.weaponSocket) {
                 while (player.rig.weaponSocket.children.length > 0) {
@@ -4165,6 +4296,7 @@
             if (isReloading || cur.currentClip === cur.clipSize || cur.reserve <= 0) return;
             isReloading = true;
             document.getElementById('weapon-name').innerText = "RELOADING...";
+            updateMobileButtonsState();
             setTimeout(() => {
                 const needed = cur.clipSize - cur.currentClip;
                 const added = Math.min(needed, cur.reserve);
@@ -4347,6 +4479,7 @@
             const cur = weapons[currentWeaponIndex];
             document.getElementById('ammo-clip').innerText = cur.currentClip;
             document.getElementById('ammo-reserve').innerText = cur.reserve;
+            updateMobileButtonsState();
         }
         function updateCrosshair() {
             const crosshair = document.getElementById('crosshair');
@@ -4356,6 +4489,7 @@
         function toggleCameraMode() {
             player.isFirstPerson = !player.isFirstPerson;
             player.mesh.visible = !player.isFirstPerson;
+            updateMobileButtonsState();
         }
         let isNight = true;
         function toggleDayNight() {
@@ -5025,6 +5159,7 @@
 
             // Flashing siren light on police car
             sirenLight.intensity = (Math.sin(elapsedTime * 8) > 0) ? 2.5 : 0.2;
+            updateMobileButtonsState();
             renderer.render(scene, camera);
             // Interpolate Remote Co-Op Players (if any active)
             if (typeof remotePlayers !== 'undefined' && remotePlayers && remotePlayers.size > 0) {

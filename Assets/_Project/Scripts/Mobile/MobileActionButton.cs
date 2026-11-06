@@ -84,5 +84,25 @@ namespace Eclipse.Mobile
                 transform.localScale = _originalScale;
             }
         }
+
+        public void SetActiveState(bool active)
+        {
+            if (_targetGraphic != null)
+            {
+                _targetGraphic.color = active ? _pressedColor : _normalColor;
+            }
+            transform.localScale = active ? Vector3.Scale(_originalScale, _pressedScale) : _originalScale;
+        }
+
+        public void SetInteractable(bool interactable)
+        {
+            if (_targetGraphic != null)
+            {
+                _targetGraphic.raycastTarget = interactable;
+                var col = _normalColor;
+                col.a = interactable ? 1f : 0.4f;
+                _targetGraphic.color = col;
+            }
+        }
     }
 }
