@@ -74,6 +74,61 @@
             align-items: center;
             gap: 6px;
         }
+        
+        /* Fullscreen Toggle Button */
+        .fs-icon {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+            pointer-events: none;
+        }
+        .btn-fullscreen {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, rgba(32, 40, 44, 0.95), rgba(18, 23, 26, 0.95));
+            border: 1px solid var(--accent-amber);
+            color: var(--accent-amber);
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 8px rgba(196, 155, 88, 0.15);
+            transition: all 0.15s ease;
+            pointer-events: auto;
+            text-transform: uppercase;
+        }
+        .btn-fullscreen:hover, .btn-fullscreen:active, .btn-fullscreen.active {
+            background: var(--accent-amber) !important;
+            color: #0b0f0e !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 0 16px rgba(196, 155, 88, 0.7) !important;
+            transform: scale(1.03);
+        }
+        .btn-fullscreen:hover .fs-icon, .btn-fullscreen:active .fs-icon, .btn-fullscreen.active .fs-icon {
+            stroke: #0b0f0e !important;
+        }
+        @media (max-width: 720px) {
+            .btn-fullscreen span {
+                display: none; /* Icon-only compact mode on mobile */
+            }
+            .btn-fullscreen {
+                padding: 7px 9px;
+            }
+            .fs-icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
         .btn-tactical-menu:hover, .btn-tactical-menu:active {
             background: var(--accent-amber);
             color: #0b0f0e;
@@ -1454,6 +1509,11 @@
                 <div class="menu-sublogo">THE LAST CIVILIZATION &bull; CINEMATIC PROTOCOL</div>
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn-fullscreen" id="btn-fullscreen-menu" onclick="toggleFullscreen()" ontouchstart="toggleFullscreen()" title="Toggle Fullscreen Mode (F)">
+                    <svg class="fs-icon fs-enter-icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    <svg class="fs-icon fs-exit-icon" viewBox="0 0 24 24" style="display:none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                    <span class="fs-label">FULLSCREEN</span>
+                </button>
                 <button class="modal-close-btn" id="menu-btn-resume" style="padding: 6px 14px; font-size: 11px; font-weight: 800; border-color: var(--accent-amber); color: var(--accent-amber);" onclick="startSurvivalGame()" ontouchstart="startSurvivalGame()">[X] RESUME GAME</button>
             </div>
             <div class="menu-status-chips">
@@ -1692,9 +1752,14 @@
                     <div class="stat-bar-bg"><div id="stamina-fill" class="stat-bar-fill"></div></div>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center; margin: 0 12px;">
+            <div style="display: flex; gap: 8px; align-items: center; margin: 0 8px;">
                 <button id="btn-open-menu" class="btn-tactical-menu" onclick="toggleTacticalMenu()" ontouchstart="toggleTacticalMenu()">
-                    &#9776; ARMORY / DOSSIER
+                    &#9776; DOSSIER
+                </button>
+                <button id="btn-fullscreen-hud" class="btn-fullscreen" onclick="toggleFullscreen()" ontouchstart="toggleFullscreen()" title="Toggle Fullscreen Mode (F)">
+                    <svg class="fs-icon fs-enter-icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    <svg class="fs-icon fs-exit-icon" viewBox="0 0 24 24" style="display:none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                    <span class="fs-label">FULLSCREEN</span>
                 </button>
             </div>
             <div class="mission-panel">
@@ -1709,7 +1774,7 @@
         </div>
         <div id="crosshair"></div>
         <div class="controls-hint">
-            [WASD] Move | [Mouse] Look | [L-Click] Fire | [R-Click] Aim | [R] Reload | [1/2] Switch | [V] Camera (1st/3rd) | [T] Day/Night
+            [WASD] Move | [Mouse] Look | [L-Click] Fire | [R-Click] Aim | [R] Reload | [1/2] Switch | [V] Camera (1st/3rd) | [F] Fullscreen | [T] Day/Night
         </div>
         <!-- Weapon HUD -->
         <div class="weapon-hud">
@@ -3814,6 +3879,7 @@
             if (currentGameState !== 'PLAYING') return;
             keys[k] = true;
             if (k === 'v') toggleCameraMode();
+            if (k === 'f') toggleFullscreen();
             if (k === 'e') { if (typeof doorState !== 'undefined' && player.position.distanceTo(doorState.pos) < 3.2) interactDoor(player); }
             if (k === 'r') reloadWeapon();
             if (e.key === '1') switchWeapon(0);
@@ -4486,6 +4552,76 @@
             if (player.isAiming) crosshair.classList.add('aiming');
             else crosshair.classList.remove('aiming');
         }
+        // --- Robust Cross-Platform Fullscreen Controller (Mobile & Desktop) ---
+        function toggleFullscreen() {
+            triggerHaptic(25);
+            const doc = document;
+            const docEl = document.documentElement;
+            const isFS = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+
+            if (!isFS) {
+                // Request Fullscreen across all vendor implementations
+                const requestFS = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+                if (requestFS) {
+                    try {
+                        const promise = requestFS.call(docEl);
+                        if (promise && promise.then) {
+                            promise.then(() => {
+                                // Lock to landscape orientation on supported mobile devices
+                                if (screen.orientation && screen.orientation.lock) {
+                                    screen.orientation.lock('landscape').catch(() => {});
+                                }
+                            }).catch(() => {});
+                        }
+                    } catch(e) {}
+                }
+            } else {
+                // Exit Fullscreen
+                const exitFS = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+                if (exitFS) {
+                    try {
+                        const promise = exitFS.call(doc);
+                        if (promise && promise.then) {
+                            promise.then(() => {
+                                if (screen.orientation && screen.orientation.unlock) {
+                                    try { screen.orientation.unlock(); } catch(e) {}
+                                }
+                            }).catch(() => {});
+                        }
+                    } catch(e) {}
+                }
+            }
+        }
+
+        function syncFullscreenUI() {
+            const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+            const enterIcons = document.querySelectorAll('.fs-enter-icon');
+            const exitIcons = document.querySelectorAll('.fs-exit-icon');
+            const labels = document.querySelectorAll('.fs-label');
+            const buttons = document.querySelectorAll('.btn-fullscreen');
+
+            enterIcons.forEach(el => el.style.display = isFS ? 'none' : 'inline-block');
+            exitIcons.forEach(el => el.style.display = isFS ? 'inline-block' : 'none');
+            labels.forEach(el => el.innerText = isFS ? 'EXIT FS' : 'FULLSCREEN');
+            buttons.forEach(el => el.classList.toggle('active', isFS));
+
+            // Instant viewport & canvas recomputation
+            setTimeout(() => {
+                if (camera && renderer) {
+                    const aspect = window.innerWidth / window.innerHeight;
+                    camera.aspect = aspect;
+                    camera.fov = (aspect < 1.0) ? 75 : 65;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                }
+            }, 80);
+        }
+
+        document.addEventListener('fullscreenchange', syncFullscreenUI);
+        document.addEventListener('webkitfullscreenchange', syncFullscreenUI);
+        document.addEventListener('mozfullscreenchange', syncFullscreenUI);
+        document.addEventListener('MSFullscreenChange', syncFullscreenUI);
+
         function toggleCameraMode() {
             player.isFirstPerson = !player.isFirstPerson;
             player.mesh.visible = !player.isFirstPerson;
