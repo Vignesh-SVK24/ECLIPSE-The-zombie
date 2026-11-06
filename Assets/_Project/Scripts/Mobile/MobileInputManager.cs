@@ -55,23 +55,40 @@ namespace Eclipse.Mobile
 
         private void OnEnable()
         {
-            if (_reloadButton != null) _reloadButton.OnTriggered += id => OnReloadAction?.Invoke();
-            if (_interactButton != null) _interactButton.OnTriggered += id => OnInteractAction?.Invoke();
-            if (_switchWeaponButton != null) _switchWeaponButton.OnTriggered += id => OnWeaponSwitchAction?.Invoke();
-            if (_inventoryButton != null) _inventoryButton.OnTriggered += id => OnInventoryAction?.Invoke();
-            if (_pauseButton != null) _pauseButton.OnTriggered += id => OnPauseAction?.Invoke();
-            if (_reviveButton != null) _reviveButton.OnTriggered += id => OnReviveAction?.Invoke();
+            SubscribeButtons();
         }
 
         private void OnDisable()
         {
-            if (_reloadButton != null) _reloadButton.OnTriggered -= id => OnReloadAction?.Invoke();
-            if (_interactButton != null) _interactButton.OnTriggered -= id => OnInteractAction?.Invoke();
-            if (_switchWeaponButton != null) _switchWeaponButton.OnTriggered -= id => OnWeaponSwitchAction?.Invoke();
-            if (_inventoryButton != null) _inventoryButton.OnTriggered -= id => OnInventoryAction?.Invoke();
-            if (_pauseButton != null) _pauseButton.OnTriggered -= id => OnPauseAction?.Invoke();
-            if (_reviveButton != null) _reviveButton.OnTriggered -= id => OnReviveAction?.Invoke();
+            UnsubscribeButtons();
         }
+
+        private void SubscribeButtons()
+        {
+            if (_reloadButton != null) _reloadButton.OnTriggered += HandleReloadTriggered;
+            if (_interactButton != null) _interactButton.OnTriggered += HandleInteractTriggered;
+            if (_switchWeaponButton != null) _switchWeaponButton.OnTriggered += HandleWeaponSwitchTriggered;
+            if (_inventoryButton != null) _inventoryButton.OnTriggered += HandleInventoryTriggered;
+            if (_pauseButton != null) _pauseButton.OnTriggered += HandlePauseTriggered;
+            if (_reviveButton != null) _reviveButton.OnTriggered += HandleReviveTriggered;
+        }
+
+        private void UnsubscribeButtons()
+        {
+            if (_reloadButton != null) _reloadButton.OnTriggered -= HandleReloadTriggered;
+            if (_interactButton != null) _interactButton.OnTriggered -= HandleInteractTriggered;
+            if (_switchWeaponButton != null) _switchWeaponButton.OnTriggered -= HandleWeaponSwitchTriggered;
+            if (_inventoryButton != null) _inventoryButton.OnTriggered -= HandleInventoryTriggered;
+            if (_pauseButton != null) _pauseButton.OnTriggered -= HandlePauseTriggered;
+            if (_reviveButton != null) _reviveButton.OnTriggered -= HandleReviveTriggered;
+        }
+
+        private void HandleReloadTriggered(string id) => OnReloadAction?.Invoke();
+        private void HandleInteractTriggered(string id) => OnInteractAction?.Invoke();
+        private void HandleWeaponSwitchTriggered(string id) => OnWeaponSwitchAction?.Invoke();
+        private void HandleInventoryTriggered(string id) => OnInventoryAction?.Invoke();
+        private void HandlePauseTriggered(string id) => OnPauseAction?.Invoke();
+        private void HandleReviveTriggered(string id) => OnReviveAction?.Invoke();
 
         private void Update()
         {

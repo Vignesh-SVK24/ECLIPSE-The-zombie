@@ -5,6 +5,11 @@ using UnityEngine.EventSystems;
 
 namespace Eclipse.Mobile
 {
+    /// <summary>
+    /// Represents a mobile touch action button with visual press scaling,
+    /// color tinting, minimum touch target enforcement (Apple 44pt / Android 48dp standard),
+    /// and haptic feedback hooks.
+    /// </summary>
     public class MobileActionButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         [Header("Button Identifier")]
@@ -13,8 +18,11 @@ namespace Eclipse.Mobile
         [Header("Visual Feedback")]
         [SerializeField] private Graphic _targetGraphic;
         [SerializeField] private Color _normalColor = Color.white;
-        [SerializeField] private Color _pressedColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+        [SerializeField] private Color _pressedColor = new Color(0.85f, 0.85f, 0.85f, 1f);
         [SerializeField] private Vector3 _pressedScale = new Vector3(0.92f, 0.92f, 1f);
+
+        [Header("Haptic & Accessibility")]
+        [SerializeField] private bool _triggerHapticOnPress = true;
 
         private bool _isPressed;
         private Vector3 _originalScale;
@@ -39,6 +47,14 @@ namespace Eclipse.Mobile
         {
             _isPressed = true;
             ApplyVisualState(true);
+
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+            if (_triggerHapticOnPress)
+            {
+                Handheld.Vibrate();
+            }
+#endif
+
             OnButtonDown?.Invoke(_buttonId);
             OnTriggered?.Invoke(_buttonId);
         }
