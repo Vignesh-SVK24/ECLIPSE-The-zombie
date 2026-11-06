@@ -64,6 +64,14 @@ namespace Eclipse.Character
 
         public event Action<string> OnFootstep;
 
+        private void Awake()
+        {
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>() ?? GetComponentInChildren<Animator>();
+            }
+        }
+
         public void Initialize(Transform chest, Transform spine, Transform head, Transform rightArm, Transform leftArm, Animator animator = null)
         {
             _chestBone = chest;

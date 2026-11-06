@@ -25,6 +25,15 @@ namespace Eclipse.AI
         public event Action<Transform> OnTargetSpotted;
         public event Action OnTargetLost;
 
+        private void Awake()
+        {
+            if (_targetMask.value == 0)
+            {
+                _targetMask = LayerMask.GetMask("Player", "Default");
+                if (_targetMask.value == 0) _targetMask = ~0;
+            }
+        }
+
         private void Update()
         {
             _checkTimer += Time.deltaTime;

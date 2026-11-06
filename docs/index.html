@@ -3480,7 +3480,16 @@
         const keys = {};
         window.addEventListener('keydown', e => {
             const k = e.key.toLowerCase();
-            if (e.key === 'Escape' || k === 'm') {
+            if (e.key === 'Escape') {
+                const openModals = document.querySelectorAll('.survival-modal.active');
+                if (openModals.length > 0) {
+                    openModals.forEach(m => m.classList.remove('active'));
+                    return;
+                }
+                toggleTacticalMenu();
+                return;
+            }
+            if (k === 'm') {
                 toggleTacticalMenu();
                 return;
             }
@@ -3500,7 +3509,9 @@
             if (k === 'c') player.isCrouching = !player.isCrouching;
         });
         window.addEventListener('keyup', e => {
-            keys[e.key.toLowerCase()] = false;
+            const k = e.key.toLowerCase();
+            keys[k] = false;
+            if (k === 'shift') player.isSprinting = false;
         });
         // Mouse Controls & Pointer Lock
         let isPointerLocked = false;
@@ -4239,36 +4250,47 @@
             }
         }, { passive: true });
         window.addEventListener('touchend', () => { isDraggingMenuHero = false; });
-        function animate() {
+        let lastFrameTimestamp = performance.now();
+        function animate(timestamp) {
+            requestAnimationFrame(animate);
+
+            // 1. Calculate rock-solid frame delta time (dt) immune to Three.js clock reset
+            const frameNow = timestamp || performance.now();
+            let dt = (frameNow - lastFrameTimestamp) * 0.001;
+            lastFrameTimestamp = frameNow;
+            if (!dt || dt <= 0.0001 || isNaN(dt)) dt = 1 / 60;
+            else if (dt > 0.066) dt = 0.066;
+
+            const elapsedTime = clock.getElapsedTime();
+
             if (typeof heliRotor !== 'undefined') {
-                heliRotor.rotation.y += 0.42;
+                heliRotor.rotation.y += dt * 25.0;
             }
             if (typeof dustParticles !== 'undefined') {
                 const pos = dustGeo.attributes.position.array;
                 for (let i = 0; i < dustCount; i++) {
                     pos[i * 3 + 1] += dustVelocities[i * 3 + 1] * 0.03;
-                    pos[i * 3 + 0] += Math.sin(clock.getElapsedTime() + i) * 0.008;
+                    pos[i * 3 + 0] += Math.sin(elapsedTime + i) * 0.008;
                     if (pos[i * 3 + 1] < 0.2) pos[i * 3 + 1] = 14;
                 }
                 dustGeo.attributes.position.needsUpdate = true;
             }
-            requestAnimationFrame(animate);
+
             // Check Game State (Cinematic 3D Menu Showcase vs Active Gameplay)
             if (currentGameState === 'MENU') {
                 const menuCamDist = 2.8;
                 const menuCamHeight = 1.35;
-                const orbitAngle = clock.getElapsedTime() * 0.12 + menuRotationYaw;
+                const orbitAngle = elapsedTime * 0.12 + menuRotationYaw;
                 camera.position.x = player.position.x + Math.sin(orbitAngle) * menuCamDist;
                 camera.position.z = player.position.z + Math.cos(orbitAngle) * menuCamDist;
                 camera.position.y = player.position.y + menuCamHeight;
                 camera.lookAt(player.position.x, player.position.y + 1.15, player.position.z);
                 // Idle hero breathing
                 if (player.mesh) player.mesh.rotation.y = orbitAngle - Math.PI;
-                if (rig.chest) rig.chest.rotation.x = Math.sin(clock.getElapsedTime() * 2.2) * 0.03;
+                if (rig.chest) rig.chest.rotation.x = Math.sin(elapsedTime * 2.2) * 0.03;
                 renderer.render(scene, camera);
                 return; // DO NOT EXECUTE GAMEPLAY PHYSICS OR ZOMBIE ATTACKS DURING MENU
             }
-            const dt = Math.min(clock.getDelta(), 0.1);
             // Handle automatic rifle hold
             if (isMouseDown && weapons[currentWeaponIndex].automatic) {
                 tryFire();
@@ -4317,7 +4339,7 @@
                 player.stamina = Math.min(100, player.stamina + dt * 15);
             }
             document.getElementById('stamina-fill').style.width = `${player.stamina}%`;
-            // 3. Camera-Relative Movement Vector
+            // 3. Camera-Relative Movement Vector & Continuous Collision Sliding
             const moveDir = new THREE.Vector3();
             if (isMoving) {
                 const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
@@ -4325,28 +4347,36 @@
                 moveDir.addScaledVector(forward, normZ)
                        .addScaledVector(right, normX)
                        .normalize();
-                const deltaMove = moveDir.clone().multiplyScalar(player.currentSpeed * dt);
+
                 const pRadius = 0.45;
+                let moveStep = moveDir.clone().multiplyScalar(player.currentSpeed * dt);
 
-                // Test X axis movement against obstacles
-                const newX = Math.max(-15.5, Math.min(15.5, player.position.x + deltaMove.x));
-                const hitX = (typeof checkCollision === 'function') ? checkCollision(newX, player.position.z, pRadius) : null;
-                if (!hitX) {
-                    player.position.x = newX;
-                }
+                // Multi-pass continuous collision with surface tangent sliding & anti-stuck penetration resolution
+                for (let pass = 0; pass < 2; pass++) {
+                    if (moveStep.lengthSq() < 0.00001) break;
+                    const testX = Math.max(-15.5, Math.min(15.5, player.position.x + moveStep.x));
+                    const testZ = Math.max(-110, Math.min(110, player.position.z + moveStep.z));
+                    const hit = (typeof checkCollision === 'function') ? checkCollision(testX, testZ, pRadius) : null;
+                    if (!hit) {
+                        player.position.x = testX;
+                        player.position.z = testZ;
+                        break;
+                    } else {
+                        // 1. Gently resolve penetration along contact normal
+                        player.position.x += hit.normalX * (hit.overlap + 0.02);
+                        player.position.z += hit.normalZ * (hit.overlap + 0.02);
+                        player.position.x = Math.max(-15.5, Math.min(15.5, player.position.x));
+                        player.position.z = Math.max(-110, Math.min(110, player.position.z));
 
-                // Test Z axis movement against obstacles
-                const newZ = Math.max(-110, Math.min(110, player.position.z + deltaMove.z));
-                const hitZ = (typeof checkCollision === 'function') ? checkCollision(player.position.x, newZ, pRadius) : null;
-                if (!hitZ) {
-                    player.position.z = newZ;
-                }
-
-                // Tangential slide if moving diagonally against an obstacle
-                if (hitX && !hitZ && deltaMove.z !== 0) {
-                    player.position.z = Math.max(-110, Math.min(110, player.position.z + deltaMove.z * 1.1));
-                } else if (hitZ && !hitX && deltaMove.x !== 0) {
-                    player.position.x = Math.max(-15.5, Math.min(15.5, player.position.x + deltaMove.x * 1.1));
+                        // 2. Project remaining velocity onto obstacle surface tangent
+                        const dot = moveStep.x * hit.normalX + moveStep.z * hit.normalZ;
+                        if (dot < 0) {
+                            moveStep.x -= dot * hit.normalX;
+                            moveStep.z -= dot * hit.normalZ;
+                        } else {
+                            break;
+                        }
+                    }
                 }
             }
             // 4. AAA 360-DEGREE SMOOTH BODY ROTATION
@@ -4527,39 +4557,102 @@
                 camera.position.copy(player.position).add(camDir).add(shoulder);
                 camera.lookAt(player.position.x + shoulder.x, player.position.y + 1.6, player.position.z + shoulder.z);
             }
-            // Zombie AI Logic
+            // Zombie AI Logic: Detection, Multi-Whisker Pathfinding, Gate Navigation & Attack
             const now = Date.now();
             zombies.forEach(z => {
-                const toPlayer = new THREE.Vector3().subVectors(player.position, z.group.position);
-                const dist = toPlayer.length();
-                toPlayer.y = 0;
-                toPlayer.normalize();
-                // Rotate towards player
-                z.group.rotation.y = Math.atan2(toPlayer.x, toPlayer.z);
+                if (z.health <= 0) return; // Ignore eliminated infected
+
+                // Determine navigation target: Checkpoint Gate Waypoint vs Player
+                let targetPos = player.position.clone();
+                const gateZ = 24.0;
+                const isZombieNorth = z.group.position.z > gateZ;
+                const isPlayerNorth = player.position.z > gateZ;
+
+                if (typeof doorState !== 'undefined' && isZombieNorth !== isPlayerNorth) {
+                    if (!doorState.isOpen) {
+                        // Gate is CLOSED: Path directly to closed gate barricade and hold position
+                        targetPos.set(
+                            Math.max(-1.8, Math.min(1.8, z.group.position.x)),
+                            0,
+                            isZombieNorth ? (gateZ + 1.5) : (gateZ - 1.5)
+                        );
+                    } else {
+                        // Gate is OPEN: Navigate through the center doorway aperture (x=0, z=24) first
+                        const distToGate = Math.abs(z.group.position.z - gateZ);
+                        if (distToGate > 1.2) {
+                            targetPos.set(0, 0, gateZ);
+                        }
+                    }
+                }
+
+                const toTarget = new THREE.Vector3().subVectors(targetPos, z.group.position);
+                const distToPlayer = z.group.position.distanceTo(player.position);
+                toTarget.y = 0;
+                const targetDist = toTarget.length();
+                if (targetDist > 0.001) toTarget.normalize();
+
+                // Rotate towards movement heading
+                z.group.rotation.y = Math.atan2(toTarget.x, toTarget.z);
+
                 // AI States: Chase & Attack
-                if (dist > 1.8) {
+                if (distToPlayer > 1.8) {
                     const zRadius = 0.42;
                     const step = z.speed * dt;
-                    const nextX = z.group.position.x + toPlayer.x * step;
-                    const nextZ = z.group.position.z + toPlayer.z * step;
 
-                    const hit = (typeof checkCollision === 'function') ? checkCollision(nextX, nextZ, zRadius, true) : null;
-                    if (!hit) {
+                    // Multi-Whisker Autonomous Obstacle Avoidance
+                    // Probe 1: Direct path
+                    let desiredDir = toTarget.clone();
+                    let testPos = z.group.position.clone().addScaledVector(desiredDir, step);
+                    let hit = (typeof checkCollision === 'function') ? checkCollision(testPos.x, testPos.z, zRadius, true) : null;
+
+                    if (hit) {
+                        // Direct probe blocked: evaluate Left (+40 deg) and Right (-40 deg) whiskers
+                        const leftWhisker = new THREE.Vector3(
+                            desiredDir.x * Math.cos(0.7) - desiredDir.z * Math.sin(0.7),
+                            0,
+                            desiredDir.x * Math.sin(0.7) + desiredDir.z * Math.cos(0.7)
+                        );
+                        const rightWhisker = new THREE.Vector3(
+                            desiredDir.x * Math.cos(-0.7) - desiredDir.z * Math.sin(-0.7),
+                            0,
+                            desiredDir.x * Math.sin(-0.7) + desiredDir.z * Math.cos(-0.7)
+                        );
+
+                        const leftTest = z.group.position.clone().addScaledVector(leftWhisker, step);
+                        const rightTest = z.group.position.clone().addScaledVector(rightWhisker, step);
+
+                        const hitLeft = checkCollision(leftTest.x, leftTest.z, zRadius, true);
+                        const hitRight = checkCollision(rightTest.x, rightTest.z, zRadius, true);
+
+                        if (!hitLeft) {
+                            desiredDir = leftWhisker;
+                        } else if (!hitRight) {
+                            desiredDir = rightWhisker;
+                        } else {
+                            // Both whiskers blocked: slide along surface tangent
+                            const dot = desiredDir.x * hit.normalX + desiredDir.z * hit.normalZ;
+                            desiredDir.x -= dot * hit.normalX;
+                            desiredDir.z -= dot * hit.normalZ;
+                            if (desiredDir.lengthSq() > 0.001) desiredDir.normalize();
+                        }
+                    }
+
+                    // Execute movement step with boundary clamping
+                    const nextX = Math.max(-15.5, Math.min(15.5, z.group.position.x + desiredDir.x * step));
+                    const nextZ = Math.max(-110, Math.min(110, z.group.position.z + desiredDir.z * step));
+                    const finalHit = (typeof checkCollision === 'function') ? checkCollision(nextX, nextZ, zRadius, true) : null;
+
+                    if (!finalHit) {
                         z.group.position.x = nextX;
                         z.group.position.z = nextZ;
                     } else {
-                        // Solid obstacle or closed door in path: slide around obstacle
-                        const slideX = z.group.position.x + hit.normalZ * step * 0.75;
-                        const slideZ = z.group.position.z - hit.normalX * step * 0.75;
-                        if (!checkCollision(slideX, z.group.position.z, zRadius, true)) {
-                            z.group.position.x = slideX;
-                        }
-                        if (!checkCollision(z.group.position.x, slideZ, zRadius, true)) {
-                            z.group.position.z = slideZ;
-                        }
+                        // Push out gently along normal
+                        z.group.position.x += finalHit.normalX * (finalHit.overlap + 0.01);
+                        z.group.position.z += finalHit.normalZ * (finalHit.overlap + 0.01);
                     }
                 } else {
-                    // Attack player
+                    // Attack Player: Face player and strike with claws
+                    z.group.rotation.y = Math.atan2(player.position.x - z.group.position.x, player.position.z - z.group.position.z);
                     if (now - z.lastAttack > 1200) {
                         z.lastAttack = now;
                         player.health -= z.def.damage;
@@ -4571,7 +4664,8 @@
                         }
                     }
                 }
-                // Random periodic groaning
+
+                // Random periodic horror audio groans
                 if (Math.random() < 0.002) {
                     playZombieGroan(z.def.isBoss);
                 }
@@ -4601,10 +4695,10 @@
                 });
             }
             if (typeof fireLight !== 'undefined') {
-                fireLight.intensity = 1.8 + Math.sin(clock.getElapsedTime() * 12) * 0.6;
+                fireLight.intensity = 1.8 + Math.sin(elapsedTime * 12) * 0.6;
             }
             if (typeof fireMesh !== 'undefined') {
-                fireMesh.scale.y = 0.85 + Math.sin(clock.getElapsedTime() * 16) * 0.25;
+                fireMesh.scale.y = 0.85 + Math.sin(elapsedTime * 16) * 0.25;
             }
 
             // Interactive Security Quarantine Gate Proximity & Hinge Lerp
@@ -4629,7 +4723,7 @@
             }
 
             // Flashing siren light on police car
-            sirenLight.intensity = (Math.sin(clock.getElapsedTime() * 8) > 0) ? 2.5 : 0.2;
+            sirenLight.intensity = (Math.sin(elapsedTime * 8) > 0) ? 2.5 : 0.2;
             renderer.render(scene, camera);
             // Interpolate Remote Co-Op Players (if any active)
             if (typeof remotePlayers !== 'undefined' && remotePlayers && remotePlayers.size > 0) {
@@ -4641,8 +4735,8 @@
                 }
             }
             // Sync Local Player State to Backend (if WebSocket connected)
-            if (typeof ws !== 'undefined' && ws && ws.readyState === 1 && (clock.getElapsedTime() - lastSyncTime > 0.05)) {
-                lastSyncTime = clock.getElapsedTime();
+            if (typeof ws !== 'undefined' && ws && ws.readyState === 1 && (elapsedTime - lastSyncTime > 0.05)) {
+                lastSyncTime = elapsedTime;
                 try {
                     ws.send(JSON.stringify({
                         type: 'player_sync',

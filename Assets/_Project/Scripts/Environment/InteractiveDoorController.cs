@@ -120,7 +120,7 @@ namespace Eclipse.Environment
             // STRICT ENTITY SECURITY CHECK:
             // 1. Must have "Player" tag
             // 2. Must NOT have "Zombie" tag or zombie components
-            bool isPlayer = initiator.CompareTag("Player") || initiator.GetComponent<Player.PlayerMovement>() != null;
+            bool isPlayer = initiator.CompareTag("Player") || initiator.GetComponent<Player.PlayerMovementController>() != null || initiator.GetComponentInParent<Player.PlayerMovementController>() != null;
             bool isZombie = initiator.CompareTag("Zombie") || initiator.name.IndexOf("zombie", StringComparison.OrdinalIgnoreCase) >= 0;
 
             if (!isPlayer || isZombie)
