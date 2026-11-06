@@ -21,6 +21,8 @@ namespace Eclipse.Mobile
         [SerializeField] private MobileActionButton _sprintButton;
         [SerializeField] private MobileActionButton _switchWeaponButton;
         [SerializeField] private MobileActionButton _interactButton;
+        [SerializeField] private MobileActionButton _crouchButton;
+        [SerializeField] private MobileActionButton _jumpButton;
         [SerializeField] private MobileActionButton _inventoryButton;
         [SerializeField] private MobileActionButton _pauseButton;
         [SerializeField] private MobileActionButton _reviveButton;
@@ -31,16 +33,23 @@ namespace Eclipse.Mobile
         private bool _isFiring;
         private bool _isAiming;
         private bool _isSprinting;
+        private bool _isCrouching;
+        private bool _isJumping;
 
         public Vector2 MoveInput => _moveInput;
         public Vector2 LookDelta => _lookDelta;
         public bool IsFiring => _isFiring;
         public bool IsAiming => _isAiming;
         public bool IsSprinting => _isSprinting;
+        public bool IsCrouching => _isCrouching;
+        public bool IsJumping => _isJumping;
+        public Vector2 MovementInput => _moveInput;
 
         public event Action OnReloadAction;
         public event Action OnInteractAction;
         public event Action OnWeaponSwitchAction;
+        public event Action OnCrouchAction;
+        public event Action OnJumpAction;
         public event Action OnInventoryAction;
         public event Action OnPauseAction;
         public event Action OnReviveAction;
@@ -68,6 +77,8 @@ namespace Eclipse.Mobile
             if (_reloadButton != null) _reloadButton.OnTriggered += HandleReloadTriggered;
             if (_interactButton != null) _interactButton.OnTriggered += HandleInteractTriggered;
             if (_switchWeaponButton != null) _switchWeaponButton.OnTriggered += HandleWeaponSwitchTriggered;
+            if (_crouchButton != null) _crouchButton.OnTriggered += HandleCrouchTriggered;
+            if (_jumpButton != null) _jumpButton.OnTriggered += HandleJumpTriggered;
             if (_inventoryButton != null) _inventoryButton.OnTriggered += HandleInventoryTriggered;
             if (_pauseButton != null) _pauseButton.OnTriggered += HandlePauseTriggered;
             if (_reviveButton != null) _reviveButton.OnTriggered += HandleReviveTriggered;
@@ -78,6 +89,8 @@ namespace Eclipse.Mobile
             if (_reloadButton != null) _reloadButton.OnTriggered -= HandleReloadTriggered;
             if (_interactButton != null) _interactButton.OnTriggered -= HandleInteractTriggered;
             if (_switchWeaponButton != null) _switchWeaponButton.OnTriggered -= HandleWeaponSwitchTriggered;
+            if (_crouchButton != null) _crouchButton.OnTriggered -= HandleCrouchTriggered;
+            if (_jumpButton != null) _jumpButton.OnTriggered -= HandleJumpTriggered;
             if (_inventoryButton != null) _inventoryButton.OnTriggered -= HandleInventoryTriggered;
             if (_pauseButton != null) _pauseButton.OnTriggered -= HandlePauseTriggered;
             if (_reviveButton != null) _reviveButton.OnTriggered -= HandleReviveTriggered;
@@ -86,6 +99,8 @@ namespace Eclipse.Mobile
         private void HandleReloadTriggered(string id) => OnReloadAction?.Invoke();
         private void HandleInteractTriggered(string id) => OnInteractAction?.Invoke();
         private void HandleWeaponSwitchTriggered(string id) => OnWeaponSwitchAction?.Invoke();
+        private void HandleCrouchTriggered(string id) => OnCrouchAction?.Invoke();
+        private void HandleJumpTriggered(string id) => OnJumpAction?.Invoke();
         private void HandleInventoryTriggered(string id) => OnInventoryAction?.Invoke();
         private void HandlePauseTriggered(string id) => OnPauseAction?.Invoke();
         private void HandleReviveTriggered(string id) => OnReviveAction?.Invoke();
@@ -104,6 +119,8 @@ namespace Eclipse.Mobile
             _isFiring = _fireButton != null && _fireButton.IsPressed;
             _isAiming = _aimButton != null && _aimButton.IsPressed;
             _isSprinting = _sprintButton != null && _sprintButton.IsPressed;
+            _isCrouching = _crouchButton != null && _crouchButton.IsPressed;
+            _isJumping = _jumpButton != null && _jumpButton.IsPressed;
 #else
             // Desktop / Editor Keyboard & Mouse Fallback with Touch Support
             Vector2 touchMove = _virtualJoystick != null ? _virtualJoystick.InputDirection : Vector2.zero;

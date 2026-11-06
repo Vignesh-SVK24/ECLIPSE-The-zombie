@@ -235,7 +235,7 @@ namespace Eclipse.Player
             HandleSmoothBodyRotation(worldMoveDirection, hasMovementInput, dt);
 
             // 7. Jump & Vertical Gravity
-            if (Input.GetButtonDown("Jump") && _isGrounded && !_isCrouching)
+            if ((Input.GetButtonDown("Jump") || (MobileInputManager.Instance != null && MobileInputManager.Instance.IsJumping)) && _isGrounded && !_isCrouching)
             {
                 _verticalVelocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
             }
