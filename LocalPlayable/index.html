@@ -65,37 +65,7 @@
         }
         
         /* Stylized Brand Title Header */
-        .brand-header {
-            position: absolute;
-            top: 14px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 12;
-            pointer-events: none;
-        }
-        .brand-title {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: #fff;
-            text-shadow: 0 0 12px rgba(255, 60, 0, 0.75), 0 2px 4px #000;
-            font-family: 'Impact', 'Arial Black', sans-serif;
-            text-transform: uppercase;
-        }
-        .brand-title span.slash {
-            color: #ff3333;
-        }
-        .brand-subtitle {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 4px;
-            color: #ffb347;
-            text-shadow: 0 1px 3px #000;
-            margin-top: -2px;
-        }
+        
 
         .avatar-container {
             display: flex;
@@ -453,17 +423,7 @@
             .stat-bar-bg {
                 height: 7px;
             }
-            .brand-header {
-                top: 8px;
-            }
-            .brand-title {
-                font-size: 18px;
-                letter-spacing: 2px;
-            }
-            .brand-subtitle {
-                font-size: 8px;
-                letter-spacing: 3px;
-            }
+            
             .mission-panel {
                 padding: 6px 12px;
             }
@@ -1244,7 +1204,7 @@
 
         <!-- Bottom Bar -->
         <div class="menu-bottom-bar">
-            <div class="menu-build-tag">VERSION 2.0.0-PRO &bull; CINEMATIC PBR ENGINE</div>
+            <div class="menu-build-tag">ECLIPSE: THE LAST CIVILIZATION &bull; BUILD 2.0</div>
             <button class="menu-play-btn" id="btn-enter-city" onclick="startSurvivalGame()" ontouchstart="startSurvivalGame()">ENTER GREYFALL CITY</button>
         </div>
     </div>
@@ -1410,7 +1370,7 @@
             </div>
 
             <div class="mission-panel">
-                <div class="mission-tag">ECLIPSE: GREYFALL CITY (BATCH B OVERHAUL)</div>
+                <div class="mission-tag">GREYFALL CITY &bull; EVACUATION SECTOR 1</div>
                 <div class="mission-desc">Investigate the abandoned evacuation street and survive the infected.</div>
                 <div class="kill-counter">KILLS: <span id="kill-count">0</span> | THREAT: <span id="threat-level">ACTIVE</span></div>
                 <div class="connectivity-badge" id="connectivity-badge">
@@ -1443,6 +1403,16 @@
             <div class="joystick-thumb" id="joystick-thumb"></div>
         </div>
 
+        <div class="touch-action-buttons">
+            <div class="btn-touch" id="btn-cam" title="Toggle 1st/3rd Person">CAM<br><span class="btn-sub">[V]</span></div>
+            <div class="btn-touch" id="btn-switch" title="Switch Weapon">GUN<br><span class="btn-sub">[1-2]</span></div>
+            <div class="btn-touch" id="btn-reload" title="Reload Clip">RELOAD<br><span class="btn-sub">[R]</span></div>
+            <div class="btn-touch" id="btn-sprint" title="Toggle Sprint">RUN<br><span class="btn-sub">[SHIFT]</span></div>
+            <div class="btn-touch" id="btn-aim" title="Aim Down Sights">AIM<br><span class="btn-sub">[R-CLK]</span></div>
+            <div class="btn-touch btn-fire" id="btn-fire" title="Fire Weapon">FIRE<br><span class="btn-sub">[L-CLK]</span></div>
+        </div>
+    </div>
+
     <!-- Modal for Game Over / Victory -->
     <div id="modal-overlay">
         <div class="modal-title" id="modal-title">SURVIVOR DOWN</div>
@@ -1452,6 +1422,8 @@
 
     <script>
         // Global Game & Multiplayer State
+        let currentGameState = 'MENU'; // 'MENU' or 'PLAYING'
+        let touchJoystickActive = false;
         const remotePlayers = new Map();
         let ws = null;
         let lastSyncTime = 0;
@@ -3072,7 +3044,7 @@
         const joystickZone = document.getElementById('joystick-zone');
         const joystickThumb = document.getElementById('joystick-thumb');
 
-        let touchJoystickActive = false;
+        touchJoystickActive = false;
         let joystickTouchId = null;
         let cameraTouchId = null;
         let touchStartPos = { x: 0, y: 0 };
@@ -3117,18 +3089,18 @@
 
             // Auto-Sprint when pushed full forward (> 82%)
             const isFullForward = (joystickVector.y < -0.80 && Math.abs(joystickVector.x) < 0.65);
+            const sprintBtn = document.getElementById('btn-sprint');
+            const sprintSub = document.querySelector('#btn-sprint .btn-sub');
             if (isFullForward && player.stamina > 15) {
                 player.isSprinting = true;
                 joystickThumb.classList.add('sprinting');
-                document.getElementById('btn-sprint').classList.add('active');
-                const sub = document.querySelector('#btn-sprint .btn-sub');
-                if (sub) sub.innerText = 'SPRINT';
+                if (sprintBtn) sprintBtn.classList.add('active');
+                if (sprintSub) sprintSub.innerText = 'SPRINT';
             } else if (!player.isSprintLocked) {
                 player.isSprinting = false;
                 joystickThumb.classList.remove('sprinting');
-                document.getElementById('btn-sprint').classList.remove('active');
-                const sub = document.querySelector('#btn-sprint .btn-sub');
-                if (sub) sub.innerText = 'OFF';
+                if (sprintBtn) sprintBtn.classList.remove('active');
+                if (sprintSub) sprintSub.innerText = 'OFF';
             }
         }
 
@@ -3147,9 +3119,10 @@
 
             if (!player.isSprintLocked) {
                 player.isSprinting = false;
-                document.getElementById('btn-sprint').classList.remove('active');
-                const sub = document.querySelector('#btn-sprint .btn-sub');
-                if (sub) sub.innerText = 'OFF';
+                const sprintBtn = document.getElementById('btn-sprint');
+                if (sprintBtn) sprintBtn.classList.remove('active');
+                const sprintSub = document.querySelector('#btn-sprint .btn-sub');
+                if (sprintSub) sprintSub.innerText = 'OFF';
             }
         }
 
@@ -3235,8 +3208,7 @@
                     // EXCLUSION LAYER: Ignore interactive controls
                     if (target && (target.closest('.btn-touch') || target.closest('.status-panel') || 
                                    target.closest('.mission-panel') || target.closest('.modal-btn') || 
-                                   target.closest('.touch-action-buttons') || target.closest('.brand-header') ||
-                                   target.closest('.weapon-hud'))) {
+                                   target.closest('.touch-action-buttons') || target.closest('.weapon-hud'))) {
                         continue;
                     }
 
@@ -3349,7 +3321,7 @@
         const btnFire = document.getElementById('btn-fire');
         const startFire = () => {
             triggerHaptic(40);
-            btnFire.classList.add('active');
+            if (btnFire) btnFire.classList.add('active');
             tryFire();
             if (continuousFireInterval) clearInterval(continuousFireInterval);
             continuousFireInterval = setInterval(() => {
@@ -3357,17 +3329,19 @@
             }, weapons[currentWeaponIndex].automatic ? 120 : 320);
         };
         const endFire = () => {
-            btnFire.classList.remove('active');
+            if (btnFire) btnFire.classList.remove('active');
             if (continuousFireInterval) {
                 clearInterval(continuousFireInterval);
                 continuousFireInterval = null;
             }
         };
 
-        btnFire.addEventListener('touchstart', e => { e.preventDefault(); startFire(); }, { passive: false });
-        btnFire.addEventListener('touchend', endFire);
-        btnFire.addEventListener('touchcancel', endFire);
-        btnFire.addEventListener('mousedown', e => { if (e.button === 0) startFire(); });
+        if (btnFire) {
+            btnFire.addEventListener('touchstart', e => { e.preventDefault(); startFire(); }, { passive: false });
+            btnFire.addEventListener('touchend', endFire);
+            btnFire.addEventListener('touchcancel', endFire);
+            btnFire.addEventListener('mousedown', e => { if (e.button === 0) startFire(); });
+        }
         window.addEventListener('mouseup', endFire);
 
         // --- Combat & Shooting Mechanics ---
@@ -3567,7 +3541,7 @@
         let clock = new THREE.Clock();
 
         // --- Game State & Cinematic Main Menu Controller ---
-        let currentGameState = 'MENU'; // 'MENU' or 'PLAYING'
+        // (currentGameState is declared at top of script)
         let menuRotationYaw = 0;
         let isDraggingMenuHero = false;
         let menuDragStartX = 0;
