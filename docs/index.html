@@ -7,6 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    
     <style>
         :root {
             --sat: env(safe-area-inset-top, 0px);
@@ -2777,10 +2778,24 @@
         mistGeo.setAttribute('position', new THREE.BufferAttribute(mistPos, 3));
         const mistMat = new THREE.PointsMaterial({
             color: 0x90a4ae,
-            size: 3.8,
+            size: 4.8,
+            map: (function() {
+                const c = document.createElement('canvas');
+                c.width = 64; c.height = 64;
+                const ctx = c.getContext('2d');
+                const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+                g.addColorStop(0, 'rgba(215, 230, 240, 0.75)');
+                g.addColorStop(0.35, 'rgba(180, 205, 220, 0.40)');
+                g.addColorStop(0.7, 'rgba(145, 175, 195, 0.12)');
+                g.addColorStop(1, 'rgba(130, 155, 175, 0)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, 64, 64);
+                return new THREE.CanvasTexture(c);
+            })(),
             transparent: true,
-            opacity: 0.28,
-            depthWrite: false
+            opacity: 0.35,
+            depthWrite: false,
+            blending: THREE.NormalBlending
         });
         const mistPoints = new THREE.Points(mistGeo, mistMat);
         vfxGroup.add(mistPoints);
