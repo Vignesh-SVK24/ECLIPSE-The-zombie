@@ -617,12 +617,763 @@
             letter-spacing: 0.5px;
             pointer-events: none;
         }
+    
+        /* ======================================================== */
+        /* CINEMATIC GRITTY SURVIVAL UI (LEFT TO SURVIVE INSPIRED)   */
+        /* ======================================================== */
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --gunmetal-bg: rgba(14, 18, 20, 0.90);
+            --panel-border: 1px solid rgba(196, 155, 88, 0.35);
+            --accent-amber: #d4a034;
+            --accent-olive: #4b5e43;
+            --accent-red: #c23828;
+            --text-light: #e6eceb;
+            --text-muted: #889596;
+        }
+
+        /* Cinematic 3D Main Menu Overlay */
+        #main-menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: auto;
+            background: radial-gradient(circle at 75% 50%, rgba(10, 14, 15, 0.25) 0%, rgba(10, 14, 15, 0.85) 75%, rgba(6, 8, 9, 0.96) 100%);
+            padding-top: max(16px, var(--sat));
+            padding-bottom: max(16px, var(--sab));
+            padding-left: max(24px, var(--sal));
+            padding-right: max(24px, var(--sar));
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        #main-menu-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Top Brand & Status Strip */
+        .menu-top-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border-bottom: var(--panel-border);
+            padding-bottom: 12px;
+            background: linear-gradient(90deg, rgba(14, 18, 20, 0.85) 0%, rgba(14, 18, 20, 0.4) 100%);
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+        .menu-brand-block {
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-logo {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 0 16px rgba(194, 56, 40, 0.8), 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .menu-logo span {
+            color: var(--accent-red);
+        }
+        .menu-sublogo {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--accent-amber);
+            margin-top: 2px;
+        }
+        .menu-status-chips {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .menu-chip {
+            background: rgba(22, 28, 30, 0.85);
+            border: 1px solid rgba(75, 94, 67, 0.6);
+            padding: 5px 12px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .menu-chip .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #42d420;
+            box-shadow: 0 0 8px #42d420;
+            animation: pulseChip 1.8s infinite;
+        }
+        @keyframes pulseChip {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        /* Menu Middle Split: Left Nav + Right Inspector Card */
+        .menu-middle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: calc(100% - 130px);
+            pointer-events: none;
+        }
+        .menu-nav-sidebar {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: auto;
+        }
+        .nav-btn {
+            background: rgba(18, 23, 26, 0.88);
+            border: 1px solid rgba(196, 155, 88, 0.28);
+            padding: 11px 16px;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.15s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: transparent;
+            transition: background 0.15s;
+        }
+        .nav-btn:hover, .nav-btn:active {
+            background: rgba(36, 45, 48, 0.95);
+            border-color: var(--accent-amber);
+            transform: translateX(4px);
+        }
+        .nav-btn:hover::before, .nav-btn.primary::before {
+            background: var(--accent-amber);
+        }
+        .nav-btn.primary {
+            background: linear-gradient(90deg, rgba(194, 56, 40, 0.35) 0%, rgba(18, 23, 26, 0.92) 100%);
+            border-color: rgba(194, 56, 40, 0.7);
+        }
+        .nav-btn.primary::before {
+            background: var(--accent-red);
+        }
+        .nav-title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+        .nav-desc {
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+        .nav-icon {
+            font-size: 10px;
+            color: var(--accent-amber);
+            font-weight: 900;
+        }
+
+        /* Right Survivor Inspector Card */
+        .menu-inspector-card {
+            width: 280px;
+            background: var(--gunmetal-bg);
+            border: var(--panel-border);
+            padding: 16px;
+            border-radius: 3px;
+            pointer-events: auto;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+        }
+        .inspector-badge {
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--accent-amber);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(196, 155, 88, 0.2);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+        .inspector-name {
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+        .inspector-role {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--accent-olive);
+            margin-top: 2px;
+            margin-bottom: 12px;
+        }
+        .inspector-stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            padding-bottom: 4px;
+        }
+        .inspector-stat-label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .inspector-stat-val {
+            color: var(--text-light);
+            font-weight: 800;
+        }
+        .inspector-hint {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--accent-amber);
+            text-align: center;
+            margin-top: 10px;
+            padding: 6px;
+            background: rgba(212, 160, 52, 0.1);
+            border-radius: 2px;
+            border: 1px dashed rgba(212, 160, 52, 0.3);
+        }
+
+        /* Bottom Bar with Primary Action */
+        .menu-bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: var(--panel-border);
+            padding-top: 10px;
+            background: linear-gradient(90deg, rgba(14, 18, 20, 0.95) 0%, rgba(14, 18, 20, 0.6) 100%);
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+        .menu-build-tag {
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .menu-play-btn {
+            background: linear-gradient(135deg, #c23828 0%, #821414 100%);
+            border: 2px solid #ff7777;
+            padding: 12px 36px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: 3px;
+            cursor: pointer;
+            box-shadow: 0 0 24px rgba(194, 56, 40, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.2);
+            transition: all 0.15s ease;
+        }
+        .menu-play-btn:hover, .menu-play-btn:active {
+            transform: scale(1.04);
+            box-shadow: 0 0 32px rgba(255, 60, 60, 0.9);
+            border-color: #ffffff;
+        }
+
+        /* Interactive Modal Screens (Missions, Weapons, Inventory, Base, Settings) */
+        .survival-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(850px, 94vw);
+            max-height: 85vh;
+            background: rgba(14, 18, 20, 0.96);
+            border: 2px solid rgba(196, 155, 88, 0.6);
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            border-radius: 4px;
+            z-index: 60;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            pointer-events: auto;
+        }
+        .survival-modal.active {
+            display: flex;
+        }
+        .modal-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background: linear-gradient(90deg, rgba(30, 38, 42, 0.9) 0%, rgba(18, 23, 26, 0.9) 100%);
+            border-bottom: 1px solid rgba(196, 155, 88, 0.3);
+        }
+        .modal-header-title {
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+        .modal-close-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 10px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.1s;
+        }
+        .modal-close-btn:hover {
+            background: var(--accent-red);
+            border-color: #ffffff;
+        }
+        .modal-body-content {
+            padding: 16px;
+            overflow-y: auto;
+            color: var(--text-light);
+            font-size: 11px;
+        }
+
+        /* Missions Sector Grid */
+        .missions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .sector-card {
+            background: rgba(22, 28, 32, 0.9);
+            border: 1px solid rgba(75, 94, 67, 0.5);
+            padding: 12px;
+            border-radius: 3px;
+            position: relative;
+        }
+        .sector-card.active {
+            border-color: var(--accent-amber);
+            box-shadow: 0 0 16px rgba(212, 160, 52, 0.25);
+        }
+        .sector-title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .sector-desc {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .sector-status-tag {
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--accent-amber);
+        }
+
+        /* Weapons Armory Grid */
+        .armory-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .weapon-card {
+            background: rgba(22, 28, 32, 0.9);
+            border: 1px solid rgba(196, 155, 88, 0.3);
+            padding: 14px;
+            border-radius: 3px;
+        }
+        .weapon-card-title {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .weapon-stat-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 9px;
+            margin: 4px 0;
+        }
+        .stat-track {
+            width: 110px;
+            height: 6px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .stat-fill {
+            height: 100%;
+            background: var(--accent-amber);
+        }
+
+        /* Inventory 12-Slot Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .inv-slot {
+            background: rgba(20, 26, 29, 0.95);
+            border: 1px solid rgba(75, 94, 67, 0.6);
+            padding: 10px;
+            border-radius: 3px;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .inv-slot.equipped {
+            border-color: var(--accent-amber);
+            background: rgba(35, 42, 45, 0.95);
+        }
+        .inv-name {
+            font-size: 10px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .inv-count {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--accent-amber);
+            align-self: flex-end;
+        }
+
+        /* Settlement Base Management */
+        .base-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .base-card {
+            background: rgba(22, 28, 32, 0.9);
+            border: 1px solid rgba(75, 94, 67, 0.5);
+            padding: 12px;
+            border-radius: 3px;
+        }
+        .base-card-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        /* Menu Button inside HUD */
+        .hud-menu-btn {
+            background: rgba(18, 23, 26, 0.85);
+            border: 1px solid rgba(196, 155, 88, 0.4);
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            padding: 6px 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.1s;
+            pointer-events: auto;
+        }
+        .hud-menu-btn:hover {
+            background: var(--accent-amber);
+            color: #111918;
+        }
+
+        /* Mobile Adjustments for Menu */
+        @media (max-width: 720px) {
+            .menu-inspector-card {
+                display: none;
+            }
+            .menu-nav-sidebar {
+                width: 100%;
+                max-width: 260px;
+            }
+            .nav-btn {
+                padding: 8px 12px;
+            }
+            .menu-logo {
+                font-size: 20px;
+            }
+            .menu-play-btn {
+                padding: 10px 24px;
+                font-size: 12px;
+            }
+            .armory-grid, .base-grid {
+                grid-template-columns: 1fr;
+            }
+            .inventory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
     </style>
     <!-- Include Three.js from trusted CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <div id="canvas-container"></div>
+<!-- Cinematic 3D Main Menu Overlay (Left to Survive Inspired) -->
+    <div id="main-menu-overlay">
+        <!-- Top Strip -->
+        <div class="menu-top-strip">
+            <div class="menu-brand-block">
+                <div class="menu-logo">ECLIPSE<span>:</span> SURVIVAL</div>
+                <div class="menu-sublogo">THE LAST CIVILIZATION &bull; CINEMATIC PROTOCOL</div>
+            </div>
+            <div class="menu-status-chips">
+                <div class="menu-chip"><span class="pulse-dot"></span> SURVIVORS: 1,420</div>
+                <div class="menu-chip">US-EAST &bull; 24ms</div>
+            </div>
+        </div>
+
+        <!-- Middle Section -->
+        <div class="menu-middle-section">
+            <!-- Left Navigation Sidebar -->
+            <div class="menu-nav-sidebar">
+                <div class="nav-btn primary" id="menu-btn-play" onclick="startSurvivalGame()">
+                    <div>
+                        <div class="nav-title">NEW GAME</div>
+                        <div class="nav-desc">Enter Greyfall City</div>
+                    </div>
+                    <div class="nav-icon">&blacktriangleright;</div>
+                </div>
+                <div class="nav-btn" onclick="openModal('missions')">
+                    <div>
+                        <div class="nav-title">MISSIONS</div>
+                        <div class="nav-desc">Tactical Sector Map</div>
+                    </div>
+                    <div class="nav-icon">&plus;</div>
+                </div>
+                <div class="nav-btn" onclick="openModal('armory')">
+                    <div>
+                        <div class="nav-title">WEAPONS</div>
+                        <div class="nav-desc">3D Armory & Upgrades</div>
+                    </div>
+                    <div class="nav-icon">&plus;</div>
+                </div>
+                <div class="nav-btn" onclick="openModal('inventory')">
+                    <div>
+                        <div class="nav-title">INVENTORY</div>
+                        <div class="nav-desc">Rucksack & Supplies</div>
+                    </div>
+                    <div class="nav-icon">&plus;</div>
+                </div>
+                <div class="nav-btn" onclick="openModal('settlement')">
+                    <div>
+                        <div class="nav-title">SETTLEMENT</div>
+                        <div class="nav-desc">Base Defenses & Survivors</div>
+                    </div>
+                    <div class="nav-icon">&plus;</div>
+                </div>
+                <div class="nav-btn" onclick="openModal('settings')">
+                    <div>
+                        <div class="nav-title">SETTINGS</div>
+                        <div class="nav-desc">Audio, Graphics & Mobile</div>
+                    </div>
+                    <div class="nav-icon">&plus;</div>
+                </div>
+            </div>
+
+            <!-- Right Hero Dossier Card -->
+            <div class="menu-inspector-card">
+                <div class="inspector-badge">SURVIVOR DOSSIER &bull; ACTIVE</div>
+                <div class="inspector-name">ETHAN CROSS</div>
+                <div class="inspector-role">COMBAT ENGINEER &bull; VETERAN SURVIVOR</div>
+                <div class="inspector-stats-row">
+                    <span class="inspector-stat-label">PRIMARY WEAPON</span>
+                    <span class="inspector-stat-val">M4 CARBINE (PBR)</span>
+                </div>
+                <div class="inspector-stats-row">
+                    <span class="inspector-stat-label">SIDEARM</span>
+                    <span class="inspector-stat-val">9MM TACTICAL PISTOL</span>
+                </div>
+                <div class="inspector-stats-row">
+                    <span class="inspector-stat-label">ARMOR CARRIER</span>
+                    <span class="inspector-stat-val">LEVEL-IIIA CHARCOAL VEST</span>
+                </div>
+                <div class="inspector-stats-row">
+                    <span class="inspector-stat-label">BASE REPUTATION</span>
+                    <span class="inspector-stat-val">LEVEL 8 (SAFE)</span>
+                </div>
+                <div class="inspector-hint">&#8644; DRAG SCREEN TO ROTATE SURVIVOR (360&deg;)</div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="menu-bottom-bar">
+            <div class="menu-build-tag">VERSION 2.0.0-PRO &bull; CINEMATIC PBR ENGINE</div>
+            <button class="menu-play-btn" onclick="startSurvivalGame()">ENTER GREYFALL CITY</button>
+        </div>
+    </div>
+
+    <!-- Interactive Survival Modals -->
+    <!-- 1. Missions Modal -->
+    <div class="survival-modal" id="modal-missions">
+        <div class="modal-header-bar">
+            <div class="modal-header-title">TACTICAL SECTOR MAP &bull; CAMPAIGN</div>
+            <button class="modal-close-btn" onclick="closeModal('missions')">[X] CLOSE</button>
+        </div>
+        <div class="modal-body-content">
+            <div class="missions-grid">
+                <div class="sector-card active">
+                    <div class="sector-title">01. GREYFALL CITY</div>
+                    <div class="sector-desc">Urban evacuation boulevard overrun by initial wave. Survive the infected ambush and secure checkpoint.</div>
+                    <div class="sector-status-tag">&bull; ACTIVE CAMPAIGN SECTOR</div>
+                </div>
+                <div class="sector-card">
+                    <div class="sector-title">02. BLACKWOOD FOREST</div>
+                    <div class="sector-desc">Dense pine wilderness and abandoned ranger outpost. High stalker ambush risk in fog.</div>
+                    <div class="sector-status-tag" style="color: #889596;">[LOCKED &bull; CLEAR GREYFALL]</div>
+                </div>
+                <div class="sector-card">
+                    <div class="sector-title">03. IRONSHIELD BASE</div>
+                    <div class="sector-desc">Fortified National Guard depot with heavy munitions and armored vehicle wrecks.</div>
+                    <div class="sector-status-tag" style="color: #889596;">[LOCKED &bull; CLEAR SECTOR 2]</div>
+                </div>
+                <div class="sector-card">
+                    <div class="sector-title">04. ASHEN DISTRICT</div>
+                    <div class="sector-desc">Heavy manufacturing complex, toxic pipelines, and mutated brute encounters.</div>
+                    <div class="sector-status-tag" style="color: #889596;">[LOCKED &bull; CLEAR SECTOR 3]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Weapons Armory Modal -->
+    <div class="survival-modal" id="modal-armory">
+        <div class="modal-header-bar">
+            <div class="modal-header-title">3D ARMORY &bull; WEAPON MODIFICATIONS</div>
+            <button class="modal-close-btn" onclick="closeModal('armory')">[X] CLOSE</button>
+        </div>
+        <div class="modal-body-content">
+            <div class="armory-grid">
+                <div class="weapon-card">
+                    <div class="weapon-card-title">M4 TACTICAL CARBINE</div>
+                    <div style="font-size: 9px; color: var(--accent-amber); margin-bottom: 8px;">CALIBER: 5.56x45mm NATO &bull; FULL-AUTO</div>
+                    <div class="weapon-stat-bar"><span>DAMAGE</span><div class="stat-track"><div class="stat-fill" style="width: 75%;"></div></div></div>
+                    <div class="weapon-stat-bar"><span>FIRE RATE</span><div class="stat-track"><div class="stat-fill" style="width: 85%;"></div></div></div>
+                    <div class="weapon-stat-bar"><span>ACCURACY</span><div class="stat-track"><div class="stat-fill" style="width: 80%;"></div></div></div>
+                    <div class="weapon-stat-bar"><span>CLIP SIZE</span><span style="font-weight: 800;">30 ROUNDS</span></div>
+                </div>
+                <div class="weapon-card">
+                    <div class="weapon-card-title">9MM COMBAT PISTOL</div>
+                    <div style="font-size: 9px; color: var(--accent-amber); margin-bottom: 8px;">CALIBER: 9x19mm PARABELLUM &bull; SEMI-AUTO</div>
+                    <div class="weapon-stat-bar"><span>DAMAGE</span><div class="stat-track"><div class="stat-fill" style="width: 65%;"></div></div></div>
+                    <div class="weapon-stat-bar"><span>FIRE RATE</span><div class="stat-track"><div class="stat-fill" style="width: 55%;"></div></div></div>
+                    <div class="weapon-stat-bar"><span>ACCURACY</span><div class="stat-track"><div class="stat-fill" style="width: 90%;"></div></div></div>
+                    <div class="weapon-stat-bar"><span>CLIP SIZE</span><span style="font-weight: 800;">15 ROUNDS</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Inventory Modal -->
+    <div class="survival-modal" id="modal-inventory">
+        <div class="modal-header-bar">
+            <div class="modal-header-title">SURVIVAL RUCKSACK &bull; GEAR & SUPPLIES</div>
+            <button class="modal-close-btn" onclick="closeModal('inventory')">[X] CLOSE</button>
+        </div>
+        <div class="modal-body-content">
+            <div class="inventory-grid">
+                <div class="inv-slot equipped"><div class="inv-name">M4 CARBINE</div><div class="inv-count">EQUIPPED</div></div>
+                <div class="inv-slot equipped"><div class="inv-name">9MM PISTOL</div><div class="inv-count">EQUIPPED</div></div>
+                <div class="inv-slot"><div class="inv-name">MILITARY MEDKIT</div><div class="inv-count">x3</div></div>
+                <div class="inv-slot"><div class="inv-name">STERILE BANDAGE</div><div class="inv-count">x6</div></div>
+                <div class="inv-slot"><div class="inv-name">5.56MM AMMO</div><div class="inv-count">120 RDS</div></div>
+                <div class="inv-slot"><div class="inv-name">9MM AMMO</div><div class="inv-count">60 RDS</div></div>
+                <div class="inv-slot"><div class="inv-name">MRE RATIONS</div><div class="inv-count">x4</div></div>
+                <div class="inv-slot"><div class="inv-name">WATER CANTEEN</div><div class="inv-count">2.0 L</div></div>
+                <div class="inv-slot"><div class="inv-name">SCRAP METAL</div><div class="inv-count">x42</div></div>
+                <div class="inv-slot"><div class="inv-name">GUNPOWDER</div><div class="inv-count">x28</div></div>
+                <div class="inv-slot"><div class="inv-name">ELECTRONICS</div><div class="inv-count">x14</div></div>
+                <div class="inv-slot"><div class="inv-name">RADIO BATTERY</div><div class="inv-count">100%</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Settlement Modal -->
+    <div class="survival-modal" id="modal-settlement">
+        <div class="modal-header-bar">
+            <div class="modal-header-title">SETTLEMENT OUTPOST &bull; BASE DEFENSE</div>
+            <button class="modal-close-btn" onclick="closeModal('settlement')">[X] CLOSE</button>
+        </div>
+        <div class="modal-body-content">
+            <div class="base-grid">
+                <div class="base-card">
+                    <div class="base-card-title">PERIMETER BARRICADES (LVL 4)</div>
+                    <div style="font-size: 9px; color: var(--accent-amber); margin-bottom: 6px;">STRUCTURE INTEGRITY: 850 / 1000 HP</div>
+                    <div>Reinforced steel rebar and concrete barriers prevent zombie breach.</div>
+                </div>
+                <div class="base-card">
+                    <div class="base-card-title">DIESEL GENERATOR (ONLINE)</div>
+                    <div style="font-size: 9px; color: var(--accent-amber); margin-bottom: 6px;">FUEL LEVEL: 82% &bull; RUNTIME: 48 HRS</div>
+                    <div>Powers defense searchlights, electric fences, and medical freezers.</div>
+                </div>
+                <div class="base-card">
+                    <div class="base-card-title">SNIPER WATCHTOWER (LVL 3)</div>
+                    <div style="font-size: 9px; color: var(--accent-amber); margin-bottom: 6px;">DEFENDERS: 2 SURVIVOR SNIPERS</div>
+                    <div>Automated perimeter defense with thermal scopes.</div>
+                </div>
+                <div class="base-card">
+                    <div class="base-card-title">RADIO BROADCAST TOWER</div>
+                    <div style="font-size: 9px; color: var(--accent-amber); margin-bottom: 6px;">FREQUENCY: 104.5 MHz &bull; SIGNAL: CLEAR</div>
+                    <div>Scans for other survivor enclaves across Greyfall County.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Settings Modal -->
+    <div class="survival-modal" id="modal-settings">
+        <div class="modal-header-bar">
+            <div class="modal-header-title">SYSTEM SETTINGS &bull; PERFORMANCE</div>
+            <button class="modal-close-btn" onclick="closeModal('settings')">[X] CLOSE</button>
+        </div>
+        <div class="modal-body-content">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>GRAPHICS QUALITY</span>
+                    <span style="font-weight: 800; color: var(--accent-amber);">HIGH (CINEMATIC PBR)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>TARGET FRAME RATE</span>
+                    <span style="font-weight: 800; color: #42d420;">60 FPS LOCKED</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>TOUCH AIM ASSIST</span>
+                    <span style="font-weight: 800; color: var(--accent-amber);">ENABLED (MAGNETIC)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>MOBILE HAPTICS</span>
+                    <span style="font-weight: 800; color: var(--accent-amber);">ENABLED</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="damage-flash"></div>
 
     <div id="hud">
@@ -672,27 +1423,6 @@
             <div class="joystick-bg"></div>
             <div class="joystick-thumb" id="joystick-thumb"></div>
         </div>
-
-        <div class="touch-action-buttons">
-            <div class="btn-touch" id="btn-cam" title="Camera View">CAM<br><span class="btn-sub">3RD</span></div>
-            <div class="btn-touch" id="btn-light" title="Day / Night">LIGHT<br><span class="btn-sub">DUSK</span></div>
-            <div class="btn-touch" id="btn-switch" title="Switch Weapon">GUN<br><span class="btn-sub">9MM</span></div>
-            <div class="btn-touch" id="btn-reload" title="Reload Clip">RELOAD<br><span class="btn-sub">[R]</span></div>
-            <div class="btn-touch" id="btn-sprint" title="Toggle Sprint">RUN<br><span class="btn-sub">OFF</span></div>
-            <div class="btn-touch" id="btn-aim" title="Aim Down Sights">AIM<br><span class="btn-sub">ADS</span></div>
-            <div class="btn-touch btn-fire" id="btn-fire" title="Fire Weapon">FIRE<br><span class="btn-sub">SHOOT</span></div>
-        </div>
-    </div>
-
-        <div class="touch-action-buttons">
-            <div class="btn-touch" id="btn-cam">CAM<br>[V]</div>
-            <div class="btn-touch" id="btn-switch">GUN<br>[1-2]</div>
-            <div class="btn-touch" id="btn-reload">RELOAD<br>[R]</div>
-            <div class="btn-touch" id="btn-sprint">RUN<br>[SHIFT]</div>
-            <div class="btn-touch" id="btn-aim">AIM<br>[R-CLK]</div>
-            <div class="btn-touch btn-fire" id="btn-fire">FIRE<br>[L-CLK]</div>
-        </div>
-    </div>
 
     <!-- Modal for Game Over / Victory -->
     <div id="modal-overlay">
@@ -1549,19 +2279,19 @@
         // ULTRA-REALISTIC ETHAN CROSS ANATOMICAL MODEL & 65-BONE RIG
         // ================================================================
         const charPBR = {
-            skin: new THREE.MeshStandardMaterial({ color: 0xdcb08c, roughness: 0.50, metalness: 0.0 }),
+            skin: new THREE.MeshStandardMaterial({ color: 0xbfa08a, roughness: 0.48, metalness: 0.0 }),
             head: new THREE.MeshStandardMaterial({ color: 0xd5a682, roughness: 0.46, metalness: 0.0 }),
             hair: new THREE.MeshStandardMaterial({ color: 0x301e12, roughness: 0.85, metalness: 0.05 }),
             stubble: new THREE.MeshStandardMaterial({ color: 0x422d1e, roughness: 0.95 }),
             eyeSclera: new THREE.MeshBasicMaterial({ color: 0xf5f5f5 }),
             eyeIris: new THREE.MeshBasicMaterial({ color: 0x2e5270 }),
             eyePupil: new THREE.MeshBasicMaterial({ color: 0x050505 }),
-            shirt: new THREE.MeshStandardMaterial({ color: 0xb72626, roughness: 0.68, metalness: 0.02 }), // Master Crimson Red Hoodie
-            vest: new THREE.MeshStandardMaterial({ color: 0x1e2426, roughness: 0.52, metalness: 0.15 }),  // Dark Kevlar Armor
+            shirt: new THREE.MeshStandardMaterial({ color: 0x6e2624, roughness: 0.65, metalness: 0.04 }), // Master Crimson Red Hoodie
+            vest: new THREE.MeshStandardMaterial({ color: 0x232729, roughness: 0.50, metalness: 0.18 }),  // Dark Kevlar Armor
             pouches: new THREE.MeshStandardMaterial({ color: 0x4a4336, roughness: 0.80 }),
-            trousers: new THREE.MeshStandardMaterial({ color: 0x24282a, roughness: 0.75, metalness: 0.04 }),
+            trousers: new THREE.MeshStandardMaterial({ color: 0x2c332e, roughness: 0.72, metalness: 0.04 }),
             kneePads: new THREE.MeshStandardMaterial({ color: 0x14181a, roughness: 0.35, metalness: 0.30 }),
-            boots: new THREE.MeshStandardMaterial({ color: 0x201a14, roughness: 0.45, metalness: 0.1 }),
+            boots: new THREE.MeshStandardMaterial({ color: 0x1e1814, roughness: 0.42, metalness: 0.12 }),
             gloves: new THREE.MeshStandardMaterial({ color: 0x1a1e1f, roughness: 0.62 }),
             backpack: new THREE.MeshStandardMaterial({ color: 0x8a623e, roughness: 0.82 }),                 // Heavy canvas rucksack
             bedroll: new THREE.MeshStandardMaterial({ color: 0xc2a676, roughness: 0.85 }),                  // Khaki rolled sleeping pad
@@ -1991,10 +2721,10 @@
                 speed: 2.2, 
                 health: 80, 
                 damage: 12, 
-                fleshColor: 0x5a6b54, 
-                clothesColor: 0x3e4745, 
+                fleshColor: 0x4e574c, 
+                clothesColor: 0x2d3235, 
                 scale: 1.0, 
-                eyeColor: 0x2bf805, 
+                eyeColor: 0x36c420, 
                 isSingleEye: true 
             },
             RUNNER: { name: 'Runner', speed: 4.8, health: 55, damage: 18, fleshColor: 0x6e785a, clothesColor: 0x42382e, scale: 0.95, eyeColor: 0x00ff66 },
@@ -2801,6 +3531,106 @@
 
         // --- Main Animation Loop ---
         let clock = new THREE.Clock();
+
+        // --- Game State & Cinematic Main Menu Controller ---
+        let currentGameState = 'MENU'; // 'MENU' or 'PLAYING'
+        let menuRotationYaw = 0;
+        let isDraggingMenuHero = false;
+        let menuDragStartX = 0;
+
+        function startSurvivalGame() {
+            triggerHaptic(30);
+            currentGameState = 'PLAYING';
+            const menuOverlay = document.getElementById('main-menu-overlay');
+            if (menuOverlay) menuOverlay.classList.add('hidden');
+
+            const hud = document.getElementById('hud');
+            if (hud) hud.style.display = 'block';
+
+            // Auto-focus pointer lock on desktop if requested
+            if (window.innerWidth > 900 && typeof document.body.requestPointerLock === 'function') {
+                try { document.body.requestPointerLock(); } catch(e) {}
+            }
+        }
+
+        function returnToMainMenu() {
+            triggerHaptic(20);
+            currentGameState = 'MENU';
+            const menuOverlay = document.getElementById('main-menu-overlay');
+            if (menuOverlay) menuOverlay.classList.remove('hidden');
+
+            if (document.exitPointerLock) {
+                try { document.exitPointerLock(); } catch(e) {}
+            }
+        }
+
+        function openModal(modalId) {
+            triggerHaptic(20);
+            const m = document.getElementById('modal-' + modalId);
+            if (m) m.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            triggerHaptic(15);
+            const m = document.getElementById('modal-' + modalId);
+            if (m) m.classList.remove('active');
+        }
+
+        // Close modal on Escape
+        window.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                const openModals = document.querySelectorAll('.survival-modal.active');
+                if (openModals.length > 0) {
+                    openModals.forEach(m => m.classList.remove('active'));
+                } else if (currentGameState === 'PLAYING') {
+                    returnToMainMenu();
+                } else if (currentGameState === 'MENU') {
+                    startSurvivalGame();
+                }
+            }
+        });
+
+        // Menu 360-degree Drag Rotation for Ethan Cross showcase
+        window.addEventListener('mousedown', e => {
+            if (currentGameState === 'MENU' && e.clientX > window.innerWidth * 0.35) {
+                const target = document.elementFromPoint(e.clientX, e.clientY);
+                if (!target || !target.closest('.survival-modal') && !target.closest('.nav-btn') && !target.closest('.menu-play-btn')) {
+                    isDraggingMenuHero = true;
+                    menuDragStartX = e.clientX;
+                }
+            }
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (currentGameState === 'MENU' && isDraggingMenuHero) {
+                const dx = e.clientX - menuDragStartX;
+                menuDragStartX = e.clientX;
+                menuRotationYaw += dx * 0.012;
+            }
+        });
+
+        window.addEventListener('mouseup', () => { isDraggingMenuHero = false; });
+
+        // Touch drag for 360 showcase
+        window.addEventListener('touchstart', e => {
+            if (currentGameState === 'MENU' && e.touches[0].clientX > window.innerWidth * 0.35) {
+                const target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+                if (!target || !target.closest('.survival-modal') && !target.closest('.nav-btn') && !target.closest('.menu-play-btn')) {
+                    isDraggingMenuHero = true;
+                    menuDragStartX = e.touches[0].clientX;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', e => {
+            if (currentGameState === 'MENU' && isDraggingMenuHero && e.touches.length > 0) {
+                const dx = e.touches[0].clientX - menuDragStartX;
+                menuDragStartX = e.touches[0].clientX;
+                menuRotationYaw += dx * 0.012;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => { isDraggingMenuHero = false; });
 
         function animate() {
             if (typeof heliRotor !== 'undefined') {
